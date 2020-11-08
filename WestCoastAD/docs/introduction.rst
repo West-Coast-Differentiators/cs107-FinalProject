@@ -1,0 +1,13 @@
+.. _introduction:
+
+============
+Introduction
+============
+
+Automatic differentiation (AD) is a set of techniques to numerically evaluate the derivative of a function specified by a computer program. In mathematics and computer fields, a large number of numerical methods require derivatives to be calculated(Margossian, 2019). For example, in machine learning, gradient plays an essential role. Neural networks are able to gradually increase accuracy with every training session through the process of gradient descent(Wang, 2019).  In physics, differentiation is needed to quantify the rate of change in the equations of motion. However, for many problems, calculating derivatives analytically is both time consuming and computationally impractical. Automatic differentiation can gives exact answers in constant time(Saroufim, 2019), which is a powerful tool to automate the calculation of derivatives, especially when differentiating complex algorithms and mathematical functions(Margossian, 2019).  
+
+There are three main methods of calculating derivatives: numerical differentiation, symbolic differentiation, and automatic differentiation. Specifically, symbolic differentiation involves computing exact expressions for the derivatives in terms of the function variables by representing the expression as a tree and manipulating it using the rules of differentiation. The derivatives can quickly become very complicated for complex functions and higher-order derivatives. Thus, for complicated functions, symbolic differentiation is not easily generalizable and becomes computationally inefficient due to redundant evaluations of different components of the function . Numerical differentiation aims to approximate derivatives through finite differentiating, but the solution accuracy is greatly affected by the truncation and round-off errors associated with finite difference formulas. Automatic differentiation is more computationally efficient and generalizable than symbolic differentiation and can find exact derivatives as opposed to numerical differentiation.
+
+In this library, we will describe the mathematical background and concepts in the Background section, explain the software organization, and discuss the implementation of the forward mode of automatic differentiation.
+
+
