@@ -54,5 +54,25 @@ class VariableUnitTest(unittest.TestCase):
         self.assertEqual(np.arcsin(.4), result.value)
         self.assertEqual(-2/np.sqrt(1-.4**2), result.derivative)
 
+
+class VariableIntegrationTest(unittest.TestCase):
+
+    def test_sum_and_sin_scalar(self):
+        value = np.pi /3
+        var = Variable(value, 1)
+        equation = var + np.sin(var)
+        
+        self.assertEqual(value+ np.sin(value), equation.value)
+        self.assertEqual(1+np.cos(value), equation.derivative)
+    
+    def test_sinh_of_sin_scalar(self):
+        value = 0.34
+        var = Variable(value, 1)
+        equation = np.sinh(np.sin(var))
+        
+        self.assertEqual(np.sinh(np.sin(value)), equation.value)
+        expected_derivative = np.cosh(np.sin(value))*np.cos(value)
+        self.assertEqual(expected_derivative, equation.derivative)
+
 if __name__ == '__main__':
     unittest.main()
