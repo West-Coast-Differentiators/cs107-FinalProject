@@ -47,11 +47,15 @@ class Variable:
     def __neg__(self):
         pass
     
-    def log(self, b):
-        pass
+    def log(self):
+        val = np.log(self.value)
+        der = 1/self.value
+        return Variable(val, der)
     
     def exp(self):
-        pass
+        val = np.exp(self.value)
+        der = np.exp(self.value)
+        return Variable(val, der)
     
     def sqrt(self):
         pass

@@ -47,6 +47,20 @@ class VariableUnitTest(unittest.TestCase):
         self.assertEqual(np.sinh(-.5), result.value)
         self.assertEqual(np.cosh(-.5)*1.2, result.derivative)
 
+    def test_log_scalar(self):
+        var = Variable(5, 1.5)
+        result = np.log(var)
+
+        self.assertEqual(np.log(5), result.value)
+        self.assertEqual((1/5)*1.5, result.derivative)
+
+    def test_exp_scalar(self):
+        var = Variable(5, 1.5)
+        result = np.exp(var)
+
+        self.assertEqual(np.exp(5), result.value)
+        self.assertEqual(np.exp(5)*1.5, result.derivative)
+
     def test_arcsin_scalar(self):
         var = Variable(.4, -2)
         result = np.arcsin(var)
