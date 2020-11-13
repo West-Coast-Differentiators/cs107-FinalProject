@@ -49,12 +49,12 @@ class Variable:
     
     def log(self):
         val = np.log(self.value)
-        der = 1/self.value
+        der = self.derivative * (1/self.value)
         return Variable(val, der)
     
     def exp(self):
         val = np.exp(self.value)
-        der = np.exp(self.value)
+        der = self.derivative * np.exp(self.value)
         return Variable(val, der)
     
     def sqrt(self):
