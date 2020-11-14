@@ -27,10 +27,17 @@ class Variable:
         pass
     
     def __sub__(self, other):
-        pass
+        try:
+            val = self.value - other.value
+            der = self.derivative - other.derivative
+        except AttributeError:
+            val = self.value - other
+            der = self.derivative
+        
+        return Variable(val, der)
     
     def __rsub__(self, other):
-        pass
+        return self.__sub__(other)
     
     def __truediv__(self, other):
         pass
@@ -45,7 +52,9 @@ class Variable:
         pass
     
     def __neg__(self):
-        pass
+        val = (-1) * self.value 
+        der = (-1) * self.derivative
+        return Variable(val, der)
     
     def log(self):
         val = np.log(self.value)
@@ -66,7 +75,10 @@ class Variable:
         return Variable(val, der)
     
     def cos(self):
-        pass
+        val = np.cos(self.value)
+        der = -np.sin(self.value) * self.derivative
+        return Variable(val, der)
+    
     
     def tan(self):
         val = np.tan(self.value)
@@ -81,8 +93,10 @@ class Variable:
         return Variable(val, der)
     
     def cosh(self):
-        pass
-
+        val = np.cosh(self.value)
+        der = np.sinh(self.value) * self.derivative
+        return Variable(val, der)
+    
     def tanh(self):
         pass
     
@@ -92,16 +106,12 @@ class Variable:
         return Variable(val, der)
     
     def arccos(self):
-        pass
+        val = np.arccos(self.value)
+        der = (-1) * self.derivative / np.sqrt(1-self.value**2)
+        return Variable(val,der)
     
     def arctan(self):
         pass
     
     def abs(self):
         pass
-    
-
-    
-
-
-    
