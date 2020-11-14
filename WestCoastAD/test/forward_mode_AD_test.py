@@ -25,13 +25,52 @@ class VariableUnitTest(unittest.TestCase):
         self.assertEqual(8, summation2.value)
         self.assertEqual(17, summation.derivative)
         self.assertEqual(17, summation2.derivative)
-    
+        
+    def test_sub_scalar_two_variable_objects(self):
+        var1 = Variable(10.1, 2.1)
+        var2  = Variable(9, 3)
+        substraction = var1 - var2
+        substraction_reverse_order = var2 - var1
+        
+        self.assertEqual(1.1, round(substraction.value, 1))
+        self.assertEqual(-1.1, round(substraction_reverse_order.value, 1))
+        self.assertEqual(-0.9, round(substraction.derivative, 1))
+        self.assertEqual(0.9, round(substraction_reverse_order.derivative, 1))
+        
+    def test__sub__scalar_one_variable_one_constant(self):
+        var = Variable(3, 17)
+        substraction = var - 4
+        substraction2 = 5 - var
+        
+        self.assertEqual(-1, substraction.value)
+        self.assertEqual(2, substraction2.value)
+        self.assertEqual(17, substraction.derivative)
+        self.assertEqual(-17, substraction2.derivative)
+          
+    def test_neg(self):
+        var1 = Variable(9, 2)
+        negation1 = - var1
+        var2 = Variable(-8, -1)
+        negation2 = - var2
+        
+        self.assertEqual(-9, negation1.value)
+        self.assertEqual(-2, negation1.derivative)
+        self.assertEqual(8, negation2.value)
+        self.assertEqual(1, negation2.derivative)
+        
     def test_sin_scalar(self):
         var = Variable(9, 2)
         result = np.sin(var)
         
         self.assertEqual(np.sin(9), result.value)
         self.assertEqual(np.cos(9)*2, result.derivative)
+        
+    def test_cos_scalar(self):
+        var = Variable(8, 3)
+        result = np.cos(var)
+        
+        self.assertEqual(np.cos(8), result.value)
+        self.assertEqual(-np.sin(8)*3, result.derivative)
     
     def test_tan_scalar(self):
         var = Variable(-0.1, -2)
@@ -46,6 +85,13 @@ class VariableUnitTest(unittest.TestCase):
 
         self.assertEqual(np.sinh(-.5), result.value)
         self.assertEqual(np.cosh(-.5)*1.2, result.derivative)
+    
+    def test_cosh_scalar(self):
+        var = Variable(8, 1.3)
+        result = np.cosh(var)
+        
+        self.assertEqual(np.cosh(8), result.value)
+        self.assertEqual(np.sinh(8)*1.3, result.derivative)
 
     def test_log_scalar(self):
         var = Variable(5, 1.5)
@@ -68,7 +114,13 @@ class VariableUnitTest(unittest.TestCase):
         self.assertEqual(np.arcsin(.4), result.value)
         self.assertEqual(-2/np.sqrt(1-.4**2), result.derivative)
 
+    def test_arccos_scalar(self):
+        var = Variable(.8, -1.2)
+        result = np.arccos(var)
 
+        self.assertEqual(np.arccos(.8), result.value)
+        self.assertEqual((-1)*(-1.2)/np.sqrt(1-.8**2), result.derivative)
+        
 class VariableIntegrationTest(unittest.TestCase):
 
     def test_sum_and_sin_scalar(self):
