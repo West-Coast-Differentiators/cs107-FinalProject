@@ -5,6 +5,23 @@ class Variable:
     def __init__(self, value, derivative_seed):
         self.value = value
         self.derivative = derivative_seed
+        
+    @property
+    def value(self):
+        return self._value
+    
+    @property
+    def derivative(self):
+        return self._derivative
+   
+    @value.setter
+    def value(self, value):
+        self._value = value
+        
+    @derivative.setter
+    def derivative(self,derivative_seed):
+        self._derivative = derivative_seed
+        
 
     def __add__(self, other):
         try:
@@ -37,7 +54,7 @@ class Variable:
         return Variable(val, der)
     
     def __rsub__(self, other):
-        return self.__sub__(other)
+        return Variable(other,0) - self
     
     def __truediv__(self, other):
         pass
