@@ -17,14 +17,14 @@ class Variable:
     @value.setter
     def value(self, value):
         if not isinstance(value, (int, float)):
-            raise ValueError('Input value should be numerical.')
+            raise TypeError('Input value should be numerical.')
         else:
             self._value = value
         
     @derivative.setter
     def derivative(self,derivative_seed):
         if not isinstance(derivative_seed, (int, float)):
-            raise ValueError('Input derivative seed should be numerical.')
+            raise TypeError('Input derivative seed should be numerical.')
         else:
             self._derivative = derivative_seed
         
