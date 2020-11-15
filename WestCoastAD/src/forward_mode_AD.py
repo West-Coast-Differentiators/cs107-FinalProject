@@ -93,7 +93,9 @@ class Variable:
         return Variable(val, der)
     
     def sqrt(self):
-        pass
+        val = np.power(self.value, 0.5)
+        der = self.derivative * 0.5 * np.power(self.value, -0.5)
+        return Variable(val, der)
     
     def sin(self):
         val = np.sin(self.value)
