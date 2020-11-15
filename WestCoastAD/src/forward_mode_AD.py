@@ -49,18 +49,20 @@ class Variable:
     def __rmul__(self, other):
         pass
     
-    def __sub__(self, other):
-        try:
-            val = self.value - other.value
-            der = self.derivative - other.derivative
-        except AttributeError:
-            val = self.value - other
-            der = self.derivative
+    # def __sub__(self, other):
+        # try:
+        #     val = self.value - other.value
+        #     der = self.derivative - other.derivative
+        # except AttributeError:
+        #     val = self.value - other
+        #     der = self.derivative
+    
         
-        return Variable(val, der)
+    def __sub__(self, other):
+        return self + (-other)
     
     def __rsub__(self, other):
-        return Variable(other,0) - self
+        return (-self) + other
     
     def __truediv__(self, other):
         pass
