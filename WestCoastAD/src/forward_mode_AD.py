@@ -25,7 +25,8 @@ class Variable:
     def derivative(self,derivative_seed):
         if not isinstance(derivative_seed, (int, float)):
             raise ValueError('Input derivative seed should be numerical.')
-        self._derivative = derivative_seed
+        else:
+            self._derivative = derivative_seed
         
         
 
