@@ -4,6 +4,22 @@ import numpy as np
 from WestCoastAD import Variable
 
 class VariableUnitTest(unittest.TestCase):
+    
+    def test_value_setter_string(self):
+        with self.assertRaises(TypeError):
+            Variable.value('1')
+            
+    def test_value_setter_float(self):
+        with self.assertRaises(TypeError):
+            Variable.value(1.2)
+        
+    def test_derivative_setter_string(self):
+        with self.assertRaises(TypeError):
+            Variable.derivative('s')
+        
+    def test_derivative_setter_float(self):
+        with self.assertRaises(TypeError):
+            Variable.derivative(12.3)
 
     def test__add__scalar_two_variable_objects(self):
         var1 = Variable(10.1, 2.1)
