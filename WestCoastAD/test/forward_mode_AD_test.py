@@ -117,14 +117,14 @@ class VariableUnitTest(unittest.TestCase):
 
     def test_log_scalar(self):
         var = Variable(5, 1.5)
-        result = np.log(var)
+        result = var.log()
 
         self.assertEqual(np.log(5), result.value)
         self.assertEqual((1/5)*1.5, result.derivative)
 
     def test_exp_scalar(self):
         var = Variable(5, 1.5)
-        result = np.exp(var)
+        result = var.exp()
 
         self.assertEqual(np.exp(5), result.value)
         self.assertEqual(np.exp(5)*1.5, result.derivative)
@@ -142,6 +142,13 @@ class VariableUnitTest(unittest.TestCase):
 
         self.assertEqual(np.arccos(.8), result.value)
         self.assertEqual((-1)*(-1.2)/np.sqrt(1-.8**2), result.derivative)
+
+    def test_sqrt_scalar(self):
+        var = Variable(4, -1)
+        result = var.sqrt()
+
+        self.assertEqual(np.sqrt(4), result.value)
+        self.assertEqual((-1 * 0.5) * np.power(4, -0.5), result.derivative)
         
 class VariableIntegrationTest(unittest.TestCase):
 
