@@ -6,21 +6,27 @@ from WestCoastAD import Variable
 class VariableUnitTest(unittest.TestCase):
     
     def test_value_setter_string(self):
-        with self.assertRaises(TypeError):
-            Variable.value('1')
+        with self.assertRaises(TypeError) as e:
+            var = Variable('s', 1)
+        self.assertEqual('Input value should be numerical.', str(e.exception))
             
-    def test_value_setter_float(self):
-        with self.assertRaises(TypeError):
-            Variable.value(1.2)
+    def test_value_setter_float_and_int(self):
+        var1 = Variable(1.2, 1)
+        var2 = Variable(1, 1.3)
+        var1.value = 2
+        var2.value = 1.1
         
     def test_derivative_setter_string(self):
-        with self.assertRaises(TypeError):
-            Variable.derivative('s')
+        with self.assertRaises(TypeError) as e:
+            var = Variable(1.2, 'string')
+        self.assertEqual('Input derivative seed should be numerical.', str(e.exception))
+    
+    def test_derivative_setter_float_and_int(self):
+        var1 = Variable(1.2, 1)
+        var2 = Variable(1, 1.3)
+        var1.derivative = 1.5
+        var2.derivative = 6
         
-    def test_derivative_setter_float(self):
-        with self.assertRaises(TypeError):
-            Variable.derivative(12.3)
-
     def test__add__scalar_two_variable_objects(self):
         var1 = Variable(10.1, 2.1)
         var2 = Variable(9, 3)
