@@ -142,6 +142,62 @@ class VariableUnitTest(unittest.TestCase):
 
         self.assertEqual(np.arccos(.8), result.value)
         self.assertEqual((-1)*(-1.2)/np.sqrt(1-.8**2), result.derivative)
+
+    def test_arctan_scalar(self):
+        var = Variable(.5, .75)
+        result = np.arctan(var)
+
+        self.assertEqual(np.arctan(.5), result.value)
+        self.assertEqual((1)/(1 + .5**2)*.75, result.derivative)
+
+    def test_tanh_scalar(self):
+        var = Variable(.5, .75)
+        result = np.tanh(var)
+
+        self.assertEqual(np.arctan(.5), result.value)
+        self.assertEqual((1)/(np.cosh(.5)**2)*.75, result.derivative)
+
+    def test__mul__scalar_two_variable_objects(self):
+        var1 = Variable(5.0, 1.0)
+        var2 = Variable(2.0, 2.0)
+        mult = var1 * var2
+        mult_reverse_order = var2 * var1
+        
+        self.assertEqual(10.0, mult.value)
+        self.assertEqual(10.0, mult_reverse_order.value)
+        # self.assertEqual(, mult.derivative)
+        # self.assertEqual(, mult2.derivative)
+    
+    def test__mul__scalar_one_variable_one_constant(self):
+        var = Variable(5.0, 2.0)
+        multiply = var * 4
+        multiply2 = 5 * var
+        
+        self.assertEqual(20, multiply.value)
+        self.assertEqual(25, multiply2.value)
+        # self.assertEqual(, multiply.derivative)
+        # self.assertEqual(, multiply2.derivative)
+
+    def test__truediv__scalar_two_variable_objects(self):
+        var1 = Variable(10.0, 1.0)
+        var2 = Variable(2.0, 2.0)
+        divided = var1 / var2
+        divided_reverse_order = var2 / var1
+        
+        self.assertEqual(5.0, divided.value)
+        self.assertEqual(5.0, divided_reverse_order.value)
+        # self.assertEqual(, divided.derivative)
+        # self.assertEqual(, divided2.derivative)
+    
+    def test__truediv__scalar_one_variable_one_constant(self):
+        var = Variable(20.0, 2.0)
+        divided = var / 4
+        divided2 = 100 / var
+        
+        self.assertEqual(5, divided.value)
+        self.assertEqual(5, divided2.value)
+        # self.assertEqual(, divided.derivative)
+        # self.assertEqual(, divided2.derivative)
         
 class VariableIntegrationTest(unittest.TestCase):
 
