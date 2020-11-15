@@ -43,12 +43,13 @@ class Variable:
     def __radd__(self, other):
         return self.__add__(other)
         
-    
     def __mul__(self, other):
-        pass
+        val = self.value * other.value
+        der = self.value * other.derivative + other.value * self.derivative
+        return Variable(val, der)
     
     def __rmul__(self, other):
-        pass
+        return self.__mul__(other)
     
     # def __sub__(self, other):
         # try:
@@ -66,10 +67,12 @@ class Variable:
         return (-self) + other
     
     def __truediv__(self, other):
-        pass
+        val = self.value / other.value
+        der = (other.value *  self.derivative - self.value * other.derivative) / (other.value ** 2)
+        return Variable(val, der)
     
     def __rtruediv__(self, other):
-        pass
+        return self.__mul__(other)
     
     def __pow__(self, other):
         pass
@@ -124,7 +127,9 @@ class Variable:
         return Variable(val, der)
     
     def tanh(self):
-        pass
+        val = np.tanh(self.value)
+        der = 1 / (np.cosh(self.value)**2) * self.derivative
+        return Variable(val, der)
     
     def arcsin(self):
         val = np.arcsin(self.value)
@@ -137,7 +142,9 @@ class Variable:
         return Variable(val,der)
     
     def arctan(self):
-        pass
+        val = np.arctan(self.value)
+        der = 1 / (1 + self.value**2) * self.derivative
+        return Variable(val, der)
     
     def abs(self):
         pass
