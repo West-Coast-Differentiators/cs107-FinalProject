@@ -149,7 +149,22 @@ class VariableUnitTest(unittest.TestCase):
 
         self.assertEqual(np.sqrt(4), result.value)
         self.assertEqual((-1 * 0.5) * np.power(4, -0.5), result.derivative)
-        
+
+    def test__pow__scalar(self):
+        var = Variable(4, 3)
+        result = var ** 3
+        reverse_result = 3 ** var
+
+        self.assertEqual(4 ** 3, result.value)
+        self.assertEqual(var.derivative * 3 * (4**2), result.derivative)
+        self.assertEqual(4 ** 3, reverse_result.value)
+        self.assertEqual(var.derivative * 3 * (4**2), reverse_result.derivative)
+
+    def test_exponent_exception(self):
+        var = Variable(6, 6.7)
+        with self.assertRaises(TypeError) as e:
+            var ** 'string'
+
 class VariableIntegrationTest(unittest.TestCase):
 
     def test_sum_and_sin_scalar(self):
