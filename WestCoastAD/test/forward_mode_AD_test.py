@@ -163,6 +163,17 @@ class VariableUnitTest(unittest.TestCase):
 
         self.assertEqual(np.arccos(.8), result.value)
         self.assertEqual((-1)*(-1.2)/np.sqrt(1-.8**2), result.derivative)
+    
+    def test_arccos_scalar_invalid_value(self):
+        with self.assertRaises(ValueError) as e:
+            var = Variable(18, 2)
+            np.arccos(var)
+        self.assertEqual("Inputs to arccos should be in [-1, 1].", str(e.exception))
+
+        with self.assertRaises(ValueError) as e:
+            var = Variable(-18, 2)
+            np.arccos(var)
+        self.assertEqual("Inputs to arccos should be in [-1, 1].", str(e.exception))
         
 class VariableIntegrationTest(unittest.TestCase):
 
