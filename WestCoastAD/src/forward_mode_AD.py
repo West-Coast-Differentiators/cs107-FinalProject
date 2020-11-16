@@ -38,14 +38,65 @@ class Variable:
         
     @property
     def value(self):
+        """ 
+        getter method for getting the value attribute of the Variable object
+
+        INPUTS
+        =======
+        None
+
+        RETURNS
+        ========
+        the value attribute of the Variable object
+
+        NOTES
+        =====
+        POST:
+         - self is not changed by this function
+
+        """
         return self._value
     
     @property
     def derivative(self):
+        """ 
+        getter method for getting the derivative attribute of the Variable object
+
+        INPUTS
+        =======
+        None
+
+        RETURNS
+        ========
+        the derivative attribute of the Variable object
+
+        NOTES
+        =====
+        POST:
+         - self is not changed by this function
+
+        """
         return self._derivative
    
     @value.setter
     def value(self, value):
+        """ 
+        setter method for setting the value attribute of Variable object
+
+        INPUTS
+        =======
+        value: An int or float giving the value of the variable
+
+        RETURNS
+        ========
+        None
+
+        NOTES
+        =====
+        POST:
+         - self is not changed by this function
+
+        """
         if not isinstance(value, (int, float)):
             raise TypeError('Input value should be numerical.')
         else:
@@ -53,12 +104,28 @@ class Variable:
         
     @derivative.setter
     def derivative(self,derivative_seed):
+        """ 
+        setter method for setting the derivative attribute of Variable object
+
+        INPUTS
+        =======
+        derivative_seed: An int or float giving a seed value for the variable derivative
+
+        RETURNS
+        ========
+        None
+
+        NOTES
+        =====
+        POST:
+         - self is not changed by this function
+
+        """
         if not isinstance(derivative_seed, (int, float)):
             raise TypeError('Input derivative seed should be numerical.')
         else:
             self._derivative = derivative_seed
         
-
     def __add__(self, other):
         """ 
         Dunder method for overloading the "+" operator. 
@@ -78,7 +145,6 @@ class Variable:
          - self is not changed by this function
 
         """
-
         try:
             val = self.value + other.value
             der = self.derivative + other.derivative
@@ -118,9 +184,45 @@ class Variable:
         pass
         
     def __sub__(self, other):
+        """ 
+        Dunder method for overloading the "-" operator. 
+        Computes the value and derivative of the substraction operation
+
+        INPUTS
+        =======
+        other: a Variable object, an int, or a float
+
+        RETURNS
+        ========
+        a Variable object with the derivative and value of the substraction operation.
+
+        NOTES
+        =====
+        POST:
+         - self is not changed by this function
+
+        """
         return self + (-other)
     
     def __rsub__(self, other):
+        """ 
+        Dunder method for overloading the "-" operator. 
+        Computes the value and derivative of the substraction operation
+
+        INPUTS
+        =======
+        other: a Variable object, an int, or a float
+
+        RETURNS
+        ========
+        a Variable object with the derivative and value of the substraction operation.
+
+        NOTES
+        =====
+        POST:
+         - self is not changed by this function
+
+        """
         return (-self) + other
     
     def __truediv__(self, other):
@@ -136,6 +238,24 @@ class Variable:
         pass
     
     def __neg__(self):
+        """ 
+        This method is called using '-' operator.
+        Computes the value and derivative of the negation operation
+
+        INPUTS
+        =======
+        None
+
+        RETURNS
+        ========
+        a Variable object with the derivative and value of the negation operation.
+
+        NOTES
+        =====
+        POST:
+         - self is not changed by this function
+
+        """
         val = (-1) * self.value 
         der = (-1) * self.derivative
         return Variable(val, der)
@@ -177,6 +297,23 @@ class Variable:
         return Variable(val, der)
     
     def cos(self):
+        """ 
+        Computes the value and derivative of the cos function
+
+        INPUTS
+        =======
+        None
+
+        RETURNS
+        ========
+        a Variable object with the derivative and value of the cos function.
+
+        NOTES
+        =====
+        POST:
+         - self is not changed by this function
+
+        """
         val = np.cos(self.value)
         der = -np.sin(self.value) * self.derivative
         return Variable(val, der)
@@ -234,6 +371,23 @@ class Variable:
         return Variable(val, der)
     
     def cosh(self):
+        """ 
+        Computes the value and derivative of the cosh function
+
+        INPUTS
+        =======
+        None
+
+        RETURNS
+        ========
+        a Variable object with the derivative and value of the cosh function.
+
+        NOTES
+        =====
+        POST:
+         - self is not changed by this function
+
+        """
         val = np.cosh(self.value)
         der = np.sinh(self.value) * self.derivative
         return Variable(val, der)
@@ -262,7 +416,7 @@ class Variable:
 
         """
 
-        if self.value >1 or self.value < -1:
+        if self.value > 1 or self.value < -1:
             raise ValueError("Inputs to arcsin should be in [-1, 1].")
         
         val = np.arcsin(self.value)
@@ -270,6 +424,27 @@ class Variable:
         return Variable(val, der)
     
     def arccos(self):
+        """ 
+        Computes the value and derivative of the arccos function
+
+        INPUTS
+        =======
+        None
+
+        RETURNS
+        ========
+        a Variable object with the derivative and value of the arccos function.
+
+        NOTES
+        =====
+        PRE:
+         - self.value should be in [-1, 1], otherwise a ValueError will be raised
+        POST:
+         - self is not changed by this function
+
+        """
+        if self.value > 1 or self.value < -1:
+            raise ValueError("Inputs to arccos should be in [-1, 1].")
         val = np.arccos(self.value)
         der = (-1) * self.derivative / np.sqrt(1-self.value**2)
         return Variable(val,der)
