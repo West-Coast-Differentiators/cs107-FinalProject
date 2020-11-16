@@ -49,11 +49,6 @@ class Variable:
         ========
         the value attribute of the Variable object
 
-        NOTES
-        =====
-        POST:
-         - self is not changed by this function
-
         """
         return self._value
     
@@ -70,11 +65,6 @@ class Variable:
         ========
         the derivative attribute of the Variable object
 
-        NOTES
-        =====
-        POST:
-         - self is not changed by this function
-
         """
         return self._derivative
    
@@ -90,11 +80,6 @@ class Variable:
         RETURNS
         ========
         None
-
-        NOTES
-        =====
-        POST:
-         - self is not changed by this function
 
         """
         if not isinstance(value, (int, float)):
@@ -114,11 +99,6 @@ class Variable:
         RETURNS
         ========
         None
-
-        NOTES
-        =====
-        POST:
-         - self is not changed by this function
 
         """
         if not isinstance(derivative_seed, (int, float)):
