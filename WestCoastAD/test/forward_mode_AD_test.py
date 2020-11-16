@@ -165,6 +165,17 @@ class VariableUnitTest(unittest.TestCase):
         with self.assertRaises(TypeError) as e:
             var ** 'string'
 
+    def test_abs_scalar(self):
+        var = Variable(-12, 9)
+        zero_var = Variable(0, 0.5)
+        result = var.abs()
+
+        self.assertEqual(12, result.value)
+        self.assertEqual(var.derivative * -1, result.derivative)
+        with self.assertRaises(ValueError) as e:
+            zero_var.abs()
+
+
 class VariableIntegrationTest(unittest.TestCase):
 
     def test_sum_and_sin_scalar(self):
