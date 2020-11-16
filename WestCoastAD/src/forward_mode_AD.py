@@ -147,4 +147,9 @@ class Variable:
         pass
     
     def abs(self):
-        pass
+        if self.value != 0.0:
+            val = abs(self.value)
+            der = self.derivative * (self.value / abs(val))
+            return Variable(val, der)
+        else:
+            raise ValueError('Abs function derivative does not exist at 0')
