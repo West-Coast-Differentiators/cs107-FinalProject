@@ -72,10 +72,15 @@ class Variable:
         pass
     
     def __pow__(self, other):
-        pass
+        if not isinstance(other, (int, float)):
+            raise TypeError('Exponent should be numerical.')
+        else:
+            val = self.value ** other
+            der = self.derivative * other * self.value ** (other - 1)
+            return Variable(val, der)
 
     def __rpow__(self, other):
-        pass
+        return self.__pow__(other)
     
     def __neg__(self):
         val = (-1) * self.value 
