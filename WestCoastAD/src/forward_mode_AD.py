@@ -44,9 +44,11 @@ class Variable:
         return self.__add__(other)
         
     def __mul__(self, other):
-        val = self.value * other.value
-        der = self.value * other.derivative + other.value * self.derivative
-        return Variable(val, der)
+        try:
+            return Variable(self.value * other.value, self.value * other.derivative + other.value * self.derivative)
+        except AttributeError:
+            other = Variable(other, 0)
+            return Variable(self.value * other.value, self.value * other.derivative + other.value * self.derivative)
     
     def __rmul__(self, other):
         return self.__mul__(other)
@@ -67,12 +69,18 @@ class Variable:
         return (-self) + other
     
     def __truediv__(self, other):
-        val = self.value / other.value
-        der = (other.value *  self.derivative - self.value * other.derivative) / (other.value ** 2)
-        return Variable(val, der)
+        try:
+            return Variable(self.value / other.value, (other.value *  self.derivative - self.value * other.derivative) / (other.value ** 2))
+        except AttributeError:
+            other = Variable(other, 0)
+            return Variable(self.value / other.value, (other.value *  self.derivative - self.value * other.derivative) / (other.value ** 2))
     
     def __rtruediv__(self, other):
-        return self.__mul__(other)
+        try:
+            return Variable(other.value / self.value, (self.value * other.derivative - other.value * self.derivative) / (self.value ** 2))
+        except AttributeError:
+            other = Variable(other, 0)
+            return Variable(other.value / self.value, (self.value * other.derivative - other.value * self.derivative) / (self.value ** 2))
     
     def __pow__(self, other):
         pass
