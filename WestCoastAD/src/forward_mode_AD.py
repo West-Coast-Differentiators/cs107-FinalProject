@@ -264,10 +264,10 @@ class Variable:
         """
         if isinstance(other, (int)):
             if other == 0:
-                raise ZeroDivisionError("You cannot use a value of Zero")
+                raise ZeroDivisionError("You cannot use a value of Zero.")
         elif isinstance(other, (object)):
             if other.value == 0:
-                raise ZeroDivisionError("You cannot use a value of Zero")
+                raise ZeroDivisionError("You cannot use a value of Zero.")
         try:
             return Variable(self.value / other.value, (other.value *  self.derivative - self.value * other.derivative) / (other.value ** 2))
         except AttributeError:
@@ -295,7 +295,7 @@ class Variable:
          - self is not changed by this function
         """
         if self.value == 0:
-            raise ZeroDivisionError("You cannot use a value of Zero")
+            raise ZeroDivisionError("You cannot use a value of Zero.")
         try:
             return Variable(other.value / self.value, (self.value * other.derivative - other.value * self.derivative) / (self.value ** 2))
         except AttributeError:
@@ -561,4 +561,3 @@ class Variable:
     
     def abs(self):
         pass
-
