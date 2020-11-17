@@ -263,13 +263,12 @@ class Variable:
          - self is not changed by this function
         """
         try:
-            if other == 0:
+            if other.value == 0:
                 raise ZeroDivisionError("You cannot use a value of Zero.")
-            elif isinstance(other, (object)):
-                if other.value == 0:
-                    raise ZeroDivisionError("You cannot use a value of Zero.")
             return Variable(self.value / other.value, (other.value *  self.derivative - self.value * other.derivative) / (other.value ** 2))
         except AttributeError:
+            if other == 0:
+                raise ZeroDivisionError("You cannot use a value of Zero.")
             other = Variable(other, 0)
             return Variable(self.value / other.value, (other.value *  self.derivative - self.value * other.derivative) / (other.value ** 2))
     
