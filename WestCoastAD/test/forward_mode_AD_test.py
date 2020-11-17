@@ -154,26 +154,32 @@ class VariableUnitTest(unittest.TestCase):
         var = Variable(4, 3)
         result = var ** 3
         reverse_result = 3 ** var
+        combined_result = var ** Variable(5, 0.7)
 
         self.assertEqual(4 ** 3, result.value)
         self.assertEqual(var.derivative * 3 * (4**2), result.derivative)
-        self.assertEqual(4 ** 3, reverse_result.value)
-        self.assertEqual(var.derivative * 3 * (4**2), reverse_result.derivative)
+        self.assertEqual(3 ** 4, reverse_result.value)
+        self.assertAlmostEqual(var.derivative * np.log(3) * (3 ** var.value), reverse_result.derivative)
+        self.assertEqual(4 ** 5, combined_result.value)
+        self.assertAlmostEqual(4 ** 5 * ((5 * 3 / 4) + (np.log(4) * 0.7)), combined_result.derivative)
 
-    def test_exponent_exception(self):
-        var = Variable(6, 6.7)
+    def test_pow_exception(self):
         with self.assertRaises(TypeError) as e:
-            var ** 'string'
+            Variable(6, 6.7) ** 'string'
+        with self.assertRaises(ValueError) as e:
+            Variable(-1, 6.7) ** 45.7
+        with self.assertRaises(ValueError) as e:
+            Variable(0, 6) ** -2
 
     def test_abs_scalar(self):
         var = Variable(-12, 9)
         zero_var = Variable(0, 0.5)
-        result = var.abs()
+        result = abs(var)
 
         self.assertEqual(12, result.value)
         self.assertEqual(var.derivative * -1, result.derivative)
         with self.assertRaises(ValueError) as e:
-            zero_var.abs()
+            abs(zero_var)
 
 
 class VariableIntegrationTest(unittest.TestCase):
