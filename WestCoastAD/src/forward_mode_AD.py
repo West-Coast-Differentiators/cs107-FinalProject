@@ -451,12 +451,3 @@ class Variable:
     
     def abs(self):
         pass
-
-var = Variable(20.0, 2.0)
-divided = var / 4
-divided2 = 100 / var
-
-print(divided.value)
-print(divided.derivative)
-print(divided2.value)
-print(divided2.derivative)
