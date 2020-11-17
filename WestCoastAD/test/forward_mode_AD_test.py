@@ -37,6 +37,10 @@ class VariableUnitTest(unittest.TestCase):
         self.assertEqual(19.1, summation_reverse_order.value)
         self.assertEqual(5.1, summation.derivative)
         self.assertEqual(5.1, summation_reverse_order.derivative)
+
+    def test__repr__(self):
+        var = Variable(2, 3)
+        self.assertEqual(str(var), "Variable(value: 2, derivative: 3)")
     
     def test__add__scalar_one_variable_one_constant(self):
         var = Variable(3, 17)
@@ -100,6 +104,12 @@ class VariableUnitTest(unittest.TestCase):
 
         self.assertEqual(np.tan(-0.1), result.value)
         self.assertEqual(-2/(np.cos(-0.1)**2), result.derivative)
+    
+    def test_tan_scalar_invalid_value(self):
+        with self.assertRaises(ValueError) as e:
+            var = Variable(-5*np.pi/2, 1)
+            np.tan(var)
+        self.assertEqual("Inputs to tan should not be odd multiples of pi/2", str(e.exception))
 
     def test_sinh_scalar(self):
         var = Variable(-.5, 1.2)
@@ -135,6 +145,17 @@ class VariableUnitTest(unittest.TestCase):
 
         self.assertEqual(np.arcsin(.4), result.value)
         self.assertEqual(-2/np.sqrt(1-.4**2), result.derivative)
+    
+    def test_arcsin_scalar_invalid_value(self):
+        with self.assertRaises(ValueError) as e:
+            var = Variable(-20, 1)
+            np.arcsin(var)
+        self.assertEqual("Inputs to arcsin should be in [-1, 1].", str(e.exception))
+
+        with self.assertRaises(ValueError) as e:
+            var = Variable(20, 1)
+            np.arcsin(var)
+        self.assertEqual("Inputs to arcsin should be in [-1, 1].", str(e.exception))
 
     def test_arccos_scalar(self):
         var = Variable(.8, -1.2)
@@ -180,6 +201,17 @@ class VariableUnitTest(unittest.TestCase):
         self.assertEqual(var.derivative * -1, result.derivative)
         with self.assertRaises(ValueError) as e:
             abs(zero_var)
+    
+    def test_arccos_scalar_invalid_value(self):
+        with self.assertRaises(ValueError) as e:
+            var = Variable(18, 2)
+            np.arccos(var)
+        self.assertEqual("Inputs to arccos should be in [-1, 1].", str(e.exception))
+
+        with self.assertRaises(ValueError) as e:
+            var = Variable(-18, 2)
+            np.arccos(var)
+        self.assertEqual("Inputs to arccos should be in [-1, 1].", str(e.exception))
 
 
 class VariableIntegrationTest(unittest.TestCase):
