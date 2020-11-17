@@ -209,6 +209,8 @@ class Variable:
         return (-self) + other
     
     def __truediv__(self, other):
+        if self.value == 0 or other == 0:
+            raise ZeroDivisionError("You cannot use a value of Zero")
         try:
             return Variable(self.value / other.value, (other.value *  self.derivative - self.value * other.derivative) / (other.value ** 2))
         except AttributeError:
@@ -449,3 +451,12 @@ class Variable:
     
     def abs(self):
         pass
+
+var = Variable(20.0, 2.0)
+divided = var / 4
+divided2 = 100 / var
+
+print(divided.value)
+print(divided.derivative)
+print(divided2.value)
+print(divided2.derivative)

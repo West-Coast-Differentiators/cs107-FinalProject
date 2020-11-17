@@ -207,8 +207,8 @@ class VariableUnitTest(unittest.TestCase):
         
         self.assertEqual(20, multiply.value)
         self.assertEqual(8, multiply.derivative)
-        self.assertEqual(20, multiply2.value)
-        self.assertEqual(8, multiply2.derivative)
+        self.assertEqual(25, multiply2.value)
+        self.assertEqual(10, multiply2.derivative)
 
     def test__truediv__scalar_two_variable_objects(self):
         var1 = Variable(20.0, 2.0)
@@ -230,7 +230,7 @@ class VariableUnitTest(unittest.TestCase):
         self.assertEqual(0.5, divided.derivative)
         self.assertEqual(5, divided2.value)
         self.assertEqual(-0.5, divided2.derivative)
-        
+
 class VariableIntegrationTest(unittest.TestCase):
 
     def test_sum_and_sin_scalar(self):
