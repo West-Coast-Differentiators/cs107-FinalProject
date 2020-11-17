@@ -157,6 +157,23 @@ class Variable:
         return self.__add__(other)
         
     def __mul__(self, other):
+        """ 
+        Dunder method for overloading the "*" operator. 
+        Computes the value and derivative of the multiplication operation
+
+        INPUTS
+        =======
+        other: a Variable object, an int, or a float
+
+        RETURNS
+        ========
+        a Variable object with the derivative and value of the multiplication operation.
+
+        NOTES
+        =====
+        POST:
+         - self is not changed by this function
+        """
         try:
             return Variable(self.value * other.value, self.value * other.derivative + other.value * self.derivative)
         except AttributeError:
@@ -164,6 +181,23 @@ class Variable:
             return Variable(self.value * other.value, self.value * other.derivative + other.value * self.derivative)
     
     def __rmul__(self, other):
+        """ 
+        Dunder method for overloading the "*" operator. 
+        Computes the value and derivative of the multiplication operation
+
+        INPUTS
+        =======
+        other: a Variable object, an int, or a float
+
+        RETURNS
+        ========
+        a Variable object with the derivative and value of the multiplication operation.
+
+        NOTES
+        =====
+        POST:
+         - self is not changed by this function
+        """
         return self.__mul__(other)
         
     def __sub__(self, other):
@@ -209,7 +243,28 @@ class Variable:
         return (-self) + other
     
     def __truediv__(self, other):
-        if self.value == 0 or other == 0:
+        """ 
+        Dunder method for overloading the "/" operator. 
+        Computes the value and derivative of the divison operation
+
+        INPUTS
+        =======
+        other: a Variable object, an int, or a float
+
+        RETURNS
+        ========
+        a Variable object with the derivative and value of the divison operation.
+
+        NOTES
+        =====
+        PRE:
+         -  other cannot be Zero a ZeroDivisionError will be raised.
+        POST:
+         - self is not changed by this function
+        """
+        if other == 0:
+            raise ZeroDivisionError("You cannot use a value of Zero")
+        elif other.value == 0:
             raise ZeroDivisionError("You cannot use a value of Zero")
         try:
             return Variable(self.value / other.value, (other.value *  self.derivative - self.value * other.derivative) / (other.value ** 2))
@@ -218,6 +273,27 @@ class Variable:
             return Variable(self.value / other.value, (other.value *  self.derivative - self.value * other.derivative) / (other.value ** 2))
     
     def __rtruediv__(self, other):
+        """ 
+        Dunder method for overloading the "/" operator. 
+        Computes the value and derivative of the divison operation
+
+        INPUTS
+        =======
+        other: a Variable object, an int, or a float
+
+        RETURNS
+        ========
+        a Variable object with the derivative and value of the divison operation.
+
+        NOTES
+        =====
+        PRE:
+         -  self.value cannot be Zero a ZeroDivisionError will be raised.
+        POST:
+         - self is not changed by this function
+        """
+        if self.value == 0:
+            raise ZeroDivisionError("You cannot use a value of Zero")
         try:
             return Variable(other.value / self.value, (self.value * other.derivative - other.value * self.derivative) / (self.value ** 2))
         except AttributeError:
@@ -386,6 +462,22 @@ class Variable:
         return Variable(val, der)
     
     def tanh(self):
+        """ 
+        Computes the value and derivative of the tanh function
+
+        INPUTS
+        =======
+        None
+
+        RETURNS
+        ========
+        a Variable object with the derivative and value of the tanh function.
+
+        NOTES
+        =====
+        POST:
+         - self is not changed by this function
+        """
         val = np.tanh(self.value)
         der = 1 / (np.cosh(self.value)**2) * self.derivative
         return Variable(val, der)
@@ -445,9 +537,26 @@ class Variable:
         return Variable(val,der)
     
     def arctan(self):
+        """ 
+        Computes the value and derivative of the arctan function
+
+        INPUTS
+        =======
+        None
+
+        RETURNS
+        ========
+        a Variable object with the derivative and value of the arctan function.
+
+        NOTES
+        =====
+        POST:
+         - self is not changed by this function
+        """
         val = np.arctan(self.value)
         der = 1 / (1 + self.value**2) * self.derivative
         return Variable(val, der)
     
     def abs(self):
         pass
+

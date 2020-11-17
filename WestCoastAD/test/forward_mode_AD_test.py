@@ -221,6 +221,18 @@ class VariableUnitTest(unittest.TestCase):
         self.assertEqual(.5, divided_reverse_order.value)
         self.assertEqual(.2, divided_reverse_order.derivative)
     
+    def test_truediv_scalar_zero_value(self):
+        with self.assertRaises(ZeroDivisionError) as e:
+            var = Variable(20.0, 2.0)
+            divided = var / 0
+        self.assertEqual("You cannot use a value of Zero.", str(e.exception))
+
+        with self.assertRaises(ZeroDivisionError) as e:
+            var1 = Variable(20.0, 2.0)
+            var2 = Variable(0.0, 5.0)
+            divided = var1 / var2
+        self.assertEqual("You cannot use a value of Zero.", str(e.exception))
+    
     def test__truediv__scalar_one_variable_one_constant(self):
         var = Variable(20.0, 2.0)
         divided = var / 4
