@@ -262,13 +262,12 @@ class Variable:
         POST:
          - self is not changed by this function
         """
-        if isinstance(other, (int)):
+        try:
             if other == 0:
                 raise ZeroDivisionError("You cannot use a value of Zero.")
-        elif isinstance(other, (object)):
-            if other.value == 0:
-                raise ZeroDivisionError("You cannot use a value of Zero.")
-        try:
+            elif isinstance(other, (object)):
+                if other.value == 0:
+                    raise ZeroDivisionError("You cannot use a value of Zero.")
             return Variable(self.value / other.value, (other.value *  self.derivative - self.value * other.derivative) / (other.value ** 2))
         except AttributeError:
             other = Variable(other, 0)
@@ -294,9 +293,9 @@ class Variable:
         POST:
          - self is not changed by this function
         """
-        if self.value == 0:
-            raise ZeroDivisionError("You cannot use a value of Zero.")
         try:
+            if self.value == 0:
+                raise ZeroDivisionError("You cannot use a value of Zero.")
             return Variable(other.value / self.value, (self.value * other.derivative - other.value * self.derivative) / (self.value ** 2))
         except AttributeError:
             other = Variable(other, 0)
