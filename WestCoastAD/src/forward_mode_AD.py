@@ -72,15 +72,29 @@ class Variable:
         pass
     
     def __pow__(self, other):
-        if not isinstance(other, (int, float)):
-            raise TypeError('Exponent should be numerical.')
-        else:
+        if not isinstance(other, (int, float, Variable)):
+            raise TypeError('Exponent should be numerical or of class Variable')
+        if self.value < 0 and other % 1 != 0:
+            raise ValueError("Cannot raise a negative number to the power of a non-integer value.")
+        if self.value == 0 and other < 1:
+            raise ValueError("Power function does not have a derivative at 0 if the exponent is less than 1.")
+        try:
+            val = self.value ** other.value
+            der = val * ((other.value * self.derivative / self.value) + (np.log(self.value) * other.derivative))
+            return Variable(val, der)
+        except AttributeError:
             val = self.value ** other
             der = self.derivative * other * self.value ** (other - 1)
             return Variable(val, der)
 
     def __rpow__(self, other):
-        return self.__pow__(other)
+        if other == 0 and self.value <= 0:
+            raise ValueError("Derivative of 0^x is undefined for non-positive x values")
+        if other < 0:
+            raise ValueError("Values and derivatives of a^x for a<0 are not defined in the real number domain")
+        val = other ** self.value
+        der = np.log(other) * val * self.derivative
+        return Variable(val, der)
     
     def __neg__(self):
         val = (-1) * self.value 
@@ -98,9 +112,7 @@ class Variable:
         return Variable(val, der)
     
     def sqrt(self):
-        val = np.power(self.value, 0.5)
-        der = self.derivative * 0.5 * np.power(self.value, -0.5)
-        return Variable(val, der)
+        return self.__pow__(0.5)
     
     def sin(self):
         val = np.sin(self.value)
@@ -146,7 +158,7 @@ class Variable:
     def arctan(self):
         pass
     
-    def abs(self):
+    def __abs__(self):
         if self.value != 0.0:
             val = abs(self.value)
             der = self.derivative * (self.value / abs(val))
