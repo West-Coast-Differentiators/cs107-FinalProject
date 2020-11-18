@@ -319,17 +319,16 @@ class Variable:
          - self is not changed by this function
 
         """
-        if not isinstance(other, (int, float, Variable)):
-            raise TypeError('Exponent should be numerical or of class Variable')
-        if self.value < 0 and other % 1 != 0:
-            raise ValueError("Cannot raise a negative number to the power of a non-integer value.")
-        if self.value == 0 and other < 1:
-            raise ValueError("Power function does not have a derivative at 0 if the exponent is less than 1.")
         try:
             val = self.value ** other.value
-            der = val * ((other.value * self.derivative / self.value) + (np.log(self.value) * other.derivative))
+            intermediate_value = other * np.log(self)
+            der = val * intermediate_value.derivative
             return Variable(val, der)
         except AttributeError:
+            if self.value < 0 and other % 1 != 0:
+                raise ValueError("Cannot raise a negative number to the power of a non-integer value.")
+            if self.value == 0 and other < 1:
+                raise ValueError("Power function does not have a derivative at 0 if the exponent is less than 1.")
             val = self.value ** other
             der = self.derivative * other * self.value ** (other - 1)
             return Variable(val, der)
@@ -385,16 +384,69 @@ class Variable:
         return Variable(val, der)
     
     def log(self):
+        """
+        Computes the value and derivative of log function
+
+        INPUTS
+        =======
+        None
+
+        RETURNS
+        ========
+        a Variable object with the derivative and value of the log function.
+
+        NOTES
+        =====
+        POST:
+         - self is not changed by this function
+
+        """
+        if self.value < 0.0:
+            raise ValueError('Values for log should be greater than or equal to zero.')
         val = np.log(self.value)
         der = self.derivative * (1/self.value)
         return Variable(val, der)
     
     def exp(self):
+        """
+        Computes the value and derivative of exp function
+
+        INPUTS
+        =======
+        None
+
+        RETURNS
+        ========
+        a Variable object with the derivative and value of the exp function.
+
+        NOTES
+        =====
+        POST:
+         - self is not changed by this function
+
+        """
         val = np.exp(self.value)
         der = self.derivative * np.exp(self.value)
         return Variable(val, der)
     
     def sqrt(self):
+        """
+        Computes the value and derivative of sqrt function
+
+        INPUTS
+        =======
+        None
+
+        RETURNS
+        ========
+        a Variable object with the derivative and value of the sqrt function.
+
+        NOTES
+        =====
+        POST:
+         - self is not changed by this function
+
+        """
         return self.__pow__(0.5)
     
     def sin(self):
@@ -613,9 +665,27 @@ class Variable:
         return Variable(val, der)
 
     def __abs__(self):
+        """
+        Dunder method for overloading the abs function.
+        Computes the value and derivative of abs function
+
+        INPUTS
+        =======
+        None
+
+        RETURNS
+        ========
+        a Variable object with the derivative and value of the abs function.
+
+        NOTES
+        =====
+        POST:
+         - self is not changed by this function
+
+        """
         if self.value != 0.0:
             val = abs(self.value)
-            der = self.derivative * (self.value / abs(val))
+            der = self.derivative * (self.value / val)
             return Variable(val, der)
         else:
             raise ValueError('Abs function derivative does not exist at 0')

@@ -185,12 +185,20 @@ class VariableUnitTest(unittest.TestCase):
         self.assertAlmostEqual(4 ** 5 * ((5 * 3 / 4) + (np.log(4) * 0.7)), combined_result.derivative)
 
     def test_pow_exception(self):
-        with self.assertRaises(TypeError) as e:
-            Variable(6, 6.7) ** 'string'
+        with self.assertRaises(TypeError):
+            result = Variable(6, 6.7) ** 'string'
+        with self.assertRaises(ValueError):
+            result = Variable(-1, 6.7) ** 45.7
+        with self.assertRaises(ValueError):
+            result = Variable(0, 6) ** -2
+        # with self.assertRaises(ValueError):
+        #     result = -0.7 ** Variable(2, 4)
+        with self.assertRaises(ValueError):
+            result = 0 ** Variable(-2, 0.45)
+
+    def test_log_exception(self):
         with self.assertRaises(ValueError) as e:
-            Variable(-1, 6.7) ** 45.7
-        with self.assertRaises(ValueError) as e:
-            Variable(0, 6) ** -2
+            np.log(Variable(-23, 9))
 
     def test_abs_scalar(self):
         var = Variable(-12, 9)
