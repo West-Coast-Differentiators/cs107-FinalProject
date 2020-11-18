@@ -301,10 +301,64 @@ class Variable:
             return Variable(other.value / self.value, (self.value * other.derivative - other.value * self.derivative) / (self.value ** 2))
     
     def __pow__(self, other):
-        pass
+        """
+        Dunder method for overloading the "**" operator.
+        Computes the value and derivative of the power operation.
+
+        INPUTS
+        =======
+        other: a Variable object, an int, or a float
+
+        RETURNS
+        ========
+        a Variable object with the derivative and value of the power operation.
+
+        NOTES
+        =====
+        POST:
+         - self is not changed by this function
+
+        """
+        try:
+            val = self.value ** other.value
+            intermediate_value = other * np.log(self)
+            der = val * intermediate_value.derivative
+            return Variable(val, der)
+        except AttributeError:
+            if self.value < 0 and other % 1 != 0:
+                raise ValueError("Cannot raise a negative number to the power of a non-integer value.")
+            if self.value == 0 and other < 1:
+                raise ValueError("Power function does not have a derivative at 0 if the exponent is less than 1.")
+            val = self.value ** other
+            der = self.derivative * other * self.value ** (other - 1)
+            return Variable(val, der)
 
     def __rpow__(self, other):
-        pass
+        """
+        Dunder method for overloading the "**" operator.
+        Computes the value and derivative of the power operation.
+
+        INPUTS
+        =======
+        other: a Variable object, an int, or a float
+
+        RETURNS
+        ========
+        a Variable object with the derivative and value of the power operation.
+
+        NOTES
+        =====
+        POST:
+         - self is not changed by this function
+
+        """
+        if other == 0 and self.value <= 0:
+            raise ValueError("Derivative of 0^x is undefined for non-positive x values")
+        if other < 0:
+            raise ValueError("Values and derivatives of a^x for a<0 are not defined in the real number domain")
+        val = other ** self.value
+        der = np.log(other) * val * self.derivative
+        return Variable(val, der)
     
     def __neg__(self):
         """ 
@@ -330,17 +384,70 @@ class Variable:
         return Variable(val, der)
     
     def log(self):
+        """
+        Computes the value and derivative of log function
+
+        INPUTS
+        =======
+        None
+
+        RETURNS
+        ========
+        a Variable object with the derivative and value of the log function.
+
+        NOTES
+        =====
+        POST:
+         - self is not changed by this function
+
+        """
+        if self.value <= 0.0:
+            raise ValueError('Values for log should be greater than or equal to zero.')
         val = np.log(self.value)
         der = self.derivative * (1/self.value)
         return Variable(val, der)
     
     def exp(self):
+        """
+        Computes the value and derivative of exp function
+
+        INPUTS
+        =======
+        None
+
+        RETURNS
+        ========
+        a Variable object with the derivative and value of the exp function.
+
+        NOTES
+        =====
+        POST:
+         - self is not changed by this function
+
+        """
         val = np.exp(self.value)
         der = self.derivative * np.exp(self.value)
         return Variable(val, der)
     
     def sqrt(self):
-        pass
+        """
+        Computes the value and derivative of sqrt function
+
+        INPUTS
+        =======
+        None
+
+        RETURNS
+        ========
+        a Variable object with the derivative and value of the sqrt function.
+
+        NOTES
+        =====
+        POST:
+         - self is not changed by this function
+
+        """
+        return self.__pow__(0.5)
     
     def sin(self):
         """ 
@@ -556,6 +663,29 @@ class Variable:
         val = np.arctan(self.value)
         der = 1 / (1 + self.value**2) * self.derivative
         return Variable(val, der)
-    
-    def abs(self):
-        pass
+
+    def __abs__(self):
+        """
+        Dunder method for overloading the abs function.
+        Computes the value and derivative of abs function
+
+        INPUTS
+        =======
+        None
+
+        RETURNS
+        ========
+        a Variable object with the derivative and value of the abs function.
+
+        NOTES
+        =====
+        POST:
+         - self is not changed by this function
+
+        """
+        if self.value != 0.0:
+            val = abs(self.value)
+            der = self.derivative * (self.value / val)
+            return Variable(val, der)
+        else:
+            raise ValueError('Abs function derivative does not exist at 0')

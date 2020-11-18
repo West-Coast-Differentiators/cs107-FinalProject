@@ -127,14 +127,14 @@ class VariableUnitTest(unittest.TestCase):
 
     def test_log_scalar(self):
         var = Variable(5, 1.5)
-        result = np.log(var)
+        result = var.log()
 
         self.assertEqual(np.log(5), result.value)
         self.assertEqual((1/5)*1.5, result.derivative)
 
     def test_exp_scalar(self):
         var = Variable(5, 1.5)
-        result = np.exp(var)
+        result = var.exp()
 
         self.assertEqual(np.exp(5), result.value)
         self.assertEqual(np.exp(5)*1.5, result.derivative)
@@ -163,7 +163,64 @@ class VariableUnitTest(unittest.TestCase):
 
         self.assertEqual(np.arccos(.8), result.value)
         self.assertEqual((-1)*(-1.2)/np.sqrt(1-.8**2), result.derivative)
+
+    def test_sqrt_scalar(self):
+        var = Variable(4, -1)
+        result = var.sqrt()
+
+        self.assertEqual(np.sqrt(4), result.value)
+        self.assertEqual((-1 * 0.5) * np.power(4, -0.5), result.derivative)
+
+    def test__pow__scalar(self):
+        var = Variable(4, 3)
+        result = var ** 3
+        reverse_result = 3 ** var
+        combined_result = var ** Variable(5, 0.7)
+
+        self.assertEqual(4 ** 3, result.value)
+        self.assertEqual(var.derivative * 3 * (4**2), result.derivative)
+        self.assertEqual(3 ** 4, reverse_result.value)
+        self.assertAlmostEqual(var.derivative * np.log(3) * (3 ** var.value), reverse_result.derivative)
+        self.assertEqual(4 ** 5, combined_result.value)
+        self.assertAlmostEqual(4 ** 5 * ((5 * 3 / 4) + (np.log(4) * 0.7)), combined_result.derivative)
+
+    def test_pow_exception(self):
+        with self.assertRaises(TypeError):
+            result = Variable(6, 6.7) ** 'string'
+        with self.assertRaises(ValueError):
+            result = Variable(-1, 6.7) ** 45.7
+        with self.assertRaises(ValueError):
+            result = Variable(0, 6) ** -2
+        with self.assertRaises(ValueError):
+            result = (-0.7) ** Variable(2, 4)
+        with self.assertRaises(ValueError):
+            result = 0 ** Variable(-2, 0.45)
+
+    def test_log_exception(self):
+        with self.assertRaises(ValueError) as e:
+            np.log(Variable(-23, 9))
+
+    def test_abs_scalar(self):
+        var = Variable(-12, 9)
+        zero_var = Variable(0, 0.5)
+        result = abs(var)
+
+        self.assertEqual(12, result.value)
+        self.assertEqual(var.derivative * -1, result.derivative)
+        with self.assertRaises(ValueError) as e:
+            abs(zero_var)
     
+    def test_arccos_scalar_invalid_value(self):
+        with self.assertRaises(ValueError) as e:
+            var = Variable(18, 2)
+            np.arccos(var)
+        self.assertEqual("Inputs to arccos should be in [-1, 1].", str(e.exception))
+
+        with self.assertRaises(ValueError) as e:
+            var = Variable(-18, 2)
+            np.arccos(var)
+        self.assertEqual("Inputs to arccos should be in [-1, 1].", str(e.exception))
+
     def test_arccos_scalar_invalid_value(self):
         with self.assertRaises(ValueError) as e:
             var = Variable(18, 2)
@@ -204,7 +261,6 @@ class VariableUnitTest(unittest.TestCase):
         var = Variable(5.0, 2.0)
         multiply = var * 4
         multiply2 = 5 * var
-        
         self.assertEqual(20, multiply.value)
         self.assertEqual(8, multiply.derivative)
         self.assertEqual(25, multiply2.value)
