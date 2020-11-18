@@ -191,8 +191,8 @@ class VariableUnitTest(unittest.TestCase):
             result = Variable(-1, 6.7) ** 45.7
         with self.assertRaises(ValueError):
             result = Variable(0, 6) ** -2
-        # with self.assertRaises(ValueError):
-        #     result = -0.7 ** Variable(2, 4)
+        with self.assertRaises(ValueError):
+            result = (-0.7) ** Variable(2, 4)
         with self.assertRaises(ValueError):
             result = 0 ** Variable(-2, 0.45)
 
