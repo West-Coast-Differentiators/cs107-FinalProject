@@ -404,7 +404,7 @@ class VariableIntegrationTest(unittest.TestCase):
         self.assertEqual(expected_derivative, equation.derivative)
 
         # Test for rtruediv
-        self.assertEqual(np.sin(value) / value, equation2.value)
+        self.assertEqual(np.tanh(value) / value, equation2.value)
         expected_derivative2 = (value * (1 / (np.cosh(value) **2) * 1) - np.tanh(value)*1) / (value **2)
         self.assertEqual(expected_derivative2, equation2.derivative)
     
