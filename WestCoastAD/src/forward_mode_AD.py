@@ -212,6 +212,24 @@ class Variable:
         pass
     
     def __pow__(self, other):
+        """
+        Dunder method for overloading the "**" operator.
+        Computes the value and derivative of the power operation.
+
+        INPUTS
+        =======
+        other: a Variable object, an int, or a float
+
+        RETURNS
+        ========
+        a Variable object with the derivative and value of the power operation.
+
+        NOTES
+        =====
+        POST:
+         - self is not changed by this function
+
+        """
         if not isinstance(other, (int, float, Variable)):
             raise TypeError('Exponent should be numerical or of class Variable')
         if self.value < 0 and other % 1 != 0:
@@ -228,6 +246,24 @@ class Variable:
             return Variable(val, der)
 
     def __rpow__(self, other):
+        """
+        Dunder method for overloading the "**" operator.
+        Computes the value and derivative of the power operation.
+
+        INPUTS
+        =======
+        other: a Variable object, an int, or a float
+
+        RETURNS
+        ========
+        a Variable object with the derivative and value of the power operation.
+
+        NOTES
+        =====
+        POST:
+         - self is not changed by this function
+
+        """
         if other == 0 and self.value <= 0:
             raise ValueError("Derivative of 0^x is undefined for non-positive x values")
         if other < 0:
