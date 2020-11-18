@@ -174,7 +174,75 @@ class VariableUnitTest(unittest.TestCase):
             var = Variable(-18, 2)
             np.arccos(var)
         self.assertEqual("Inputs to arccos should be in [-1, 1].", str(e.exception))
+
+    def test_arctan_scalar(self):
+        var = Variable(.5, .75)
+        result = np.arctan(var)
+
+        self.assertEqual(np.arctan(.5), result.value)
+        self.assertEqual((1)/(1 + .5**2)*.75, result.derivative)
+
+    def test_tanh_scalar(self):
+        var = Variable(.5, .75)
+        result = np.tanh(var)
+
+        self.assertEqual(np.tanh(.5), result.value)
+        self.assertEqual((1)/(np.cosh(.5)**2)*.75, result.derivative)
+
+    def test__mul__scalar_two_variable_objects(self):
+        var1 = Variable(5.0, 1.0)
+        var2 = Variable(2.0, 2.0)
+        mult = var1 * var2
+        mult_reverse_order = var2 * var1
         
+        self.assertEqual(10.0, mult.value)
+        self.assertEqual(12, mult.derivative)
+        self.assertEqual(10.0, mult_reverse_order.value)
+        self.assertEqual(12, mult_reverse_order.derivative)
+    
+    def test__mul__scalar_one_variable_one_constant(self):
+        var = Variable(5.0, 2.0)
+        multiply = var * 4
+        multiply2 = 5 * var
+        
+        self.assertEqual(20, multiply.value)
+        self.assertEqual(8, multiply.derivative)
+        self.assertEqual(25, multiply2.value)
+        self.assertEqual(10, multiply2.derivative)
+
+    def test__truediv__scalar_two_variable_objects(self):
+        var1 = Variable(20.0, 2.0)
+        var2 = Variable(10.0, 5.0)
+        divided = var1 / var2
+        divided_reverse_order = var2 / var1
+        
+        self.assertEqual(2, divided.value)
+        self.assertEqual(-0.8, divided.derivative)
+        self.assertEqual(.5, divided_reverse_order.value)
+        self.assertEqual(.2, divided_reverse_order.derivative)
+    
+    def test_truediv_scalar_zero_value(self):
+        with self.assertRaises(ZeroDivisionError) as e:
+            var = Variable(20.0, 2.0)
+            divided = var / 0
+        self.assertEqual("You cannot use a value of Zero.", str(e.exception))
+
+        with self.assertRaises(ZeroDivisionError) as e:
+            var1 = Variable(20.0, 2.0)
+            var2 = Variable(0.0, 5.0)
+            divided = var1 / var2
+        self.assertEqual("You cannot use a value of Zero.", str(e.exception))
+    
+    def test__truediv__scalar_one_variable_one_constant(self):
+        var = Variable(20.0, 2.0)
+        divided = var / 4
+        divided2 = 100 / var
+        
+        self.assertEqual(5, divided.value)
+        self.assertEqual(0.5, divided.derivative)
+        self.assertEqual(5, divided2.value)
+        self.assertEqual(-0.5, divided2.derivative)
+
 class VariableIntegrationTest(unittest.TestCase):
 
     def test_sum_and_sin_scalar(self):
