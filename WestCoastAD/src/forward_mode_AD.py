@@ -35,7 +35,8 @@ class Variable:
     
     def __repr__(self):
         return "Variable(value: {}, derivative: {})".format(self.value, self.derivative)
-        
+
+
     @property
     def value(self):
         """ 
@@ -52,6 +53,7 @@ class Variable:
         """
         return self._value
     
+
     @property
     def derivative(self):
         """ 
@@ -68,6 +70,7 @@ class Variable:
         """
         return self._derivative
    
+
     @value.setter
     def value(self, value):
         """ 
@@ -86,7 +89,8 @@ class Variable:
             raise TypeError('Input value should be numerical.')
         else:
             self._value = value
-        
+
+
     @derivative.setter
     def derivative(self,derivative_seed):
         """ 
@@ -105,7 +109,8 @@ class Variable:
             raise TypeError('Input derivative seed should be numerical.')
         else:
             self._derivative = derivative_seed
-        
+
+
     def __add__(self, other):
         """ 
         Dunder method for overloading the "+" operator. 
@@ -155,7 +160,8 @@ class Variable:
 
         """
         return self.__add__(other)
-        
+
+
     def __mul__(self, other):
         """ 
         Dunder method for overloading the "*" operator. 
@@ -180,6 +186,7 @@ class Variable:
             other = Variable(other, 0)
             return Variable(self.value * other.value, self.value * other.derivative + other.value * self.derivative)
     
+
     def __rmul__(self, other):
         """ 
         Dunder method for overloading the "*" operator. 
@@ -199,7 +206,8 @@ class Variable:
          - self is not changed by this function
         """
         return self.__mul__(other)
-        
+
+
     def __sub__(self, other):
         """ 
         Dunder method for overloading the "-" operator. 
@@ -221,6 +229,7 @@ class Variable:
         """
         return self + (-other)
     
+
     def __rsub__(self, other):
         """ 
         Dunder method for overloading the "-" operator. 
@@ -242,6 +251,7 @@ class Variable:
         """
         return (-self) + other
     
+
     def __truediv__(self, other):
         """ 
         Dunder method for overloading the "/" operator. 
@@ -264,14 +274,15 @@ class Variable:
         """
         try:
             if other.value == 0:
-                raise ZeroDivisionError("You cannot use a value of Zero.")
+                raise ZeroDivisionError("Division by zero encountered")
             return Variable(self.value / other.value, (other.value *  self.derivative - self.value * other.derivative) / (other.value ** 2))
         except AttributeError:
             if other == 0:
-                raise ZeroDivisionError("You cannot use a value of Zero.")
+                raise ZeroDivisionError("Division by zero encountered")
             other = Variable(other, 0)
             return Variable(self.value / other.value, (other.value *  self.derivative - self.value * other.derivative) / (other.value ** 2))
     
+
     def __rtruediv__(self, other):
         """ 
         Dunder method for overloading the "/" operator. 
@@ -294,12 +305,13 @@ class Variable:
         """
         try:
             if self.value == 0:
-                raise ZeroDivisionError("You cannot use a value of Zero.")
+                raise ZeroDivisionError("Division by zero encountered")
             return Variable(other.value / self.value, (self.value * other.derivative - other.value * self.derivative) / (self.value ** 2))
         except AttributeError:
             other = Variable(other, 0)
             return Variable(other.value / self.value, (self.value * other.derivative - other.value * self.derivative) / (self.value ** 2))
     
+
     def __pow__(self, other):
         """
         Dunder method for overloading the "**" operator.
@@ -333,6 +345,7 @@ class Variable:
             der = self.derivative * other * self.value ** (other - 1)
             return Variable(val, der)
 
+
     def __rpow__(self, other):
         """
         Dunder method for overloading the "**" operator.
@@ -360,6 +373,7 @@ class Variable:
         der = np.log(other) * val * self.derivative
         return Variable(val, der)
     
+
     def __neg__(self):
         """ 
         This method is called using '-' operator.
@@ -383,6 +397,7 @@ class Variable:
         der = (-1) * self.derivative
         return Variable(val, der)
     
+
     def log(self):
         """
         Computes the value and derivative of log function
@@ -407,6 +422,7 @@ class Variable:
         der = self.derivative * (1/self.value)
         return Variable(val, der)
     
+
     def exp(self):
         """
         Computes the value and derivative of exp function
@@ -429,6 +445,7 @@ class Variable:
         der = self.derivative * np.exp(self.value)
         return Variable(val, der)
     
+
     def sqrt(self):
         """
         Computes the value and derivative of sqrt function
@@ -449,6 +466,7 @@ class Variable:
         """
         return self.__pow__(0.5)
     
+
     def sin(self):
         """ 
         Computes the value and derivative of the sin function
@@ -471,6 +489,7 @@ class Variable:
         val = np.sin(self.value)
         der = np.cos(self.value) * self.derivative
         return Variable(val, der)
+    
     
     def cos(self):
         """ 
@@ -521,8 +540,7 @@ class Variable:
         val = np.tan(self.value)
         der = self.derivative / np.cos(self.value)**2
         return Variable(val, der)
-    
-    ## Other functions beyond the basics
+
 
     def sinh(self):
         """ 
@@ -546,6 +564,7 @@ class Variable:
         der = np.cosh(self.value) * self.derivative
         return Variable(val, der)
     
+
     def cosh(self):
         """ 
         Computes the value and derivative of the cosh function
@@ -568,6 +587,7 @@ class Variable:
         der = np.sinh(self.value) * self.derivative
         return Variable(val, der)
     
+
     def tanh(self):
         """ 
         Computes the value and derivative of the tanh function
@@ -589,6 +609,7 @@ class Variable:
         der = 1 / (np.cosh(self.value)**2) * self.derivative
         return Variable(val, der)
     
+
     def arcsin(self):
         """ 
         Computes the value and derivative of the arcsin function
@@ -604,19 +625,20 @@ class Variable:
         NOTES
         =====
         PRE:
-         - self.value should be in [-1, 1], otherwise a ValueError will be raised
+         - self.value should be in (-1, 1), otherwise a ValueError will be raised
         POST:
          - self is not changed by this function
 
         """
 
-        if self.value > 1 or self.value < -1:
-            raise ValueError("Inputs to arcsin should be in [-1, 1].")
+        if self.value >= 1 or self.value <= -1:
+            raise ValueError("Inputs to arcsin should be in (-1, 1) for the derivative to be defined.")
         
         val = np.arcsin(self.value)
         der = self.derivative / np.sqrt(1-self.value**2)
         return Variable(val, der)
     
+
     def arccos(self):
         """ 
         Computes the value and derivative of the arccos function
@@ -632,17 +654,18 @@ class Variable:
         NOTES
         =====
         PRE:
-         - self.value should be in [-1, 1], otherwise a ValueError will be raised
+         - self.value should be in (-1, 1), otherwise a ValueError will be raised
         POST:
          - self is not changed by this function
 
         """
-        if self.value > 1 or self.value < -1:
-            raise ValueError("Inputs to arccos should be in [-1, 1].")
+        if self.value >= 1 or self.value <= -1:
+            raise ValueError("Inputs to arccos should be in (-1, 1) for the derivative to be defined.")
         val = np.arccos(self.value)
         der = (-1) * self.derivative / np.sqrt(1-self.value**2)
         return Variable(val,der)
-    
+
+
     def arctan(self):
         """ 
         Computes the value and derivative of the arctan function
@@ -663,6 +686,7 @@ class Variable:
         val = np.arctan(self.value)
         der = 1 / (1 + self.value**2) * self.derivative
         return Variable(val, der)
+
 
     def __abs__(self):
         """
