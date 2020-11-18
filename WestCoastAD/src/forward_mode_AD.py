@@ -401,7 +401,7 @@ class Variable:
          - self is not changed by this function
 
         """
-        if self.value < 0.0:
+        if self.value <= 0.0:
             raise ValueError('Values for log should be greater than or equal to zero.')
         val = np.log(self.value)
         der = self.derivative * (1/self.value)
