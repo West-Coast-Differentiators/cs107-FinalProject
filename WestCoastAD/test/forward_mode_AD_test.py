@@ -308,7 +308,7 @@ class VariableIntegrationTest(unittest.TestCase):
         
         self.assertEqual(value+ np.sin(value), equation.value)
         self.assertEqual(1+np.cos(value), equation.derivative)
-    
+        
     def test_sinh_of_sin_scalar(self):
         value = 0.34
         var = Variable(value, 1)
@@ -316,6 +316,82 @@ class VariableIntegrationTest(unittest.TestCase):
         
         self.assertEqual(np.sinh(np.sin(value)), equation.value)
         expected_derivative = np.cosh(np.sin(value))*np.cos(value)
+        self.assertEqual(expected_derivative, equation.derivative)
+        
+    def test_sub_and_sin_scalar(self):
+        value = np.pi / 4
+        var = Variable(value, 1)
+        equation = var - np.sin(var)
+        
+        self.assertEqual(value - np.sin(value), equation.value)
+        self.assertEqual(1 - np.cos(value), equation.derivative)
+        
+    def test_sum_and_cos_scalar(self):
+        value = np.pi /3
+        var = Variable(value, 1)
+        equation = var + np.cos(var)
+        
+        self.assertEqual(value + np.cos(value), equation.value)
+        self.assertEqual(1 - np.sin(value), equation.derivative)
+    
+    
+    def test_sub_and_cos_scalar(self):
+        value = np.pi /3
+        var = Variable(value, 1)
+        equation = var - np.cos(var)
+        
+        self.assertEqual(value - np.cos(value), equation.value)
+        self.assertEqual(1 + 1*np.sin(value), equation.derivative)
+    
+    def test_cosh_of_cos_scalar(self):
+        value = 0.23
+        var = Variable(value, 1)
+        equation = np.cosh(np.cos(var))
+        expected_derivative = np.sinh(np.cos(value))*(-np.sin(value))
+        
+        self.assertEqual(np.cosh(np.cos(value)), equation.value)
+        self.assertEqual(expected_derivative, equation.derivative)
+
+        
+    def test_cosh_of_sin_scalar(self):
+        value = 0.55
+        var = Variable(value, 1)
+        equation = np.cosh(np.sin(var))
+        expected_derivative = np.sinh(np.sin(value))*(np.cos(value))
+        
+        self.assertEqual(np.cosh(np.sin(value)), equation.value)
+        self.assertEqual(expected_derivative, equation.derivative)
+
+    def test_sinh_of_cos_scalar(self):
+        value = 0.92
+        var = Variable(value, 1)
+        equation = np.sinh(np.cos(var))
+        expected_derivative = np.cosh(np.cos(value))*(-np.sin(value))
+        
+        self.assertEqual(np.sinh(np.cos(value)), equation.value)
+        self.assertEqual(expected_derivative, equation.derivative)
+        
+    def test_add_cos_and_arccos_scalar(self):
+        value1 = 0.92
+        value2 = 1.42
+        var1 = Variable(value1, 4)
+        var2 = Variable(value2, 2)
+        equation = np.arccos(var1) + np.cos(var2)
+        expected_derivative = (-1) * 4/np.sqrt(1-value1**2) - 2 * np.sin(value2)
+        
+        self.assertEqual(np.arccos(value1) + np.cos(value2), equation.value)
+        self.assertEqual(expected_derivative, equation.derivative)
+        
+    
+    def test_sub_sin_and_arcsin_scalar(self):
+        value1 = -0.10
+        value2 = 1.51
+        var1 = Variable(value1, 5)
+        var2 = Variable(value2, 3)
+        equation = np.arcsin(var1) - np.sin(var2)
+        expected_derivative = 1 * 5/np.sqrt(1-value1**2) - 3 * np.cos(value2)
+        
+        self.assertEqual(np.arcsin(value1) - np.sin(value2), equation.value)
         self.assertEqual(expected_derivative, equation.derivative)
 
 if __name__ == '__main__':
