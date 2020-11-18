@@ -398,7 +398,7 @@ class VariableIntegrationTest(unittest.TestCase):
         var = Variable(value, 1)
         equation = var * np.tanh(var)
         
-        self.assertEqual(value * np.tan(value), equation.value)
+        self.assertEqual(value * np.tanh(value), equation.value)
         expected_derivative = value * ((1 / (np.cosh(value)**2) * 1)) + np.tanh(value) * 1
         self.assertEqual(expected_derivative, equation.derivative)
 
@@ -410,13 +410,13 @@ class VariableIntegrationTest(unittest.TestCase):
         equation3 = beta + alpha * x
         equation4 = beta + x * alpha
         
-        self.assertEqual(7, equation1.m)
+        self.assertEqual(7, equation1.value)
         self.assertEqual(2, equation1.derivative)
-        self.assertEqual(7, equation2.m)
+        self.assertEqual(7, equation2.value)
         self.assertEqual(2, equation2.derivative)
-        self.assertEqual(7, equation3.m)
+        self.assertEqual(7, equation3.value)
         self.assertEqual(2, equation3.derivative)
-        self.assertEqual(7, equation4.m)
+        self.assertEqual(7, equation4.value)
         self.assertEqual(2, equation4.derivative)
 
     def test_mul_and_tan_scalar(self):
@@ -439,7 +439,7 @@ class VariableIntegrationTest(unittest.TestCase):
         self.assertEqual(expected_derivative, equation.derivative)
 
         # Test for rtruediv
-        self.assertEqual(np.sin(value) / value, equation2.value)
+        self.assertEqual(np.tan(value) / value, equation2.value)
         expected_derivative2 = (value * (1 / (np.cos(value) **2)) - np.tan(value)*1) / (value **2)
         self.assertEqual(expected_derivative2, equation2.derivative)
 
@@ -463,7 +463,7 @@ class VariableIntegrationTest(unittest.TestCase):
         self.assertEqual(expected_derivative, equation.derivative)
 
         # Test for rtruediv
-        self.assertEqual(np.sin(value) / value, equation2.value)
+        self.assertEqual(np.cos(value) / value, equation2.value)
         expected_derivative2 = (value * -np.sin(value) -np.cos(value)*1) / (value **2)
         self.assertEqual(expected_derivative2, equation2.derivative)
 
