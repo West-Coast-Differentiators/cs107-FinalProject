@@ -34,7 +34,20 @@ class Variable:
     
     
     def __repr__(self):
-        return "Variable(value: {}, derivative: {})".format(self.value, self.derivative)
+        """
+        Operator overloading for Variable object representation
+
+        INPUTS
+        =======
+        None
+
+        RETURNS
+        ========
+        the value attribute of the Variable object
+
+        """
+
+        return "Variable(value={}, derivative={})".format(self.value, self.derivative)
 
 
     @property
