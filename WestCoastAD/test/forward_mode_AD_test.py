@@ -388,8 +388,7 @@ class VariableIntegrationTest(unittest.TestCase):
         
         self.assertEqual(np.arcsin(value1) - np.sin(value2), equation.value)
         self.assertEqual(expected_derivative, equation.derivative)
-
-    
+   
     def test_div_sin_cos_poly_scalar(self):
         x = Variable(1.2, 1)
         equation = (x**2 + np.sin(x**3))/(np.cos(x)-13)
@@ -443,7 +442,49 @@ class VariableIntegrationTest(unittest.TestCase):
         self.assertAlmostEqual(2.509028, equation.value, places=4)
         self.assertAlmostEqual(0.52177, equation.derivative, places=4)
     
+    def test_pow_log_scalar(self):
+        value1 = 6
+        var1 = Variable(value1, 0.6)
+        equation = var1 ** np.log(var1)
+        expected_derivative = 2 * (value1 ** np.log(value1)) * (0.6 * np.log(value1)) / value1
 
+        self.assertEqual(value1 ** np.log(value1), equation.value)
+        self.assertAlmostEqual(expected_derivative, equation.derivative)
+
+    def test_sum_pow_mul_log_cos_and_sinh_scalar(self):
+        value1 = 3
+        value2 = 6
+        var1 = Variable(value1, 0.4)
+        var2 = Variable(value2, 0.88)
+
+        equation = var1 ** np.log(var1) * np.cos(var1) + np.exp(var2) * np.sinh(var2)
+
+        expected_derivative_part1 = ((2 * (value1**np.log(value1)) * (0.4 * np.log(value1)) / value1) * np.cos(value1)) - (value1 ** np.log(value1)* np.sin(value1) * 0.4)
+        expected_derivative_part2 = (np.exp(value2)*np.cosh(value2)*0.88) + (np.sinh(value2)*np.exp(value2)*0.88)
+        expected_derivative = expected_derivative_part1 + expected_derivative_part2
+
+        self.assertEqual(
+            ((value1 ** np.log(value1)) * np.cos(value1)) + (np.exp(value2) * np.sinh(value2)),
+            equation.value
+        )
+        self.assertAlmostEqual(expected_derivative, equation.derivative)
+
+    def test_abs_pow_exp_arctan_sqrt_div_scalar(self):
+        value1 = 9
+        value2 = 12
+        var1 = Variable(value1, 0.4)
+        var2 = Variable(value2, 0.88)
+
+        equation = abs(var1 ** 2 + np.exp(np.arctan(var2))) / np.sqrt(2 * var1 ** 3)
+
+        expected_numerator_value = abs(value1 ** 2 + np.exp(np.arctan(value2)))
+        expected_numerator_derivative = 0.4 * 2 * value1 + (0.88 * (1/(1 + value2 ** 2)) * np.exp(np.arctan(value2)))
+        expected_denominator_value = np.sqrt(2 * value1 ** 3)
+        expected_denominator_derivative = (2 * 0.4 * 3 * value1 ** 2) * (0.5 * (2 * value1 ** 3)**-0.5)
+        expected_derivative = ((expected_numerator_derivative * expected_denominator_value) - (expected_numerator_value * expected_denominator_derivative))/(expected_denominator_value**2)
+
+        self.assertEqual(expected_numerator_value/expected_denominator_value, equation.value)
+        self.assertAlmostEqual(expected_derivative, equation.derivative)
 
 if __name__ == '__main__':
     unittest.main()
