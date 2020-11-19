@@ -551,15 +551,6 @@ class VariableIntegrationTest(unittest.TestCase):
         expected_derivative2 = (value * (1 / (np.cos(value) **2)) - np.tan(value)*1) / (value **2)
         self.assertEqual(expected_derivative2, equation2.derivative)
 
-    def test_mul_and_cos_scalar(self):
-        value = np.pi /3
-        var = Variable(value, 1)
-        equation = var * np.cos(var)
-        
-        self.assertEqual(value * np.cos(value), equation.value)
-        expected_derivative = value * -np.sin(value) + np.cos(value) * 1
-        self.assertEqual(expected_derivative, equation.derivative)
-
     def test_truediv_and_cos_scalar(self):
         value = np.pi / 4
         var = Variable(value, 1)
@@ -653,6 +644,6 @@ class VariableIntegrationTest(unittest.TestCase):
         self.assertEqual(np.arctan(value) / value, equation2.value)
         expected_derivative2 = (value * (1 / (1 + value**2) * 1) - np.arctan(value)*1) / (value **2)
         self.assertEqual(expected_derivative2, equation2.derivative)
-        
+
 if __name__ == '__main__':
     unittest.main()
