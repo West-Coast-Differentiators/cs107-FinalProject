@@ -485,6 +485,174 @@ class VariableIntegrationTest(unittest.TestCase):
 
         self.assertEqual(expected_numerator_value/expected_denominator_value, equation.value)
         self.assertAlmostEqual(expected_derivative, equation.derivative)
+    
+    def test_mx_plus_b_scalar(self):
+        m, alpha, beta = 2, 2.0, 3.0
+        x = Variable(m, 1)
+        equation1 = alpha * x + beta
+        equation2 = x * alpha + beta
+        equation3 = beta + alpha * x
+        equation4 = beta + x * alpha
+        
+        self.assertEqual(7, equation1.value)
+        self.assertEqual(2, equation1.derivative)
+        self.assertEqual(7, equation2.value)
+        self.assertEqual(2, equation2.derivative)
+        self.assertEqual(7, equation3.value)
+        self.assertEqual(2, equation3.derivative)
+        self.assertEqual(7, equation4.value)
+        self.assertEqual(2, equation4.derivative)
 
+    def test_truediv_and_tanh_scalar(self):
+        value = np.pi / 4
+        var = Variable(value, 1)
+        equation = var / np.tanh(var)
+        equation2 = np.tanh(var) / var
+
+        self.assertEqual(value / np.tanh(value), equation.value)
+        expected_derivative = (np.tanh(value) * 1 - value * (1 / (np.cosh(value) **2))) / (np.tanh(value) **2)
+        self.assertEqual(expected_derivative, equation.derivative)
+
+        # Test for rtruediv
+        self.assertEqual(np.tanh(value) / value, equation2.value)
+        expected_derivative2 = (value * (1 / (np.cosh(value) **2) * 1) - np.tanh(value)*1) / (value **2)
+        self.assertEqual(expected_derivative2, equation2.derivative)
+    
+    def test_mul_and_tanh_scalar(self):
+        value = np.pi / 3
+        var = Variable(value, 1)
+        equation = var * np.tanh(var)
+        
+        self.assertEqual(value * np.tanh(value), equation.value)
+        expected_derivative = value * ((1 / (np.cosh(value)**2) * 1)) + np.tanh(value) * 1
+        self.assertEqual(expected_derivative, equation.derivative)
+
+    def test_mul_and_tan_scalar(self):
+        value = np.pi /3
+        var = Variable(value, 1)
+        equation = var * np.tan(var)
+        
+        self.assertEqual(value * np.tan(value), equation.value)
+        expected_derivative = value * (1 / (np.cos(value) **2)) + np.tan(value) * 1
+        self.assertEqual(expected_derivative, equation.derivative)
+
+    def test_truediv_and_tan_scalar(self):
+        value = np.pi / 4
+        var = Variable(value, 1)
+        equation = var / np.tan(var)
+        equation2 = np.tan(var) / var
+
+        self.assertEqual(value / np.tan(value), equation.value)
+        expected_derivative = (np.tan(value) * 1 - value * (1 / (np.cos(value) **2))) / (np.tan(value) **2)
+        self.assertEqual(expected_derivative, equation.derivative)
+
+        # Test for rtruediv
+        self.assertEqual(np.tan(value) / value, equation2.value)
+        expected_derivative2 = (value * (1 / (np.cos(value) **2)) - np.tan(value)*1) / (value **2)
+        self.assertEqual(expected_derivative2, equation2.derivative)
+
+    def test_mul_and_cos_scalar(self):
+        value = np.pi /3
+        var = Variable(value, 1)
+        equation = var * np.cos(var)
+        
+        self.assertEqual(value * np.cos(value), equation.value)
+        expected_derivative = value * -np.sin(value) + np.cos(value) * 1
+        self.assertEqual(expected_derivative, equation.derivative)
+
+    def test_truediv_and_cos_scalar(self):
+        value = np.pi / 4
+        var = Variable(value, 1)
+        equation = var / np.cos(var)
+        equation2 = np.cos(var) / var
+
+        self.assertEqual(value / np.cos(value), equation.value)
+        expected_derivative = (np.cos(value)*1 - value * -np.sin(value)) / (np.cos(value) **2)
+        self.assertEqual(expected_derivative, equation.derivative)
+
+        # Test for rtruediv
+        self.assertEqual(np.cos(value) / value, equation2.value)
+        expected_derivative2 = (value * -np.sin(value) -np.cos(value)*1) / (value **2)
+        self.assertEqual(expected_derivative2, equation2.derivative)
+
+    def test_mul_and_cos_scalar(self):
+        value = np.pi /3
+        var = Variable(value, 1)
+        equation = var * np.cos(var)
+        
+        self.assertEqual(value * np.cos(value), equation.value)
+        expected_derivative = value * -np.sin(value) + np.cos(value) * 1
+        self.assertEqual(expected_derivative, equation.derivative)
+
+    def test_mul_and_sin_scalar(self):
+        value = np.pi / 4
+        var = Variable(value, 1)
+        equation = var * np.sin(var)
+
+        self.assertEqual(value * np.sin(value), equation.value)
+        expected_derivative = value * np.cos(value) + np.sin(value) * 1
+        self.assertEqual(expected_derivative, equation.derivative)
+
+    def test_truediv_and_sin_scalar(self):
+        value = np.pi / 4
+        var = Variable(value, 1)
+        equation = var / np.sin(var)
+        equation2 = np.sin(var) / var
+
+        self.assertEqual(value / np.sin(value), equation.value)
+        expected_derivative = (np.sin(value)*1 - value * np.cos(value)) / (np.sin(value) **2)
+        self.assertEqual(expected_derivative, equation.derivative)
+
+        # Test for rtruediv
+        self.assertEqual(np.sin(value) / value, equation2.value)
+        expected_derivative2 = (value * np.cos(value) - np.sin(value)*1) / (value **2)
+        self.assertEqual(expected_derivative2, equation2.derivative)
+
+    def test_mul_tanh_and_arctan_scalar(self):
+        value1 = 5.0
+        value2 = 2.0
+        var1 = Variable(value1, 1)
+        var2 = Variable(value2, 2)
+        equation = np.arctan(var1) * np.tanh(var2)
+        expected_derivative = np.arctan(value1) * (1 / (np.cosh(value2)**2) * 2) + np.tanh(value2) * (1 / (1 + value1**2) * 1)
+        
+        self.assertEqual(np.arctan(value1) * np.tanh(value2), equation.value)
+        self.assertEqual(expected_derivative, equation.derivative)
+
+    def test_truediv_tanh_and_arctan_scalar(self):
+        value1 = 5.0
+        value2 = 2.0
+        var1 = Variable(value1, 1)
+        var2 = Variable(value2, 2)
+        equation = np.arctan(var1) / np.tanh(var2)
+
+        self.assertEqual(np.arctan(value1) / np.tanh(value2), equation.value)
+        expected_derivative = (np.tanh(value2) * (1 / (1 + value1**2) * 1) - np.arctan(value1) * (1 / (np.cosh(value2)**2) * 2)) / (np.tanh(value2) **2)
+        self.assertEqual(expected_derivative, equation.derivative)
+
+    def test_mul_and_arctan_scalar(self):
+        value = np.pi / 3
+        var = Variable(value, 1)
+        equation = var * np.arctan(var)
+        
+        self.assertEqual(value * np.arctan(value), equation.value)
+        expected_derivative = value * (1 / (1 + value**2)) + np.arctan(value) * 1
+        self.assertEqual(expected_derivative, equation.derivative)
+
+    def test_truediv_and_arctan_scalar(self):
+        value = np.pi / 4
+        var = Variable(value, 1)
+        equation = var / np.arctan(var)
+        equation2 = np.arctan(var) / var
+
+        self.assertEqual(value / np.arctan(value), equation.value)
+        expected_derivative = (np.arctan(value) * 1 - value * (1 / (1 + value**2) * 1)) / (np.arctan(value) **2)
+        self.assertEqual(expected_derivative, equation.derivative)
+
+        # Test for rtruediv
+        self.assertEqual(np.arctan(value) / value, equation2.value)
+        expected_derivative2 = (value * (1 / (1 + value**2) * 1) - np.arctan(value)*1) / (value **2)
+        self.assertEqual(expected_derivative2, equation2.derivative)
+        
 if __name__ == '__main__':
     unittest.main()
