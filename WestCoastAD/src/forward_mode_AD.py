@@ -713,3 +713,15 @@ class Variable:
             return Variable(val, der)
         else:
             raise ValueError('Abs function derivative does not exist at 0')
+
+value = 0.75
+var = Variable(value, 1)
+equation = np.tanh(np.sin(var))
+
+print(np.tanh(np.sin(value)))
+print(equation.value)
+# 1 / (np.cosh(self.value)**2) * self.derivative
+expected_derivative = 1/((np.cosh(value)**2) * 1) *(np.cos(value)*1)
+
+print(expected_derivative) 
+print(equation.derivative)
