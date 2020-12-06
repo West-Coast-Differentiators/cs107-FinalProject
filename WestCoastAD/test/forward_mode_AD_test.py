@@ -8,7 +8,7 @@ class VariableUnitTest(unittest.TestCase):
     def test_value_setter_string(self):
         with self.assertRaises(TypeError) as e:
             var = Variable('s', 1)
-        self.assertEqual('Input value should be numerical.', str(e.exception))
+        self.assertEqual('Input value should be an int or float.', str(e.exception))
             
     def test_value_setter_float_and_int(self):
         var1 = Variable(1.2, 1)
@@ -19,13 +19,26 @@ class VariableUnitTest(unittest.TestCase):
     def test_derivative_setter_string(self):
         with self.assertRaises(TypeError) as e:
             var = Variable(1.2, 'string')
-        self.assertEqual('Input derivative seed should be numerical.', str(e.exception))
+        self.assertEqual('Input derivative seed should be an int, float, or a 1D numpy array of ints/floats.', str(e.exception))
     
     def test_derivative_setter_float_and_int(self):
         var1 = Variable(1.2, 1)
         var2 = Variable(1, 1.3)
         var1.derivative = 1.5
         var2.derivative = 6
+    
+    def test_derivative_setter_numpy_array(self):
+        var1 = Variable(1.2, np.array([0,2.1,0]))
+        var1.derivative = np.array([0,0,1])
+        self.assertTrue(all(var1.derivative == np.array([0,0,1])))
+
+        with self.assertRaises(TypeError) as e:
+            var = Variable(10.2, np.array([[0],[2],[0]]))
+        self.assertEqual('Input derivative seed should be an int, float, or a 1D numpy array of ints/floats.', str(e.exception))
+
+        with self.assertRaises(TypeError) as e:
+            var = Variable(10.2, np.array([1.1, 2, "s"]))
+        self.assertEqual('Input derivative seed array contains non int/float values', str(e.exception))
         
     def test__add__scalar_two_variable_objects(self):
         var1 = Variable(10.1, 2.1)
