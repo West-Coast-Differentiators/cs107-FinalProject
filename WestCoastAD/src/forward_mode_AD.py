@@ -3,7 +3,7 @@ import numpy as np
 class Variable:
     """
     This is a custom variable class with elementary function and operation overloading
-    to perform automatic differentiation.
+    to perform forward mode automatic differentiation.
 
     EXAMPLES
     =========
@@ -99,7 +99,7 @@ class Variable:
 
         """
         if not isinstance(value, (int, float)):
-            raise TypeError('Input value should be numerical.')
+            raise TypeError('Input value should be an int or float.')
         else:
             self._value = value
 
@@ -118,10 +118,17 @@ class Variable:
         None
 
         """
-        if not isinstance(derivative_seed, (int, float)):
-            raise TypeError('Input derivative seed should be numerical.')
-        else:
+        if isinstance(derivative_seed, (int, float)):
             self._derivative = derivative_seed
+        elif isinstance(derivative_seed, np.ndarray) and len(derivative_seed.shape) == 1:
+            try:
+                derivative_seed = derivative_seed.astype(float)
+            except ValueError:
+                raise TypeError('Input derivative seed array contains non int/float values')
+            self._derivative = derivative_seed   
+        else:
+            raise TypeError('Input derivative seed should be an int, float, or a 1D numpy array of ints/floats.')
+
 
 
     def __add__(self, other):
