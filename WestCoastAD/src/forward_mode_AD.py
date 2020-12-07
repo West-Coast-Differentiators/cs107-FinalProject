@@ -12,9 +12,9 @@ class Variable:
     >>> x = Variable(4, 1)
     >>> f = 3*x**2 + 3
     >>> f.value
-    51.0
+    51
     >>> f.derivative
-    24.0
+    24
 
     """
 
@@ -111,7 +111,7 @@ class Variable:
 
         INPUTS
         =======
-        derivative_seed: An int or float giving a seed value for the variable derivative
+        derivative_seed: An int, float, or 1D array giving a seed value for the variable derivative
 
         RETURNS
         ========
@@ -149,6 +149,26 @@ class Variable:
         POST:
          - self is not changed by this function
 
+        EXAMPLES
+        =========
+        # add two variables
+        >>> x = Variable(4, 1)
+        >>> y = Variable(4, 2)
+        >>> print(x + y)
+        Variable(value=8, derivative=3)
+        
+        # add a variable and a constant
+        >>> x = Variable(2.1, 3.1)
+        >>> print(x + 1)
+        Variable(value=3.1, derivative=3.1)
+
+        # add two variables with vector derivatives
+        >>> import numpy as np
+        >>> x = Variable(4, np.array([1, 3]))
+        >>> y = Variable(4, np.array([2, 1]))
+        >>> print(x + y)
+        Variable(value=8, derivative=[3. 4.])
+
         """
         try:
             val = self.value + other.value
@@ -177,6 +197,13 @@ class Variable:
         =====
         POST:
          - self is not changed by this function
+        
+        EXAMPLES
+        =========
+        # add a constant and a variable
+        >>> x = Variable(2.1, 3.1)
+        >>> print(1 + x)
+        Variable(value=3.1, derivative=3.1)
 
         """
         return self.__add__(other)
@@ -503,6 +530,20 @@ class Variable:
         =====
         POST:
          - self is not changed by this function
+        
+        EXAMPLES
+        =========
+        # sin of variable with scalar derivative
+        >>> import numpy as np
+        >>> x = Variable(np.pi/2, 1)
+        >>> print(np.sin(x))
+        Variable(value=1.0, derivative=6.123233995736766e-17)
+        
+        # sin of variable with vector derivative
+        >>> import numpy as np
+        >>> x = Variable(np.pi/2, np.array([1, 0]))
+        >>> print(np.sin(x))
+        Variable(value=1.0, derivative=[6.123234e-17 0.000000e+00])
 
         """
 
@@ -553,6 +594,20 @@ class Variable:
         POST:
          - self is not changed by this function
 
+        EXAMPLES
+        =========
+        # tan of variable with scalar derivative
+        >>> import numpy as np
+        >>> x = Variable(np.pi, 1)
+        >>> print(np.tan(x))
+        Variable(value=-1.2246467991473532e-16, derivative=1.0)
+        
+        # tan of variable with vector derivative
+        >>> import numpy as np
+        >>> x = Variable(np.pi/4, np.array([1, 0]))
+        >>> print(np.tan(x))
+        Variable(value=0.9999999999999999, derivative=[2. 0.])
+
         """
         if (self.value / (np.pi/2)) % 2 == 1:
             raise ValueError("Inputs to tan should not be odd multiples of pi/2")
@@ -578,6 +633,20 @@ class Variable:
         =====
         POST:
          - self is not changed by this function
+        
+        EXAMPLES
+        =========
+        # sinh of variable with scalar derivative
+        >>> import numpy as np
+        >>> x = Variable(2, 1)
+        >>> print(np.sinh(x))
+        Variable(value=3.6268604078470186, derivative=3.7621956910836314)
+        
+        # sinh of variable with vector derivative
+        >>> import numpy as np
+        >>> x = Variable(3, np.array([1, 1]))
+        >>> print(np.sinh(x))
+        Variable(value=10.017874927409903, derivative=[10.067662 10.067662])
 
         """
         val = np.sinh(self.value)
@@ -648,6 +717,20 @@ class Variable:
          - self.value should be in (-1, 1), otherwise a ValueError will be raised
         POST:
          - self is not changed by this function
+
+        EXAMPLES
+        =========
+        # arcsin of variable with scalar derivative
+        >>> import numpy as np
+        >>> x = Variable(0.5, 1)
+        >>> print(np.arcsin(x))
+        Variable(value=0.5235987755982988, derivative=1.1547005383792517)
+        
+        # arcsin of variable with vector derivative
+        >>> import numpy as np
+        >>> x = Variable(-0.5, np.array([0, 1]))
+        >>> print(np.arcsin(x))
+        Variable(value=-0.5235987755982988, derivative=[0.         1.15470054])
 
         """
 
@@ -733,3 +816,114 @@ class Variable:
             return Variable(val, der)
         else:
             raise ValueError('Abs function derivative does not exist at 0')
+    
+    def __lt__(self, other):
+        """
+        Dunder method for overloading the less than comparison.
+        This operand will perform elementwise comparison of the value and 
+        derivative of self and other.
+
+        INPUTS
+        =======
+        other: a Variable object
+
+        RETURNS
+        ========
+        a boolean tuple where the first element specifies if the comparison holds
+        for the value of self and the second element specifies if the comparison
+        holds for all the elements of the derivative
+
+        NOTES
+        =====
+        POST:
+         - self is not changed by this function
+
+        EXAMPLES
+        =========
+
+        # "less than" comparison when the comparison is true only for the derivative
+        >>> x = Variable(4, 1)
+        >>> y = Variable(4, 2)
+        >>> x < y
+        (False, True)
+        
+        # "less than" comparison when the comparison is true for some of the derivative elements
+        >>> import numpy as np
+        >>> x = Variable(4, np.array([1, 3]))
+        >>> y = Variable(5, np.array([3, 2]))
+        >>> x < y
+        (True, False)
+
+        # "less than" comparison when the comparison is true for all of the derivative elements
+        >>> import numpy as np
+        >>> x = Variable(4, np.array([1, 3]))
+        >>> y = Variable(6, np.array([6, 6]))
+        >>> x < y
+        (True, True)
+
+        """
+        val_comparison = self.value < other.value
+        try:
+            der_comparison = all(self.derivative < other.derivative)
+        except TypeError:
+            der_comparison = self.derivative < other.derivative
+        
+        return (val_comparison, der_comparison)
+
+    
+    def __le__(self, other):
+        """
+        Dunder method for overloading the less than or equal to comparison.
+        This operand will perform elementwise comparison of the value and 
+        derivative of self and other.
+
+        INPUTS
+        =======
+        other: a Variable object
+
+        RETURNS
+        ========
+        a boolean tuple where the first element specifies if the comparison holds
+        for the value of self and the second element specifies if the comparison
+        holds for all the elements of the derivative
+
+        NOTES
+        =====
+        POST:
+         - self is not changed by this function
+
+        EXAMPLES
+        =========
+
+        # <= comparison with scalar derivative
+        >>> x = Variable(4, 1)
+        >>> y = Variable(4, 2)
+        >>> x <= y
+        (True, True)
+        
+        # <= comparison when the comparison is true for some of the derivative elements
+        >>> import numpy as np
+        >>> x = Variable(4, np.array([1, 3]))
+        >>> y = Variable(5, np.array([3, 2]))
+        >>> x <= y
+        (True, False)
+
+        # <= comparison when the comparison is true for all of the derivative elements
+        >>> import numpy as np
+        >>> x = Variable(4, np.array([1, 3]))
+        >>> y = Variable(4, np.array([4, 4]))
+        >>> x <= y
+        (True, True)
+
+        """
+        val_comparison = self.value <= other.value
+        try:
+            der_comparison = all(self.derivative <= other.derivative)
+        except TypeError:
+            der_comparison = self.derivative <= other.derivative
+        
+        return (val_comparison, der_comparison)
+
+if __name__ == "__main__":
+    import doctest
+    doctest.testmod()
