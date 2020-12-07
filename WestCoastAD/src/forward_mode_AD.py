@@ -205,6 +205,12 @@ class Variable:
         >>> print(1 + x)
         Variable(value=3.1, derivative=3.1)
 
+        # add a constant and a variable with vector derivative
+        >>> import numpy as np
+        >>> x = Variable(2.1, np.array([1, 0]))
+        >>> print(1 + x)
+        Variable(value=3.1, derivative=[1. 0.])
+
         """
         return self.__add__(other)
 
