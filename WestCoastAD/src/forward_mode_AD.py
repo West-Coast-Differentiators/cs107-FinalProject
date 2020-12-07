@@ -600,7 +600,7 @@ class Variable:
 
     def log(self, base=None):
         """
-        Computes the value and derivative of log function with base. Default base is e.
+        Computes the value and derivative of log function with any base. Default base is e.
 
         INPUTS
         =======
