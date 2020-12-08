@@ -217,8 +217,12 @@ class VariableUnitTest(unittest.TestCase):
             result = 0 ** Variable(-2, 0.45)
 
     def test_log_exception(self):
-        with self.assertRaises(ValueError) as e:
-            np.log(Variable(-23, 9))
+        with self.assertRaises(ValueError):
+            Variable(-23, 9).log()
+        with self.assertRaises(ValueError):
+            Variable(4,5).log(1)
+        with self.assertRaises(ValueError):
+            Variable(4,5).log(-2)
 
     def test_abs_scalar(self):
         var = Variable(-12, 9)
