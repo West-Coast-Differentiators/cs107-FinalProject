@@ -620,7 +620,7 @@ class Variable:
         # log(base=5) of a variable with scalar derivative
         >>> x = Variable(4.2, 1.3)
         >>> print(x.log(5))
-        Variable(value=0.891668149608153, derivative=0.30952380952380953)
+        Variable(value=0.891668149608153, derivative=0.19231795593511794)
 
         # log(base=e) of a variable with vector derivative
         >>> import numpy as np
@@ -629,22 +629,41 @@ class Variable:
         Variable(value=0.5306282510621704, derivative=[-1.17647059  1.76470588])
         
         # ValueError will be raised if self.value is less than or equal to zero.
-        >>> x = Variable(-2, 1)
-        >>> print(x.log())
+        >>> x = Variable(-2, 2)
+        >>> print(x.log(2))
         Traceback (most recent call last):
             ...
-        ValueError: Values for log should be greater than or equal to zero.
-
+        ValueError: Values for log should be greater than zero.
+        
+        # ValueError will be raised if base is less than or equal to zero.
+        >>> x = Variable(2, -3)
+        >>> print(x.log(-2))
+        Traceback (most recent call last):
+            ...
+        ValueError: Base should be greater than zero and not equal to 1.
+        
+        # ValueError will be raised if base is equal to one.
+        >>> x = Variable(5, -3)
+        >>> print(x.log(1))
+        Traceback (most recent call last):
+            ...
+        ValueError: Base should be greater than zero and not equal to 1.
+        
         """
         if self.value <= 0.0:
-            raise ValueError('Values for log should be greater than or equal to zero.')
+            raise ValueError('Values for log should be greater than zero.')
         if base is None:
             val = np.log(self.value)
+            der = self.derivative * (1/self.value)
+            return Variable(val, der)
         else:
-            val = np.log(self.value)/np.log(base)
-        der = self.derivative * (1/self.value)
-        return Variable(val, der)
+            if base <= 0.0 or base == 1:
+                raise ValueError('Base should be greater than zero and not equal to 1.')
             
+            val = np.log(self.value)/np.log(base)
+            der = self.derivative * (1/(self.value * np.log(base)))
+            return Variable(val, der)
+        
 
     def exp(self):
         """
