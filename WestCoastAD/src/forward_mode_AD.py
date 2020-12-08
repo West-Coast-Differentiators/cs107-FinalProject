@@ -620,7 +620,7 @@ class Variable:
         # log(base=5) of a variable with scalar derivative
         >>> x = Variable(4.2, 1.3)
         >>> print(x.log(5))
-        Variable(value=0.891668149608153, derivative=0.30952380952380953)
+        Variable(value=0.891668149608153, derivative=0.19231795593511794)
 
         # log(base=e) of a variable with vector derivative
         >>> import numpy as np
@@ -640,10 +640,12 @@ class Variable:
             raise ValueError('Values for log should be greater than or equal to zero.')
         if base is None:
             val = np.log(self.value)
+            der = self.derivative * (1/self.value)
+            return Variable(val, der)
         else:
             val = np.log(self.value)/np.log(base)
-        der = self.derivative * (1/self.value)
-        return Variable(val, der)
+            der = self.derivative * (1/(self.value * np.log(base)))
+            return Variable(val, der)
             
 
     def exp(self):
