@@ -552,6 +552,16 @@ class VariableIntegrationTest(unittest.TestCase):
 
         self.assertEqual(value1 ** np.log(value1), equation.value)
         self.assertAlmostEqual(expected_derivative, equation.derivative)
+    
+    def test_composition_log_with_base5_and_base2_scalar(self):
+        var = Variable(4, 6)
+        equation = np.log(np.log(var)/np.log(5))/np.log(2)
+        
+        expected_value = np.log(np.log(4)/np.log(5))/np.log(2)
+        expected_derivative = (6 / (4*np.log(5))) * (1/((np.log(4)/np.log(5))*np.log(2)))
+
+        self.assertEqual(expected_value, equation.value)
+        self.assertAlmostEqual(expected_derivative, equation.derivative)
 
     def test_sum_pow_mul_log_cos_and_sinh_scalar(self):
         value1 = 3
