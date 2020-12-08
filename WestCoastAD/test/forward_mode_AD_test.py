@@ -144,7 +144,14 @@ class VariableUnitTest(unittest.TestCase):
 
         self.assertEqual(np.log(5), result.value)
         self.assertEqual((1/5)*1.5, result.derivative)
+    
+    def test_log_with_base_5_scalar(self):
+        var = Variable(2, 5)
+        result = var.log(5)
 
+        self.assertEqual(np.log(2)/np.log(5), result.value)
+        self.assertEqual((1/2)*5, result.derivative)
+        
     def test_exp_scalar(self):
         var = Variable(5, 1.5)
         result = var.exp()
@@ -358,7 +365,36 @@ class VariableUnitTest(unittest.TestCase):
         var1 = Variable(1, np.array([2, 3, 4]))
         var2 = Variable(2, 4*np.ones(3))
         self.assertEqual(var1 < var2, (True, False))
+    
+    def test_eq_scalar(self):
+        var1 = Variable(1, 4)
+        var2 = Variable(4, 3)
+        self.assertEqual(var1 == var2, (False, False))
 
+        var1 = Variable(1, 2)
+        var2 = Variable(2, 2)
+        self.assertEqual(var1 == var2, (False, True))
+
+        var1 = Variable(-1, 2)
+        var2 = Variable(-1, -2)
+        self.assertEqual(var1 == var2, (True, False))
+
+        var1 = Variable(-2, -10)
+        var2 = Variable(-2, -10)
+        self.assertEqual(var1 == var2, (True, True))
+        
+    def test__eq__vector(self):
+        var1 = Variable(2, np.array([2, 3, 4]))
+        var2 = Variable(2, np.ones(3))
+        self.assertEqual(var1 == var2, (True, False))
+
+        var1 = Variable(1, np.array([-1, -3, 4]))
+        var2 = Variable(-1, np.array([-1, -3, 4]))
+        self.assertEqual(var1 == var2, (False, True))
+        
+        var1 = Variable(5, np.array([-2, -3, 4]))
+        var2 = Variable(5, np.array([-1, -3, 4]))
+        self.assertEqual(var1 == var2, (True, False))
 
 class VariableIntegrationTest(unittest.TestCase):
 
