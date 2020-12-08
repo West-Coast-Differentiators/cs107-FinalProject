@@ -8,7 +8,7 @@ class VariableUnitTest(unittest.TestCase):
     def test_value_setter_string(self):
         with self.assertRaises(TypeError) as e:
             var = Variable('s', 1)
-        self.assertEqual('Input value should be numerical.', str(e.exception))
+        self.assertEqual('Input value should be an int or float.', str(e.exception))
             
     def test_value_setter_float_and_int(self):
         var1 = Variable(1.2, 1)
@@ -19,13 +19,26 @@ class VariableUnitTest(unittest.TestCase):
     def test_derivative_setter_string(self):
         with self.assertRaises(TypeError) as e:
             var = Variable(1.2, 'string')
-        self.assertEqual('Input derivative seed should be numerical.', str(e.exception))
+        self.assertEqual('Input derivative seed should be an int, float, or a 1D numpy array of ints/floats.', str(e.exception))
     
     def test_derivative_setter_float_and_int(self):
         var1 = Variable(1.2, 1)
         var2 = Variable(1, 1.3)
         var1.derivative = 1.5
         var2.derivative = 6
+    
+    def test_derivative_setter_numpy_array(self):
+        var1 = Variable(1.2, np.array([0,2.1,0]))
+        var1.derivative = np.array([0,0,1])
+        self.assertTrue(all(var1.derivative == np.array([0,0,1])))
+
+        with self.assertRaises(TypeError) as e:
+            var = Variable(10.2, np.array([[0],[2],[0]]))
+        self.assertEqual('Input derivative seed should be an int, float, or a 1D numpy array of ints/floats.', str(e.exception))
+
+        with self.assertRaises(TypeError) as e:
+            var = Variable(10.2, np.array([1.1, 2, "s"]))
+        self.assertEqual('Input derivative seed array contains non int/float values', str(e.exception))
         
     def test__add__scalar_two_variable_objects(self):
         var1 = Variable(10.1, 2.1)
@@ -40,7 +53,7 @@ class VariableUnitTest(unittest.TestCase):
 
     def test__repr__(self):
         var = Variable(2, 3)
-        self.assertEqual(str(var), "Variable(value: 2, derivative: 3)")
+        self.assertEqual(str(var), "Variable(value=2, derivative=3)")
     
     def test__add__scalar_one_variable_one_constant(self):
         var = Variable(3, 17)
@@ -131,7 +144,14 @@ class VariableUnitTest(unittest.TestCase):
 
         self.assertEqual(np.log(5), result.value)
         self.assertEqual((1/5)*1.5, result.derivative)
+    
+    def test_log_with_base_5_scalar(self):
+        var = Variable(2, 5)
+        result = var.log(5)
 
+        self.assertEqual(np.log(2)/np.log(5), result.value)
+        self.assertEqual((1/2)*5, result.derivative)
+        
     def test_exp_scalar(self):
         var = Variable(5, 1.5)
         result = var.exp()
@@ -293,6 +313,88 @@ class VariableUnitTest(unittest.TestCase):
         self.assertEqual(0.5, divided.derivative)
         self.assertEqual(5, divided2.value)
         self.assertEqual(-0.5, divided2.derivative)
+    
+    def test__le__scalar(self):
+        var1 = Variable(1, 2)
+        var2 = Variable(2, 2)
+        self.assertEqual(var1 <= var2, (True, True))
+
+        var1 = Variable(1, 2)
+        var2 = Variable(1, 0)
+        self.assertEqual(var1 <= var2, (True, False))
+
+        var1 = Variable(1, 2)
+        var2 = Variable(-1, 3)
+        self.assertEqual(var1 <= var2, (False, True))
+
+        var1 = Variable(1, 2)
+        var2 = Variable(-1, -10)
+        self.assertEqual(var1 <= var2, (False, False))
+    
+    def test__le__vector(self):
+        var1 = Variable(1, np.array([2, 3, 4]))
+        var2 = Variable(2, 4*np.ones(3))
+        self.assertEqual(var1 <= var2, (True, True))
+
+        var1 = Variable(1, np.array([2, 3, 4]))
+        var2 = Variable(2, 2.2*np.ones(3))
+        self.assertEqual(var1 < var2, (True, False))
+    
+    def test__lt__scalar(self):
+        var1 = Variable(1, 2)
+        var2 = Variable(2, 3)
+        self.assertEqual(var1 < var2, (True, True))
+
+        var1 = Variable(1, 2)
+        var2 = Variable(2, 2)
+        self.assertEqual(var1 < var2, (True, False))
+
+        var1 = Variable(1, 2)
+        var2 = Variable(-1, 3)
+        self.assertEqual(var1 < var2, (False, True))
+
+        var1 = Variable(1, 2)
+        var2 = Variable(-1, -10)
+        self.assertEqual(var1 < var2, (False, False))
+    
+    def test__lt__vector(self):
+        var1 = Variable(1, np.array([2, 3, 4]))
+        var2 = Variable(2, 5*np.ones(3))
+        self.assertEqual(var1 < var2, (True, True))
+
+        var1 = Variable(1, np.array([2, 3, 4]))
+        var2 = Variable(2, 4*np.ones(3))
+        self.assertEqual(var1 < var2, (True, False))
+    
+    def test_eq_scalar(self):
+        var1 = Variable(1, 4)
+        var2 = Variable(4, 3)
+        self.assertEqual(var1 == var2, (False, False))
+
+        var1 = Variable(1, 2)
+        var2 = Variable(2, 2)
+        self.assertEqual(var1 == var2, (False, True))
+
+        var1 = Variable(-1, 2)
+        var2 = Variable(-1, -2)
+        self.assertEqual(var1 == var2, (True, False))
+
+        var1 = Variable(-2, -10)
+        var2 = Variable(-2, -10)
+        self.assertEqual(var1 == var2, (True, True))
+        
+    def test__eq__vector(self):
+        var1 = Variable(2, np.array([2, 3, 4]))
+        var2 = Variable(2, np.ones(3))
+        self.assertEqual(var1 == var2, (True, False))
+
+        var1 = Variable(1, np.array([-1, -3, 4]))
+        var2 = Variable(-1, np.array([-1, -3, 4]))
+        self.assertEqual(var1 == var2, (False, True))
+        
+        var1 = Variable(5, np.array([-2, -3, 4]))
+        var2 = Variable(5, np.array([-1, -3, 4]))
+        self.assertEqual(var1 == var2, (True, False))
 
 class VariableIntegrationTest(unittest.TestCase):
 
@@ -459,13 +561,19 @@ class VariableIntegrationTest(unittest.TestCase):
 
         equation = var1 ** np.log(var1) * np.cos(var1) + np.exp(var2) * np.sinh(var2)
 
-        expected_derivative_part1 = ((2 * (value1**np.log(value1)) * (0.4 * np.log(value1)) / value1) * np.cos(value1)) - (value1 ** np.log(value1)* np.sin(value1) * 0.4)
-        expected_derivative_part2 = (np.exp(value2)*np.cosh(value2)*0.88) + (np.sinh(value2)*np.exp(value2)*0.88)
+        expected_derivative_part1 = (
+                                            (2 * (value1 ** np.log(value1)) * (0.4 * np.log(value1)) / value1)
+                                            * np.cos(value1)
+                                    ) - (value1 ** np.log(value1) * np.sin(value1) * 0.4)
+        expected_derivative_part2 = (np.exp(value2) * np.cosh(value2) * 0.88) + (
+                np.sinh(value2) * np.exp(value2) * 0.88
+        )
         expected_derivative = expected_derivative_part1 + expected_derivative_part2
 
         self.assertEqual(
-            ((value1 ** np.log(value1)) * np.cos(value1)) + (np.exp(value2) * np.sinh(value2)),
-            equation.value
+            ((value1 ** np.log(value1)) * np.cos(value1))
+            + (np.exp(value2) * np.sinh(value2)),
+            equation.value,
         )
         self.assertAlmostEqual(expected_derivative, equation.derivative)
 
@@ -478,12 +586,21 @@ class VariableIntegrationTest(unittest.TestCase):
         equation = abs(var1 ** 2 + np.exp(np.arctan(var2))) / np.sqrt(2 * var1 ** 3)
 
         expected_numerator_value = abs(value1 ** 2 + np.exp(np.arctan(value2)))
-        expected_numerator_derivative = 0.4 * 2 * value1 + (0.88 * (1/(1 + value2 ** 2)) * np.exp(np.arctan(value2)))
+        expected_numerator_derivative = 0.4 * 2 * value1 + (
+                0.88 * (1 / (1 + value2 ** 2)) * np.exp(np.arctan(value2))
+        )
         expected_denominator_value = np.sqrt(2 * value1 ** 3)
-        expected_denominator_derivative = (2 * 0.4 * 3 * value1 ** 2) * (0.5 * (2 * value1 ** 3)**-0.5)
-        expected_derivative = ((expected_numerator_derivative * expected_denominator_value) - (expected_numerator_value * expected_denominator_derivative))/(expected_denominator_value**2)
+        expected_denominator_derivative = (2 * 0.4 * 3 * value1 ** 2) * (
+                0.5 * (2 * value1 ** 3) ** -0.5
+        )
+        expected_derivative = (
+                                      (expected_numerator_derivative * expected_denominator_value)
+                                      - (expected_numerator_value * expected_denominator_derivative)
+                              ) / (expected_denominator_value ** 2)
 
-        self.assertEqual(expected_numerator_value/expected_denominator_value, equation.value)
+        self.assertEqual(
+            expected_numerator_value / expected_denominator_value, equation.value
+        )
         self.assertAlmostEqual(expected_derivative, equation.derivative)
     
     def test_mx_plus_b_scalar(self):
@@ -644,6 +761,92 @@ class VariableIntegrationTest(unittest.TestCase):
         self.assertEqual(np.arctan(value) / value, equation2.value)
         expected_derivative2 = (value * (1 / (1 + value**2) * 1) - np.arctan(value)*1) / (value **2)
         self.assertEqual(expected_derivative2, equation2.derivative)
+    
+class VariableMultivariateFunctionTest(unittest.TestCase):
+
+    def test_polynomial_multivariate(self):
+        x = Variable(3, np.array([1, 0]))
+        y = Variable(2, np.array([0, 1]))
+        f = 1 + 3*x**2 + 4*x + 3*y**3 + y / 7
+        x = 3
+        y = 2
+        self.assertEqual(f.value, 1 + 3*x**2 + 4*x + 3*y**3 + y / 7)
+        self.assertEqual(f.derivative[0], 6*3+4)
+        self.assertEqual(f.derivative[1], 9*4+1/7)
+    
+    def test_rational_multivariate(self):
+        x = Variable(1, np.array([1, 0]))
+        y = Variable(-2, np.array([0, 1]))
+        f = 2 - 1 / (x*y*5) + x**y - x / y - 1
+        x = 1
+        y = -2
+        self.assertEqual(f.value, 2 - 1 / (x*y*5) + x**y - x / y - 1)
+        self.assertEqual(f.derivative[0], y*x**(y-1)+1/(5*x**2*y)-1/y)
+        self.assertEqual(f.derivative[1], x**y*np.log(x)+x/y**2+1/(5*x*y**2))
+
+    def test_basic_trig_polynomial_multivariate(self):
+        x = Variable(-2, np.array([1, 0]))
+        y = Variable(3, np.array([0, 1]))
+        f = -np.sin(x**2+y**2) / np.cos(1/(x+y)) + np.tan(1+x+y)
+        x = -2
+        y = 3
+        self.assertEqual(f.value, -np.sin(x**2+y**2) / np.cos(1/(x+y)) + np.tan(1+x+y))
+        expected_derx = -(2*x*np.cos(x**2+y**2)*np.cos(1/(x+y))*(x+y)**2 \
+                        -np.sin(x**2+y**2)*np.sin(1/(x+y)))/(np.cos(1/(x+y))**2*(x+y)**2) \
+                        + 1/np.cos(1+x+y)**2
+        expected_dery = -(2*y*np.cos(x**2+y**2)*np.cos(1/(x+y))*(x+y)**2 \
+                        -np.sin(x**2+y**2)*np.sin(1/(x+y)))/(np.cos(1/(x+y))**2*(x+y)**2) \
+                        + 1/np.cos(1+x+y)**2
+        self.assertEqual(f.derivative[0], expected_derx)
+        self.assertEqual(f.derivative[1], expected_dery)
+    
+    def test_hyperbolic_multivariate(self):
+        x = Variable(2.1, np.array([1, 0]))
+        y = Variable(-1, np.array([0, 1]))
+        f = -np.sinh(-x*y)  + np.cosh(x/(x+y)) - np.tanh(1-y)
+        x = 2.1
+        y = -1
+        self.assertEqual(f.value, -np.sinh(-x*y)  + np.cosh(x/(x+y)) - np.tanh(1-y))
+        expected_derx = y*np.cosh(-x*y)+y*np.sinh(x/(x+y))/(x+y)**2
+        expected_dery = x*np.cosh(-x*y)-x*np.sinh(x/(x+y))/(x+y)**2+1/np.cosh(1-y)**2
+        self.assertEqual(f.derivative[0], expected_derx)
+        self.assertEqual(f.derivative[1], expected_dery)
+    
+    def test_inverse_trig_multivariate(self):
+        x = Variable(-0.4, np.array([1, 0]))
+        y = Variable(0.3, np.array([0, 1]))
+        f = -np.arcsin((-x)**0.5)  + np.arccos(x*(y+1)) - np.arctan(x-y)
+        x = -0.4
+        y = 0.3
+        self.assertEqual(f.value, -np.arcsin((-x)**0.5)  + np.arccos(x*(y+1)) - np.arctan(x-y))
+        expected_derx = 1/(2*(1+x)**0.5*(-x)**0.5)-(y+1)/np.sqrt(1-x**2*(y+1)**2)- 1/((x-y)**2+1)
+        expected_dery = 1/((x-y)**2+1) - x/np.sqrt(-x**2*(y+1)**2+1)
+        self.assertAlmostEqual(f.derivative[0], expected_derx)
+        self.assertAlmostEqual(f.derivative[1], expected_dery)
+    
+    def test_log_multivariate(self):
+        x = Variable(-0.4, np.array([1, 0]))
+        y = Variable(-0.3, np.array([0, 1]))
+        f = np.log(np.sqrt(2**x-3**y))- np.sqrt(np.exp(x*y))
+        x = -0.4
+        y = -0.3
+        self.assertEqual(f.value, np.log(np.sqrt(2**x-3**y))- np.sqrt(np.exp(x*y)))
+        expected_derx = np.log(2)*2**(x-1)/((2**x-3**y)) - y*np.exp(y*x)/(2*np.sqrt(np.exp(x*y)))
+        expected_dery = -(x*np.sqrt(np.exp(x*y))*(2**x-3**y)+np.log(3)*3**y)/(2*(2**x-3**y))
+        self.assertAlmostEqual(f.derivative[0], expected_derx)
+        self.assertAlmostEqual(f.derivative[1], expected_dery)
+    
+    def test_power_abs_multivariate(self):
+        x = Variable(5, np.array([1, 0]))
+        y = Variable(3, np.array([0, 1]))
+        f = abs(-x**(2*y-1))
+        x = 5
+        y = 3
+        self.assertEqual(f.value, abs(x**(2*y-1)))
+        expected_derx = x**(y*4-3)*(2*y-1)/abs(x**(2*y-1))
+        expected_dery = 2*x**(4*y-2)*np.log(x)/abs(x**(2*y-1))
+        self.assertAlmostEqual(f.derivative[0], expected_derx)
+        self.assertAlmostEqual(f.derivative[1], expected_dery)
 
 if __name__ == '__main__':
     unittest.main()
