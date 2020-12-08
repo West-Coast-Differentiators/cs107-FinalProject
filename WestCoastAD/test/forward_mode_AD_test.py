@@ -217,12 +217,15 @@ class VariableUnitTest(unittest.TestCase):
             result = 0 ** Variable(-2, 0.45)
 
     def test_log_exception(self):
-        with self.assertRaises(ValueError):
+        with self.assertRaises(ValueError) as e:
             Variable(-23, 9).log()
-        with self.assertRaises(ValueError):
+        self.assertEqual("Values for log should be greater than zero.", str(e.exception))
+        with self.assertRaises(ValueError) as e:
             Variable(4,5).log(1)
+        self.assertEqual("Base should be greater than zero and not equal to 1.", str(e.exception))
         with self.assertRaises(ValueError):
             Variable(4,5).log(-2)
+        self.assertEqual("Base should be greater than zero and not equal to 1.", str(e.exception))
 
     def test_abs_scalar(self):
         var = Variable(-12, 9)
