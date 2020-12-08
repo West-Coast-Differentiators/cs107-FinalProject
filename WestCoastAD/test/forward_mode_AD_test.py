@@ -150,7 +150,7 @@ class VariableUnitTest(unittest.TestCase):
         result = var.log(5)
 
         self.assertEqual(np.log(2)/np.log(5), result.value)
-        self.assertEqual((1/2)*5, result.derivative)
+        self.assertEqual((1/(2*np.log(5)))*5, result.derivative)
         
     def test_exp_scalar(self):
         var = Variable(5, 1.5)
@@ -835,6 +835,18 @@ class VariableMultivariateFunctionTest(unittest.TestCase):
         expected_dery = -(x*np.sqrt(np.exp(x*y))*(2**x-3**y)+np.log(3)*3**y)/(2*(2**x-3**y))
         self.assertAlmostEqual(f.derivative[0], expected_derx)
         self.assertAlmostEqual(f.derivative[1], expected_dery)
+    
+    def test_composition_log_with_base5_and_base2_multivariate(self):
+        var = Variable(4, np.array([1, 5]))
+        f = np.log(np.log(var)/np.log(5))/np.log(2)
+
+        expected_value = np.log(np.log(4)/np.log(5))/np.log(2)
+        expected_derivative = np.array([(1 / (4*np.log(5))) * (1/((np.log(4)/np.log(5))*np.log(2))),
+                               (5 / (4*np.log(5))) * (1/((np.log(4)/np.log(5))*np.log(2)))])
+
+        self.assertEqual(expected_value, f.value)
+        self.assertAlmostEqual(expected_derivative[0], f.derivative[0])
+        self.assertAlmostEqual(expected_derivative[1], f.derivative[1])
     
     def test_power_abs_multivariate(self):
         x = Variable(5, np.array([1, 0]))
