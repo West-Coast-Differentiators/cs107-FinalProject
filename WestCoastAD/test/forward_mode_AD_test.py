@@ -423,7 +423,7 @@ class VariableUnitTest(unittest.TestCase):
         self.assertEqual(var1 >= var2, (False, True))
     
     def test__gt__scalar(self):
-        var1 = Variable(1, 2)
+        var1 = Variable(4, 4)
         var2 = Variable(2, 3)
         self.assertEqual(var1 > var2, (True, True))
 
