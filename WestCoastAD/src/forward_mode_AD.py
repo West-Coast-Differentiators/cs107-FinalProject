@@ -1286,8 +1286,5 @@ class Variable:
     
 
 if __name__ == "__main__":
-    # import doctest
-    # doctest.testmod()
-    import numpy as np
-    x = Variable(3, np.array([1, -4]))
-    print(np.sqrt(x))
+    import doctest
+    doctest.testmod()
