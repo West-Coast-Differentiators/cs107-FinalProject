@@ -1093,6 +1093,8 @@ class Variable:
 
         NOTES
         =====
+        PRE:
+         -  self.value is not 0 otherwise a ValueError will be raised
         POST:
          - self is not changed by this function
 
