@@ -682,6 +682,21 @@ class Variable:
         POST:
          - self is not changed by this function
 
+        EXAMPLES
+        =========
+
+        # exp of variable with scalar derivative
+        >>> import numpy as np
+        >>> x = Variable(4, 1)
+        >>> print(np.exp(x))
+        Variable(value=54.598150033144236, derivative=54.598150033144236)
+
+        # exp of variable with vector derivative
+        >>> import numpy as np
+        >>> x = Variable(3, np.array([1, -4]))
+        >>> print(np.exp(x))
+        Variable(value=20.085536923187668, derivative=[ 20.08553692 -80.34214769])
+
         """
         val = np.exp(self.value)
         der = self.derivative * np.exp(self.value)
@@ -704,6 +719,21 @@ class Variable:
         =====
         POST:
          - self is not changed by this function
+
+        EXAMPLES
+        =========
+
+        # sqrt of variable with scalar derivative
+        >>> import numpy as np
+        >>> x = Variable(4, 1)
+        >>> print(np.sqrt(x))
+        Variable(value=2.0, derivative=0.25)
+
+        # sqrt of variable with vector derivative
+        >>> import numpy as np
+        >>> x = Variable(3, np.array([1, -4]))
+        >>> print(np.sqrt(x))
+        Variable(value=1.7320508075688772, derivative=[ 0.28867513 -1.15470054])
 
         """
         return self.__pow__(0.5)
@@ -1066,6 +1096,27 @@ class Variable:
         POST:
          - self is not changed by this function
 
+        EXAMPLES
+        =========
+
+        # abs of variable with scalar derivative
+        >>> x = Variable(4, 1)
+        >>> print(abs(x))
+        Variable(value=4, derivative=1.0)
+
+        # abs of variable with vector derivative
+        >>> import numpy as np
+        >>> x = Variable(3, np.array([1, -4]))
+        >>> print(abs(x))
+        Variable(value=3, derivative=[ 1. -4.])
+
+        # ValueError will be raised if self.value is equal to 0
+        >>> x = Variable(0, -0.6)
+        >>> print(abs(x))
+        Traceback (most recent call last):
+            ...
+        ValueError: Abs function derivative does not exist at 0
+
         """
         if self.value != 0.0:
             val = abs(self.value)
@@ -1235,5 +1286,8 @@ class Variable:
     
 
 if __name__ == "__main__":
-    import doctest
-    doctest.testmod()
+    # import doctest
+    # doctest.testmod()
+    import numpy as np
+    x = Variable(3, np.array([1, -4]))
+    print(np.sqrt(x))
