@@ -159,6 +159,13 @@ class VariableUnitTest(unittest.TestCase):
         self.assertEqual(np.exp(5), result.value)
         self.assertEqual(np.exp(5)*1.5, result.derivative)
 
+    def test_exp_vector(self):
+        var = Variable(5, np.array([1.5, 5.9]))
+        result = var.exp()
+
+        self.assertEqual(np.exp(5), result.value)
+        np.testing.assert_array_equal(np.exp(5)*np.array([1.5, 5.9]), result.derivative)
+
     def test_arcsin_scalar(self):
         var = Variable(.4, -2)
         result = np.arcsin(var)
@@ -191,6 +198,13 @@ class VariableUnitTest(unittest.TestCase):
         self.assertEqual(np.sqrt(4), result.value)
         self.assertEqual((-1 * 0.5) * np.power(4, -0.5), result.derivative)
 
+    def test_sqrt_vector(self):
+        var = Variable(4, np.array([-1, 7]))
+        result = var.sqrt()
+
+        self.assertEqual(np.sqrt(4), result.value)
+        np.testing.assert_array_equal((var.derivative * 0.5) * np.power(var.value, -0.5), result.derivative)
+
     def test__pow__scalar(self):
         var = Variable(4, 3)
         result = var ** 3
@@ -203,6 +217,21 @@ class VariableUnitTest(unittest.TestCase):
         self.assertAlmostEqual(var.derivative * np.log(3) * (3 ** var.value), reverse_result.derivative)
         self.assertEqual(4 ** 5, combined_result.value)
         self.assertAlmostEqual(4 ** 5 * ((5 * 3 / 4) + (np.log(4) * 0.7)), combined_result.derivative)
+
+    def test__pow__vector(self):
+        var = Variable(4, np.array([4, 7]))
+        exponent_var = Variable(5, np.array([0.7, 0.1]))
+        result = var ** 3
+        reverse_result = 3 ** var
+        combined_result = var ** Variable(5, np.array([0.7, 0.1]))
+        expected_derivative_combined = (var.value ** exponent_var.value) * (((exponent_var.value * var.derivative)/var.value) + (np.log(var.value) * exponent_var.derivative))
+
+        self.assertEqual(4 ** 3, result.value)
+        np.testing.assert_array_equal(var.derivative * 3 * (4 ** 2), result.derivative)
+        self.assertEqual(3 ** 4, reverse_result.value)
+        np.testing.assert_array_equal(var.derivative * np.log(3) * (3 ** var.value), reverse_result.derivative)
+        self.assertEqual(4 ** 5, combined_result.value)
+        np.testing.assert_array_equal(expected_derivative_combined, combined_result.derivative)
 
     def test_pow_exception(self):
         with self.assertRaises(TypeError):
@@ -236,6 +265,13 @@ class VariableUnitTest(unittest.TestCase):
         self.assertEqual(var.derivative * -1, result.derivative)
         with self.assertRaises(ValueError) as e:
             abs(zero_var)
+
+    def test_abs_vector(self):
+        var = Variable(-12, np.array([7, 8]))
+        result = abs(var)
+
+        self.assertEqual(12, result.value)
+        np.testing.assert_array_equal(var.derivative * -1, result.derivative)
 
     def test_logit_scalar(self):
         var = Variable(2, 7)

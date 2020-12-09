@@ -522,7 +522,7 @@ class Variable:
 
         EXAMPLES
         =========
-        # Power two variables with scalar derivatives
+        # Power of variables with scalar derivatives
         >>> x = Variable(3, 3)
         >>> y = Variable(1, 5)
         >>> print(y ** x)
@@ -532,6 +532,17 @@ class Variable:
         >>> x = Variable(2.1, 3.2)
         >>> print(x ** 2)
         Variable(value=4.41, derivative=13.440000000000001)
+
+        # Power of Variable with vector derivative.
+        >>> x = Variable(2.1, np.array([3.2, 2.5]))
+        >>> print(x ** 2)
+        Variable(value=4.41, derivative=[13.44 10.5 ])
+
+        # Power of Variable with vector derivative.
+        >>> x = Variable(2.1, np.array([3.2, 2.5]))
+        >>> y = Variable(5, np.array([0.4, 9.6]))
+        >>> print(x ** y)
+        Variable(value=40.84101000000001, derivative=[323.29018821 533.99536695])
 
         """
         try:
@@ -564,8 +575,18 @@ class Variable:
 
         NOTES
         =====
+        PRE:
+         -  other is positive otherwise a ValueError will be raised
+         -  self.value is not zero while other is negative otherwise a ValueError will be raised
         POST:
          - self is not changed by this function
+
+        EXAMPLES
+        =========
+        # Power of variables with scalar derivatives
+        >>> x = Variable(3, np.array([5, 6]))
+        >>> print(3 ** x)
+        Variable(value=27, derivative=[148.31265897 177.97519076])
 
         """
         if other == 0 and self.value <= 0:
