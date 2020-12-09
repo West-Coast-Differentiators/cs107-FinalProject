@@ -1,3 +1,4 @@
+import numbers
 import numpy as np 
 
 class Variable:
@@ -117,7 +118,7 @@ class Variable:
 
         INPUTS
         =======
-        value: An int or float giving the value of the variable
+        value: A real number giving the value of the variable
 
         RETURNS
         ========
@@ -143,7 +144,7 @@ class Variable:
         Variable(value=55, derivative=[2.  1.1])
         
         """
-        if not isinstance(value, (int, float)):
+        if not isinstance(value, numbers.Number):
             raise TypeError('Input value should be an int or float.')
         else:
             self._value = value
@@ -156,7 +157,7 @@ class Variable:
 
         INPUTS
         =======
-        derivative_seed: An int, float, or 1D array giving a seed value for the variable derivative
+        derivative_seed: A real number or 1D array of real numbers giving a seed value for the variable derivative
 
         RETURNS
         ========
@@ -200,7 +201,7 @@ class Variable:
 
         """
         
-        if isinstance(derivative_seed, (int, float)):
+        if isinstance(derivative_seed, numbers.Number):
             self._derivative = derivative_seed
         elif isinstance(derivative_seed, np.ndarray) and len(derivative_seed.shape) == 1:
             try:
