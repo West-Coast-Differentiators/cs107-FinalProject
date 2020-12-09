@@ -236,6 +236,22 @@ class VariableUnitTest(unittest.TestCase):
         self.assertEqual(var.derivative * -1, result.derivative)
         with self.assertRaises(ValueError) as e:
             abs(zero_var)
+
+    def test_logit_scalar(self):
+        var = Variable(2, 7)
+        result = var.logit()
+        expected_derivative = -(var.derivative * np.exp(2))/(1 + np.exp(2))**2
+
+        self.assertAlmostEqual(1/(1 + np.exp(2)), result.value)
+        self.assertAlmostEqual(expected_derivative, result.derivative)
+
+    def test_logit_vector(self):
+        var = Variable(2, np.array([2, 6, 8]))
+        result = var.logit()
+        expected_derivative = -(var.derivative * np.exp(2))/(1 + np.exp(2))**2
+
+        self.assertAlmostEqual(1/(1 + np.exp(2)), result.value)
+        np.testing.assert_array_equal(expected_derivative, result.derivative)
     
     def test_arccos_scalar_invalid_value(self):
         with self.assertRaises(ValueError) as e:
@@ -402,6 +418,40 @@ class VariableUnitTest(unittest.TestCase):
         var1 = Variable(5, np.array([-2, -3, 4]))
         var2 = Variable(5, np.array([-1, -3, 4]))
         self.assertEqual(var1 == var2, (True, False))
+
+    def test_ne_scalar(self):
+        var1 = Variable(12, 7)
+        var2 = Variable(5, 5)
+        self.assertEqual(var1 != var2, (True, True))
+
+        var1 = Variable(1, 30)
+        var2 = Variable(24, 30)
+        self.assertEqual(var1 != var2, (True, False))
+
+        var1 = Variable(3, 5)
+        var2 = Variable(3, 4)
+        self.assertEqual(var1 != var2, (False, True))
+
+        var1 = Variable(1, 2)
+        var2 = Variable(1, 2)
+        self.assertEqual(var1 != var2, (False, False))
+
+    def test__ne__vector(self):
+        var1 = Variable(2, np.array([1, 3]))
+        var2 = Variable(5, np.array([45, 78]))
+        self.assertEqual(var1 != var2, (True, True))
+
+        var1 = Variable(1, np.array([-1, 20]))
+        var2 = Variable(1, np.array([-1, 2]))
+        self.assertEqual(var1 != var2, (False, True))
+
+        var1 = Variable(5, np.array([2, 4]))
+        var2 = Variable(55, np.array([2, 4]))
+        self.assertEqual(var1 != var2, (True, False))
+
+        var1 = Variable(1, np.array([3, 4]))
+        var2 = Variable(1, np.array([3, 4]))
+        self.assertEqual(var1 != var2, (False, False))
 
 class VariableIntegrationTest(unittest.TestCase):
 
