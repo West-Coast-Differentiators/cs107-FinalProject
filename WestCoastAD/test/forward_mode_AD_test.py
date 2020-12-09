@@ -148,9 +148,9 @@ class VariableUnitTest(unittest.TestCase):
     def test_log_with_base_5_scalar(self):
         var = Variable(2, 5)
         result = var.log(5)
-
+        
         self.assertEqual(np.log(2)/np.log(5), result.value)
-        self.assertEqual((1/2)*5, result.derivative)
+        self.assertEqual((1/(2*np.log(5)))*5, result.derivative)
         
     def test_exp_scalar(self):
         var = Variable(5, 1.5)
@@ -218,7 +218,14 @@ class VariableUnitTest(unittest.TestCase):
 
     def test_log_exception(self):
         with self.assertRaises(ValueError) as e:
-            np.log(Variable(-23, 9))
+            Variable(-23, 9).log()
+        self.assertEqual("Values for log should be greater than zero.", str(e.exception))
+        with self.assertRaises(ValueError) as e:
+            Variable(4,5).log(1)
+        self.assertEqual("Base should be greater than zero and not equal to 1.", str(e.exception))
+        with self.assertRaises(ValueError):
+            Variable(4,5).log(-2)
+        self.assertEqual("Base should be greater than zero and not equal to 1.", str(e.exception))
 
     def test_abs_scalar(self):
         var = Variable(-12, 9)
@@ -604,7 +611,28 @@ class VariableIntegrationTest(unittest.TestCase):
 
         self.assertEqual(value1 ** np.log(value1), equation.value)
         self.assertAlmostEqual(expected_derivative, equation.derivative)
+    
+    def test_composition_log_with_base5_and_base2_scalar(self):
+        var = Variable(4, 6)
+        equation = var.log(5).log(2)
+        
+        expected_value = np.log(np.log(4)/np.log(5))/np.log(2)
+        expected_derivative = (6 / (4*np.log(5))) * (1/((np.log(4)/np.log(5))*np.log(2)))
 
+        self.assertEqual(expected_value, equation.value)
+        self.assertAlmostEqual(expected_derivative, equation.derivative)
+        
+    def test_composition_log_with_base5_and_base2_vector(self):
+        var = Variable(4, np.array([1, 5]))
+        equation = var.log(5).log(2)
+        expected_value = np.log(np.log(4)/np.log(5))/np.log(2)
+        expected_derivative = np.array([(1 / (4*np.log(5))) * (1/((np.log(4)/np.log(5))*np.log(2))),
+                               (5 / (4*np.log(5))) * (1/((np.log(4)/np.log(5))*np.log(2)))])
+
+        self.assertEqual(expected_value, equation.value)
+        self.assertAlmostEqual(expected_derivative[0], equation.derivative[0])
+        self.assertAlmostEqual(expected_derivative[1], equation.derivative[1])
+        
     def test_sum_pow_mul_log_cos_and_sinh_scalar(self):
         value1 = 3
         value2 = 6
@@ -813,7 +841,9 @@ class VariableIntegrationTest(unittest.TestCase):
         self.assertEqual(np.arctan(value) / value, equation2.value)
         expected_derivative2 = (value * (1 / (1 + value**2) * 1) - np.arctan(value)*1) / (value **2)
         self.assertEqual(expected_derivative2, equation2.derivative)
-    
+        
+
+        
 class VariableMultivariateFunctionTest(unittest.TestCase):
 
     def test_polynomial_multivariate(self):
@@ -887,7 +917,21 @@ class VariableMultivariateFunctionTest(unittest.TestCase):
         expected_dery = -(x*np.sqrt(np.exp(x*y))*(2**x-3**y)+np.log(3)*3**y)/(2*(2**x-3**y))
         self.assertAlmostEqual(f.derivative[0], expected_derx)
         self.assertAlmostEqual(f.derivative[1], expected_dery)
-    
+        
+        
+    def test_log_with_base2_and_base5_multivariate(self):
+        x = Variable(2, np.array([1, 0]))
+        y = Variable(3, np.array([0, 1]))
+        f = (x*y).log(2) + y.log(5)
+        x = 2
+        y = 3
+        self.assertEqual(f.value, np.log(x*y)/np.log(2) + np.log(y)/np.log(5))
+        expected_derx = y/(x*y*np.log(2))
+        expected_dery = x/(x*y*np.log(2))+1/(y*np.log(5))
+        self.assertAlmostEqual(f.derivative[0], expected_derx)
+        self.assertAlmostEqual(f.derivative[1], expected_dery)
+        
+        
     def test_power_abs_multivariate(self):
         x = Variable(5, np.array([1, 0]))
         y = Variable(3, np.array([0, 1]))

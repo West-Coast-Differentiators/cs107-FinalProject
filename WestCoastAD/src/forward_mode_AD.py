@@ -730,7 +730,7 @@ class Variable:
         # log(base=5) of a variable with scalar derivative
         >>> x = Variable(4.2, 1.3)
         >>> print(x.log(5))
-        Variable(value=0.891668149608153, derivative=0.30952380952380953)
+        Variable(value=0.891668149608153, derivative=0.19231795593511794)
 
         # log(base=e) of a variable with vector derivative
         >>> import numpy as np
@@ -739,22 +739,41 @@ class Variable:
         Variable(value=0.5306282510621704, derivative=[-1.17647059  1.76470588])
         
         # ValueError will be raised if self.value is less than or equal to zero.
-        >>> x = Variable(-2, 1)
-        >>> print(x.log())
+        >>> x = Variable(-2, 2)
+        >>> print(x.log(2))
         Traceback (most recent call last):
             ...
-        ValueError: Values for log should be greater than or equal to zero.
-
+        ValueError: Values for log should be greater than zero.
+        
+        # ValueError will be raised if base is less than or equal to zero.
+        >>> x = Variable(2, -3)
+        >>> print(x.log(-2))
+        Traceback (most recent call last):
+            ...
+        ValueError: Base should be greater than zero and not equal to 1.
+        
+        # ValueError will be raised if base is equal to one.
+        >>> x = Variable(5, -3)
+        >>> print(x.log(1))
+        Traceback (most recent call last):
+            ...
+        ValueError: Base should be greater than zero and not equal to 1.
+        
         """
         if self.value <= 0.0:
-            raise ValueError('Values for log should be greater than or equal to zero.')
+            raise ValueError('Values for log should be greater than zero.')
         if base is None:
             val = np.log(self.value)
+            der = self.derivative * (1/self.value)
+            return Variable(val, der)
         else:
-            val = np.log(self.value)/np.log(base)
-        der = self.derivative * (1/self.value)
-        return Variable(val, der)
+            if base <= 0.0 or base == 1:
+                raise ValueError('Base should be greater than zero and not equal to 1.')
             
+            val = np.log(self.value)/np.log(base)
+            der = self.derivative * (1/(self.value * np.log(base)))
+            return Variable(val, der)
+        
 
     def exp(self):
         """
@@ -772,6 +791,21 @@ class Variable:
         =====
         POST:
          - self is not changed by this function
+
+        EXAMPLES
+        =========
+
+        # exp of variable with scalar derivative
+        >>> import numpy as np
+        >>> x = Variable(4, 1)
+        >>> print(np.exp(x))
+        Variable(value=54.598150033144236, derivative=54.598150033144236)
+
+        # exp of variable with vector derivative
+        >>> import numpy as np
+        >>> x = Variable(3, np.array([1, -4]))
+        >>> print(np.exp(x))
+        Variable(value=20.085536923187668, derivative=[ 20.08553692 -80.34214769])
 
         """
         val = np.exp(self.value)
@@ -795,6 +829,21 @@ class Variable:
         =====
         POST:
          - self is not changed by this function
+
+        EXAMPLES
+        =========
+
+        # sqrt of variable with scalar derivative
+        >>> import numpy as np
+        >>> x = Variable(4, 1)
+        >>> print(np.sqrt(x))
+        Variable(value=2.0, derivative=0.25)
+
+        # sqrt of variable with vector derivative
+        >>> import numpy as np
+        >>> x = Variable(3, np.array([1, -4]))
+        >>> print(np.sqrt(x))
+        Variable(value=1.7320508075688772, derivative=[ 0.28867513 -1.15470054])
 
         """
         return self.__pow__(0.5)
@@ -1184,8 +1233,31 @@ class Variable:
 
         NOTES
         =====
+        PRE:
+         -  self.value is not 0 otherwise a ValueError will be raised
         POST:
          - self is not changed by this function
+
+        EXAMPLES
+        =========
+
+        # abs of variable with scalar derivative
+        >>> x = Variable(4, 1)
+        >>> print(abs(x))
+        Variable(value=4, derivative=1.0)
+
+        # abs of variable with vector derivative
+        >>> import numpy as np
+        >>> x = Variable(3, np.array([1, -4]))
+        >>> print(abs(x))
+        Variable(value=3, derivative=[ 1. -4.])
+
+        # ValueError will be raised if self.value is equal to 0
+        >>> x = Variable(0, -0.6)
+        >>> print(abs(x))
+        Traceback (most recent call last):
+            ...
+        ValueError: Abs function derivative does not exist at 0
 
         """
         if self.value != 0.0:
