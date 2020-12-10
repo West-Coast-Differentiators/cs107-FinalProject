@@ -514,6 +514,59 @@ class VariableUnitTest(unittest.TestCase):
         var2 = Variable(1, np.array([3, 4]))
         self.assertEqual(var1 != var2, (False, False))
 
+    def test__ge__scalar(self):
+        var1 = Variable(3, 10)
+        var2 = Variable(3, 2)
+        self.assertEqual(var1 >= var2, (True, True))
+
+        var1 = Variable(2, -2)
+        var2 = Variable(2, 2)
+        self.assertEqual(var1 >= var2, (True, False))
+
+        var1 = Variable(1, 2)
+        var2 = Variable(2, 2)
+        self.assertEqual(var1 >= var2, (False, True))
+
+        var1 = Variable(-4, -9)
+        var2 = Variable(-3, -8)
+        self.assertEqual(var1 >= var2, (False, False))
+
+    def test__ge__vector(self):
+        var1 = Variable(5, np.array([6, 6, 6]))
+        var2 = Variable(5, 5*np.ones(3))
+        self.assertEqual(var1 >= var2, (True, True))
+
+        var1 = Variable(1, np.array([6, 6, 6]))
+        var2 = Variable(5, 6*np.ones(3))
+        self.assertEqual(var1 >= var2, (False, True))
+    
+    def test__gt__scalar(self):
+        var1 = Variable(4, 4)
+        var2 = Variable(2, 3)
+        self.assertEqual(var1 > var2, (True, True))
+
+        var1 = Variable(6, -2)
+        var2 = Variable(2, 2)
+        self.assertEqual(var1 > var2, (True, False))
+
+        var1 = Variable(3, 10)
+        var2 = Variable(3, 2)
+        self.assertEqual(var1 > var2, (False, True))
+
+        var1 = Variable(-4, -9)
+        var2 = Variable(-3, -8)
+        self.assertEqual(var1 > var2, (False, False))
+    
+    def test__gt__vector(self):
+        var1 = Variable(5, np.array([6, 6, 6]))
+        var2 = Variable(2, 5*np.ones(3))
+        self.assertEqual(var1 > var2, (True, True))
+
+        var1 = Variable(1, np.array([8, 5, 4]))
+        var2 = Variable(2, 3*np.ones(3))
+        self.assertEqual(var1 > var2, (False, True))
+
+
 class VariableIntegrationTest(unittest.TestCase):
 
     def test_sum_and_sin_scalar(self):

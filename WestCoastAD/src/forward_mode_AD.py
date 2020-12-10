@@ -1,3 +1,4 @@
+import numbers
 import numpy as np 
 
 class Variable:
@@ -117,7 +118,7 @@ class Variable:
 
         INPUTS
         =======
-        value: An int or float giving the value of the variable
+        value: A real number giving the value of the variable
 
         RETURNS
         ========
@@ -143,7 +144,7 @@ class Variable:
         Variable(value=55, derivative=[2.  1.1])
         
         """
-        if not isinstance(value, (int, float)):
+        if not isinstance(value, numbers.Number):
             raise TypeError('Input value should be an int or float.')
         else:
             self._value = value
@@ -156,7 +157,7 @@ class Variable:
 
         INPUTS
         =======
-        derivative_seed: An int, float, or 1D array giving a seed value for the variable derivative
+        derivative_seed: A real number or 1D array of real numbers giving a seed value for the variable derivative
 
         RETURNS
         ========
@@ -200,7 +201,7 @@ class Variable:
 
         """
         
-        if isinstance(derivative_seed, (int, float)):
+        if isinstance(derivative_seed, numbers.Number):
             self._derivative = derivative_seed
         elif isinstance(derivative_seed, np.ndarray) and len(derivative_seed.shape) == 1:
             try:
@@ -314,6 +315,33 @@ class Variable:
         =====
         POST:
          - self is not changed by this function
+
+        EXAMPLES
+        =========
+        # multiply two variables
+        >>> x = Variable(15, 1)
+        >>> y = Variable(3, 1)
+        >>> print(x * y)
+        Variable(value=45, derivative=18)
+        
+        # multiply a variable and a constant
+        >>> x = Variable(5.25, 3)
+        >>> print(x * 4)
+        Variable(value=21.0, derivative=12.0)
+
+        # multiply two variables with vector derivatives
+        >>> import numpy as np
+        >>> x = Variable(3, np.array([1, 6]))
+        >>> y = Variable(3, np.array([4, 1]))
+        >>> print(x * y)
+        Variable(value=9, derivative=[15. 21.])
+
+        # multiply a variable with vector derivatives and a constant
+        >>> import numpy as np
+        >>> x = Variable(3, np.array([4, 1]))
+        >>> print(x * 3)
+        Variable(value=9, derivative=[12.  3.])
+
         """
         try:
             return Variable(self.value * other.value, self.value * other.derivative + other.value * self.derivative)
@@ -339,6 +367,20 @@ class Variable:
         =====
         POST:
          - self is not changed by this function
+        
+        EXAMPLES
+        =========
+        # multiply a constant and a variable
+        >>> x = Variable(5.25, 3)
+        >>> print(4 * x)
+        Variable(value=21.0, derivative=12.0)
+
+        # multiply a constant and a variable with vector derivatives
+        >>> import numpy as np
+        >>> x = Variable(3, np.array([4, 1]))
+        >>> print(3 * x)
+        Variable(value=9, derivative=[12.  3.])
+
         """
         return self.__mul__(other)
 
@@ -458,6 +500,48 @@ class Variable:
          -  other cannot be Zero a ZeroDivisionError will be raised.
         POST:
          - self is not changed by this function
+        
+        EXAMPLES
+        =========
+        # Divide two variables
+        >>> x = Variable(15, 1)
+        >>> y = Variable(3, 1)
+        >>> print(x / y)
+        Variable(value=5.0, derivative=-1.3333333333333333)
+        
+        # Divide a variable by a constant
+        >>> x = Variable(20.0, 3)
+        >>> print(x / 4)
+        Variable(value=5.0, derivative=0.75)
+
+        # Divide two variables with vector derivatives
+        >>> import numpy as np
+        >>> x = Variable(3, np.array([1, 6]))
+        >>> y = Variable(3, np.array([4, 1]))
+        >>> print(x / y)
+        Variable(value=1.0, derivative=[-1.          1.66666667])
+
+        # Divide a variable with vector derivatives by a constant
+        >>> import numpy as np
+        >>> x = Variable(3, np.array([4, 1]))
+        >>> print(x / 3)
+        Variable(value=1.0, derivative=[1.33333333 0.33333333])
+
+        # ZeroDivisionError will be raised when constant is zero
+        >>> x = Variable(3, 1)
+        >>> x / 0
+        Traceback (most recent call last):
+            ...
+        ZeroDivisionError: Division by zero encountered
+
+        # ZeroDivisionError will be raised when variable is zero
+        >>> x = Variable(3, 1)
+        >>> y = Variable(0, 1)
+        >>> x / y
+        Traceback (most recent call last):
+            ...
+        ZeroDivisionError: Division by zero encountered
+        
         """
         try:
             if other.value == 0:
@@ -489,6 +573,33 @@ class Variable:
          -  self.value cannot be Zero a ZeroDivisionError will be raised.
         POST:
          - self is not changed by this function
+
+        EXAMPLES
+        =========
+        # Divide two variables
+        >>> x = Variable(3, 2)
+        >>> y = Variable(15, 5)
+        >>> print(y / x)
+        Variable(value=5.0, derivative=-1.6666666666666667)
+        
+        # Divide a constant by a constant
+        >>> x = Variable(20.0, 3)
+        >>> print(100 / x)
+        Variable(value=5.0, derivative=-0.75)
+
+        # Divide two variables with vector derivatives
+        >>> import numpy as np
+        >>> x = Variable(3, np.array([1, 6]))
+        >>> y = Variable(3, np.array([4, 1]))
+        >>> print(y / x)
+        Variable(value=1.0, derivative=[ 1.         -1.66666667])
+
+        # Divide a constant by a variable with vector derivatives 
+        >>> import numpy as np
+        >>> x = Variable(3, np.array([4, 1]))
+        >>> print(3 / x)
+        Variable(value=1.0, derivative=[-1.33333333 -0.33333333])
+
         """
         try:
             if self.value == 0:
@@ -985,6 +1096,21 @@ class Variable:
         =====
         POST:
          - self is not changed by this function
+
+        EXAMPLES
+        =========
+        # tanh of variable with scalar derivative
+        >>> import numpy as np
+        >>> x = Variable(2, 1)
+        >>> print(np.tanh(x))
+        Variable(value=0.9640275800758169, derivative=0.07065082485316447)
+        
+        # tanh of variable with vector derivative
+        >>> import numpy as np
+        >>> x = Variable(3, np.array([4, 1]))
+        >>> print(np.tanh(x))
+        Variable(value=0.9950547536867305, derivative=[0.03946415 0.00986604])
+
         """
         val = np.tanh(self.value)
         der = 1 / (np.cosh(self.value)**2) * self.derivative
@@ -1109,6 +1235,21 @@ class Variable:
         =====
         POST:
          - self is not changed by this function
+
+        EXAMPLES
+        =========
+        # arctan of variable with scalar derivative
+        >>> import numpy as np
+        >>> x = Variable(2, 1)
+        >>> print(np.arctan(x))
+        Variable(value=1.1071487177940904, derivative=0.2)
+        
+        # arctan of variable with vector derivative
+        >>> import numpy as np
+        >>> x = Variable(3, np.array([4, 1]))
+        >>> print(np.arctan(x))
+        Variable(value=1.2490457723982544, derivative=[0.4 0.1])
+
         """
         val = np.arctan(self.value)
         der = 1 / (1 + self.value**2) * self.derivative
@@ -1328,22 +1469,22 @@ class Variable:
         Dunder method for overloading the not equal to comparison.
         This operand will perform elementwise comparison of the
         value and derivative of self and other.
-
+        
         INPUTS
         =======
         other: a Variable object
-
+        
         RETURNS
         ========
         a boolean tuple where the first element specifies if the inequality holds
         for the value of self and the second element specifies if the inequality
         holds for all the elements of the derivative
-
+        
         NOTES
         =====
         POST:
          - self is not changed by this function
-
+         
         EXAMPLES
         =========
         # != comparison with scalar derivative
@@ -1365,7 +1506,7 @@ class Variable:
         >>> y = Variable(4, np.array([3, 3]))
         >>> x != y
         (False, False)
-
+        
         """
         val_comparison = self.value != other.value
         try:
@@ -1374,6 +1515,98 @@ class Variable:
             der_comparison = self.derivative != other.derivative
 
         return val_comparison, der_comparison
+      
+    def __gt__(self, other):
+        """
+        Dunder method for overloading the greater than comparison.
+        This operand will perform elementwise comparison of the value and 
+        derivative of self and other.
+        INPUTS
+        =======
+        other: a Variable object
+        RETURNS
+        ========
+        a boolean tuple where the first element specifies if the comparison holds
+        for the value of self and the second element specifies if the comparison
+        holds for all the elements of the derivative
+        NOTES
+        =====
+        POST:
+         - self is not changed by this function
+        EXAMPLES
+        =========
+        # "greater than" comparison when the comparison is true only for the derivative
+        >>> x = Variable(3, 7)
+        >>> y = Variable(5, 2)
+        >>> x > y
+        (False, True)
+        
+        # "greater than" comparison when the comparison is true for some of the derivative elements
+        >>> import numpy as np
+        >>> x = Variable(2, np.array([1, 3]))
+        >>> y = Variable(1, np.array([3, 2]))
+        >>> x > y
+        (True, False)
+        # "greater than" comparison when the comparison is true for all of the derivative elements
+        >>> import numpy as np
+        >>> x = Variable(7, np.array([5, 6]))
+        >>> y = Variable(3, np.array([4, 4]))
+        >>> x > y
+        (True, True)
+        """
+        val_comparison = self.value > other.value
+        try:
+            der_comparison = all(self.derivative > other.derivative)
+        except TypeError:
+            der_comparison = self.derivative > other.derivative
+        
+        return (val_comparison, der_comparison)
+      
+    def __ge__(self, other):
+        """
+        Dunder method for overloading the greater than or equal to comparison.
+        This operand will perform elementwise comparison of the value and 
+        derivative of self and other.
+        INPUTS
+        =======
+        other: a Variable object
+        RETURNS
+        ========
+        a boolean tuple where the first element specifies if the comparison holds
+        for the value of self and the second element specifies if the comparison
+        holds for all the elements of the derivative
+        NOTES
+        =====
+        POST:
+         - self is not changed by this function
+        EXAMPLES
+        =========
+        # >= comparison with scalar derivative
+        >>> x = Variable(7, 2)
+        >>> y = Variable(4, 2)
+        >>> x >= y
+        (True, True)
+        
+        # >= comparison when the comparison is true for some of the derivative elements
+        >>> import numpy as np
+        >>> x = Variable(4, np.array([1, 3]))
+        >>> y = Variable(4, np.array([3, 2]))
+        >>> x >= y
+        (True, False)
+        # >= comparison when the comparison is true for all of the derivative elements
+        >>> import numpy as np
+        >>> x = Variable(4, np.array([9, 7]))
+        >>> y = Variable(4, np.array([4, 7]))
+        >>> x >= y
+        (True, True)
+        """
+        val_comparison = self.value >= other.value
+        try:
+            der_comparison = all(self.derivative >= other.derivative)
+        except TypeError:
+            der_comparison = self.derivative >= other.derivative
+        
+        return (val_comparison, der_comparison)
 
     def logistic(self):
         """
@@ -1408,8 +1641,7 @@ class Variable:
 
         """
         return 1/(1 + np.exp(-self))
-
-
+        
 if __name__ == "__main__":
     import doctest
     doctest.testmod()
