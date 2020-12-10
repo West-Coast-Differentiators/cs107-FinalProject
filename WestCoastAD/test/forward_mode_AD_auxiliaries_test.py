@@ -22,9 +22,9 @@ class AuxiliariesUnitTest(unittest.TestCase):
         y = 3
         z = 1
 
-        self.assertEqual(f_value[0], x + y + z)
-        self.assertEqual(f_value[1], x**2*y)
-        np.testing.assert_array_equal(f_jac, np.array([[1, 1, 1], [2*x*y, x**2, 0]]))
+        self.assertAlmostEqual(f_value[0], x + y + z)
+        self.assertAlmostEqual(f_value[1], x**2*y)
+        np.testing.assert_array_almost_equal(f_jac, np.array([[1, 1, 1], [2*x*y, x**2, 0]]))
     
     def test_vector_function_polynomial_univariate(self):
         x = Variable(1, 1)
@@ -39,14 +39,14 @@ class AuxiliariesUnitTest(unittest.TestCase):
 
         x = 1
         
-        np.testing.assert_array_equal(f_value, np.array([np.sin(x), np.log2(np.cos(x)), 1/x]))
-        np.testing.assert_array_equal(f_jac, np.array([[np.cos(x)], [-np.tan(x)/np.log(2)], [-1/x**2]]))
+        np.testing.assert_array_almost_equal(f_value, np.array([np.sin(x), np.log2(np.cos(x)), 1/x]))
+        np.testing.assert_array_almost_equal(f_jac, np.array([[np.cos(x)], [-np.tan(x)/np.log(2)], [-1/x**2]]))
 
         f_value = vector_function_value(np.array([f_1]))
         f_jac = vector_function_jacobian(np.array([f_1]))
         
-        np.testing.assert_array_equal(f_value, np.array([np.sin(x)]))
-        np.testing.assert_array_equal(f_jac, np.array([[np.cos(x)]]))
+        np.testing.assert_array_almost_equal(f_value, np.array([np.sin(x)]))
+        np.testing.assert_array_almost_equal(f_jac, np.array([[np.cos(x)]]))
     
 
     def test_multivariate_dimension_check(self):
@@ -77,7 +77,7 @@ class AuxiliariesUnitTest(unittest.TestCase):
     def test_multivariate_dimension_check_exception(self):
         with self.assertRaises(ValueError) as e:
             multivariate_dimension_check([])
-        self.assertEqual('variable_list must have at least one variable.', str(e.exception))
+        self.assertAlmostEqual('variable_list must have at least one variable.', str(e.exception))
 
     
     def test_differentiate_univariate_scalar_function(self):
@@ -86,16 +86,16 @@ class AuxiliariesUnitTest(unittest.TestCase):
         
         val, der = differentiate(func, np.array([2]))
         x = 2
-        self.assertEqual(val, func(x))
+        self.assertAlmostEqual(val, func(x))
         derivative_expected = np.array([6*x - 4/x**2 + np.cos(x**2)*2*x])
-        np.testing.assert_array_equal(der, derivative_expected)
+        np.testing.assert_array_almost_equal(der, derivative_expected)
 
         def func(x):
             return 3*x[0]**2 + 4/x[0] + np.sin(x[0]**2)
         
         val, der = differentiate(func, np.array([x]), scalar=False)
-        self.assertEqual(val, func(np.array([x])))
-        np.testing.assert_array_equal(der, derivative_expected)
+        self.assertAlmostEqual(val, func(np.array([x])))
+        np.testing.assert_array_almost_equal(der, derivative_expected)
 
 
     def test_differentiate_multivariate_scalar_function(self):
@@ -108,17 +108,17 @@ class AuxiliariesUnitTest(unittest.TestCase):
         x_arr = np.array([x, y, z])
 
         val, der = differentiate(func, x_arr)
-        self.assertEqual(val, func(x, y, z))
+        self.assertAlmostEqual(val, func(x, y, z))
         derivative_expected = np.array([6*x- 4*z/x**2+1/(x+y+z), 1/(x+y+z), (5*x+4*z+4*y)/(x*(x+y+z))])
-        np.testing.assert_array_equal(der, derivative_expected)
+        np.testing.assert_array_almost_equal(der, derivative_expected)
 
         def func(x):
             return 3*x[0]**2 + 4*x[2]/x[0] + np.log(x[0]+x[1]+x[2])
         
         val, der = differentiate(func, x_arr, scalar=False)
         
-        self.assertEqual(val, func(x_arr))
-        np.testing.assert_array_equal(der, derivative_expected)
+        self.assertAlmostEqual(val, func(x_arr))
+        np.testing.assert_array_almost_equal(der, derivative_expected)
 
 
     def test_differentiate_multivariate_vector_function(self):
@@ -142,8 +142,8 @@ class AuxiliariesUnitTest(unittest.TestCase):
         f4_der = [0, 1, 0]
         derivative_expected = np.array([f1_der, f2_der, f3_der, f4_der])
 
-        np.testing.assert_array_equal(val, func(x, y, z))
-        np.testing.assert_array_equal(der, derivative_expected)
+        np.testing.assert_array_almost_equal(val, func(x, y, z))
+        np.testing.assert_array_almost_equal(der, derivative_expected)
 
         def func(x):
             f1 = 3*x[0]**2 + 4*x[2]/x[0] + np.log(x[0]+x[1]+x[2])
@@ -154,8 +154,8 @@ class AuxiliariesUnitTest(unittest.TestCase):
         
         val, der = differentiate(func, x_arr, scalar=False)
         
-        np.testing.assert_array_equal(val, func(x_arr))
-        np.testing.assert_array_equal(der, derivative_expected)
+        np.testing.assert_array_almost_equal(val, func(x_arr))
+        np.testing.assert_array_almost_equal(der, derivative_expected)
 
     
     def test_differentiate_univariate_vector_function(self):
@@ -178,8 +178,8 @@ class AuxiliariesUnitTest(unittest.TestCase):
         f4_der = [-1]
         derivative_expected = np.array([f1_der, f2_der, f3_der, f4_der])
 
-        np.testing.assert_array_equal(val, val_expected)
-        np.testing.assert_array_equal(der, derivative_expected)
+        np.testing.assert_array_almost_equal(val, val_expected)
+        np.testing.assert_array_almost_equal(der, derivative_expected)
 
         def func(x):
             f1 = x[0].logistic()
@@ -190,8 +190,8 @@ class AuxiliariesUnitTest(unittest.TestCase):
         
         val, der = differentiate(func, np.array([2]), scalar=False)
         
-        np.testing.assert_array_equal(val, val_expected)
-        np.testing.assert_array_equal(der, derivative_expected)
+        np.testing.assert_array_almost_equal(val, val_expected)
+        np.testing.assert_array_almost_equal(der, derivative_expected)
 
 
 if __name__ == '__main__':
