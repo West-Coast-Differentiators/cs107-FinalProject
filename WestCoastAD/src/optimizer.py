@@ -167,13 +167,3 @@ class Optimizer():
                 return objective.value, cur_variable_values
         return objective.value, cur_variable_values
 
-
-f = lambda x, y: x**2 + y**2
-
-op = Optimizer(f, 2, np.array([1, -1]))
-print(op.gd_optimize(num_iterations=1000, learning_rate=0.01))
-
-print(111111)
-print(op.adam_optimizer(num_iterations=1000, learning_rate=0.01, beta1=0.9, beta2=0.999, epsilon=1e-8))
-# op.gd_optimize(num_iterations=10, learning_rate=0.1)
-# print(dir(op))
