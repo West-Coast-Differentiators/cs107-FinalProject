@@ -1205,7 +1205,7 @@ class Variable:
         >>> import numpy as np
         >>> x = Variable(2, 1)
         >>> print(np.arctan(x))
-        Variable(value=1.1071487177940904, derivative=0.2)
+        Variable(value=1.1071487177940906, derivative=0.2)
         
         # arctan of variable with vector derivative
         >>> import numpy as np
