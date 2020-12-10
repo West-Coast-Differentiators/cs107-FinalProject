@@ -1,21 +1,37 @@
+""" 
+This file defines the WestCoastAD Variable class which is the core of the automatic 
+differentiation package used in WestCoastAD's optimizers.
+"""
+
 import numbers
 import numpy as np 
 
 class Variable:
     """
     This is a custom variable class with elementary function and operation overloading
-    to perform forward mode automatic differentiation.
+    to perform forward mode automatic differentiation for scalar functions of one or more
+    variables.
 
     EXAMPLES
     =========
 
-    # Derivative computation for a single input scalar function
+    # Derivative computation for a univariate scalar functions
     >>> x = Variable(4, 1)
     >>> f = 3*x**2 + 3
     >>> f.value
     51
     >>> f.derivative
     24
+
+    # Derivative computation for a multivariate scalar function
+    >>> import numpy as np
+    >>> x = Variable(4, np.array([1, 0]))
+    >>> y = Variable(1, np.array([0, 1]))
+    >>> f = x**2*y + np.sin(x-y)
+    >>> f.value
+    16.14112000805987
+    >>> f.derivative
+    array([ 7.0100075, 16.9899925])
 
     """
 
@@ -203,12 +219,14 @@ class Variable:
         
         if isinstance(derivative_seed, numbers.Number):
             self._derivative = derivative_seed
+            self._dimensionality = 1
         elif isinstance(derivative_seed, np.ndarray) and len(derivative_seed.shape) == 1:
             try:
                 derivative_seed = derivative_seed.astype(float)
             except ValueError:
                 raise TypeError('Input derivative seed array contains non int/float values')
             self._derivative = derivative_seed   
+            self._dimensionality = len(derivative_seed)
         else:
             raise TypeError('Input derivative seed should be an int, float, or a 1D numpy array of ints/floats.')
 
@@ -1242,7 +1260,7 @@ class Variable:
         >>> import numpy as np
         >>> x = Variable(2, 1)
         >>> print(np.arctan(x))
-        Variable(value=1.1071487177940904, derivative=0.2)
+        Variable(value=1.1071487177940906, derivative=0.2)
         
         # arctan of variable with vector derivative
         >>> import numpy as np
@@ -1478,7 +1496,7 @@ class Variable:
         ========
         a boolean tuple where the first element specifies if the inequality holds
         for the value of self and the second element specifies if the inequality
-        holds for all the elements of the derivative
+        holds for any of the elements of the derivative
         
         NOTES
         =====
@@ -1515,24 +1533,29 @@ class Variable:
             der_comparison = self.derivative != other.derivative
 
         return val_comparison, der_comparison
-      
+
+
     def __gt__(self, other):
         """
         Dunder method for overloading the greater than comparison.
         This operand will perform elementwise comparison of the value and 
         derivative of self and other.
+
         INPUTS
         =======
         other: a Variable object
+
         RETURNS
         ========
         a boolean tuple where the first element specifies if the comparison holds
         for the value of self and the second element specifies if the comparison
         holds for all the elements of the derivative
+
         NOTES
         =====
         POST:
          - self is not changed by this function
+        
         EXAMPLES
         =========
         # "greater than" comparison when the comparison is true only for the derivative
@@ -1547,6 +1570,7 @@ class Variable:
         >>> y = Variable(1, np.array([3, 2]))
         >>> x > y
         (True, False)
+
         # "greater than" comparison when the comparison is true for all of the derivative elements
         >>> import numpy as np
         >>> x = Variable(7, np.array([5, 6]))
@@ -1567,20 +1591,25 @@ class Variable:
         Dunder method for overloading the greater than or equal to comparison.
         This operand will perform elementwise comparison of the value and 
         derivative of self and other.
+
         INPUTS
         =======
         other: a Variable object
+
         RETURNS
         ========
         a boolean tuple where the first element specifies if the comparison holds
         for the value of self and the second element specifies if the comparison
         holds for all the elements of the derivative
+
         NOTES
         =====
         POST:
          - self is not changed by this function
+
         EXAMPLES
         =========
+
         # >= comparison with scalar derivative
         >>> x = Variable(7, 2)
         >>> y = Variable(4, 2)
@@ -1593,6 +1622,7 @@ class Variable:
         >>> y = Variable(4, np.array([3, 2]))
         >>> x >= y
         (True, False)
+
         # >= comparison when the comparison is true for all of the derivative elements
         >>> import numpy as np
         >>> x = Variable(4, np.array([9, 7]))
@@ -1641,7 +1671,4 @@ class Variable:
 
         """
         return 1/(1 + np.exp(-self))
-        
-if __name__ == "__main__":
-    import doctest
-    doctest.testmod()
+
