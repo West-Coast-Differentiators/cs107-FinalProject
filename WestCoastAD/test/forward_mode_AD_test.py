@@ -273,20 +273,20 @@ class VariableUnitTest(unittest.TestCase):
         self.assertEqual(12, result.value)
         np.testing.assert_array_equal(var.derivative * -1, result.derivative)
 
-    def test_logit_scalar(self):
+    def test_logistic_scalar(self):
         var = Variable(2, 7)
-        result = var.logit()
-        expected_derivative = -(var.derivative * np.exp(2))/(1 + np.exp(2))**2
+        result = var.logistic()
+        expected_derivative = (var.derivative * np.exp(-2))/(1 + np.exp(-2))**2
 
-        self.assertAlmostEqual(1/(1 + np.exp(2)), result.value)
+        self.assertAlmostEqual(1/(1 + np.exp(-2)), result.value)
         self.assertAlmostEqual(expected_derivative, result.derivative)
 
-    def test_logit_vector(self):
+    def test_logistic_vector(self):
         var = Variable(2, np.array([2, 6, 8]))
-        result = var.logit()
-        expected_derivative = -(var.derivative * np.exp(2))/(1 + np.exp(2))**2
+        result = var.logistic()
+        expected_derivative = (var.derivative * np.exp(-2))/(1 + np.exp(-2))**2
 
-        self.assertAlmostEqual(1/(1 + np.exp(2)), result.value)
+        self.assertAlmostEqual(1/(1 + np.exp(-2)), result.value)
         np.testing.assert_array_equal(expected_derivative, result.derivative)
     
     def test_arccos_scalar_invalid_value(self):

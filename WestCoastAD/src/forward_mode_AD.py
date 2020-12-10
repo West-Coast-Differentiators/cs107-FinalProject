@@ -1375,9 +1375,9 @@ class Variable:
 
         return val_comparison, der_comparison
 
-    def logit(self):
+    def logistic(self):
         """
-        Computes the value and derivative of the logistic function.
+        Computes the value and derivative of the standard logistic function of the form 1/(1 + e^-x).
 
         INPUTS
         =======
@@ -1396,19 +1396,18 @@ class Variable:
         =========
         # logistic function with scalar derivative
         >>> x = Variable(3, 1)
-        >>> y = x.logit()
+        >>> y = x.logistic()
         >>> print(y)
-        Variable(value=0.04742587317756678, derivative=-0.04517665973091213)
+        Variable(value=0.9525741268224334, derivative=0.045176659730912144)
 
         # logistic function with vector derivative
         >>> import numpy as np
         >>> x = Variable(2, np.array([3, 3]))
-        >>> print(x.logit())
-        Variable(value=0.11920292202211755, derivative=[-0.31498076 -0.31498076])
+        >>> print(x.logistic())
+        Variable(value=0.8807970779778823, derivative=[0.31498076 0.31498076])
 
         """
-        input = Variable(self.value, self.derivative)
-        return 1/(1 + np.exp(input))
+        return 1/(1 + np.exp(-self))
 
 
 if __name__ == "__main__":
