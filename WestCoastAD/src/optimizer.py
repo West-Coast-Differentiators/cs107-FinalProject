@@ -142,7 +142,7 @@ class Optimizer():
         >>> f = lambda x: x**2 - 12*x + 4
         >>> fprime = lambda x: 2*x-12
         >>> op = Optimizer(f, 1, np.array([1]),fprime)
-        >>> op.newton_raphson(x0=np.array([12]), num_iterations=100, tolerance =1e-3, verbose=True)
+        >>> op.newton_raphson(num_iterations=100, tolerance =1e-3, verbose=True)
         (-32.0, array([6.]))
         """
         if self.objective_function_prime is None:
