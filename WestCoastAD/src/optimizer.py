@@ -122,11 +122,9 @@ class Optimizer():
     
     def newton_raphson(self, num_iterations=100, tolerance=None, verbose=False):
         """
-        This function implements the Newton's method given the input functiono as well as the
-        starting point.
+        method that performs Neton's method optimization of the objective function
         INPUTS
         =======
-        - x0: an real number specifying the initial guess for a solution f(x)=0
         - num_iterations: an int specifying the maximum number of iterations of Newton's method; Default is 100
         - tolerance: a float specifying the smallest tolerance for the updates to the variables. 
         - verbose: a boolean specifying whether updates about the optimization process will be printed
@@ -134,7 +132,10 @@ class Optimizer():
 
         RETURNS
         ========
-
+        - f.value: the minimum value of the objective_function that was found (float)
+        - xnew: the values for the inputs to objective_function that gave the
+                minimum objective_value found. (1D array of floats with the same size as the number of
+                inputs to the objective function)
 
         EXAMPLES
         =========
