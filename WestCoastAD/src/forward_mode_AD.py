@@ -625,8 +625,35 @@ class Variable:
 
         NOTES
         =====
+        PRE:
+        -  A ValueError is raised if self.value is negative and other is non-integer
+        -  A ValueError is raised if self.value is zero and other is negative
         POST:
          - self is not changed by this function
+
+        EXAMPLES
+        =========
+        # Power of variables with scalar derivatives
+        >>> x = Variable(3, 3)
+        >>> y = Variable(1, 5)
+        >>> print(y ** x)
+        Variable(value=1, derivative=15.0)
+
+        # Power of Variable with scalar exponent.
+        >>> x = Variable(2.1, 3.2)
+        >>> print(x ** 2)
+        Variable(value=4.41, derivative=13.440000000000001)
+
+        # Power of Variable with vector derivative.
+        >>> x = Variable(2.1, np.array([3.2, 2.5]))
+        >>> print(x ** 2)
+        Variable(value=4.41, derivative=[13.44 10.5 ])
+
+        # Power of Variable with vector derivative.
+        >>> x = Variable(2.1, np.array([3.2, 2.5]))
+        >>> y = Variable(5, np.array([0.4, 9.6]))
+        >>> print(x ** y)
+        Variable(value=40.84101000000001, derivative=[323.29018821 533.99536695])
 
         """
         try:
@@ -659,8 +686,18 @@ class Variable:
 
         NOTES
         =====
+        PRE:
+         -  ValueError is raised if other is zero and self.value is negative
+         -  ValueError is raised if other is negative
         POST:
          - self is not changed by this function
+
+        EXAMPLES
+        =========
+        # Power of variables with scalar derivatives
+        >>> x = Variable(3, np.array([5, 6]))
+        >>> print(3 ** x)
+        Variable(value=27, derivative=[148.31265897 177.97519076])
 
         """
         if other == 0 and self.value <= 0:
@@ -1426,31 +1463,78 @@ class Variable:
             der_comparison = self.derivative == other.derivative
             
         return (val_comparison, der_comparison)
-    
+
+    def __ne__(self, other):
+        """
+        Dunder method for overloading the not equal to comparison.
+        This operand will perform elementwise comparison of the
+        value and derivative of self and other.
+        
+        INPUTS
+        =======
+        other: a Variable object
+        
+        RETURNS
+        ========
+        a boolean tuple where the first element specifies if the inequality holds
+        for the value of self and the second element specifies if the inequality
+        holds for all the elements of the derivative
+        
+        NOTES
+        =====
+        POST:
+         - self is not changed by this function
+         
+        EXAMPLES
+        =========
+        # != comparison with scalar derivative
+        >>> x = Variable(5, 3)
+        >>> y = Variable(5, 2)
+        >>> x != y
+        (False, True)
+
+        # != comparison when some vector elements in derivative are not equal.
+        >>> import numpy as np
+        >>> x = Variable(2, np.array([3, 3]))
+        >>> y = Variable(2, np.array([3, 2]))
+        >>> x != y
+        (False, True)
+
+        # != comparison when all vector elements in derivative are the same.
+        >>> import numpy as np
+        >>> x = Variable(4, np.array([3, 3]))
+        >>> y = Variable(4, np.array([3, 3]))
+        >>> x != y
+        (False, False)
+        
+        """
+        val_comparison = self.value != other.value
+        try:
+            der_comparison = any(self.derivative != other.derivative)
+        except TypeError:
+            der_comparison = self.derivative != other.derivative
+
+        return val_comparison, der_comparison
+      
     def __gt__(self, other):
         """
         Dunder method for overloading the greater than comparison.
         This operand will perform elementwise comparison of the value and 
         derivative of self and other.
-
         INPUTS
         =======
         other: a Variable object
-
         RETURNS
         ========
         a boolean tuple where the first element specifies if the comparison holds
         for the value of self and the second element specifies if the comparison
         holds for all the elements of the derivative
-
         NOTES
         =====
         POST:
          - self is not changed by this function
-
         EXAMPLES
         =========
-
         # "greater than" comparison when the comparison is true only for the derivative
         >>> x = Variable(3, 7)
         >>> y = Variable(5, 2)
@@ -1463,14 +1547,12 @@ class Variable:
         >>> y = Variable(1, np.array([3, 2]))
         >>> x > y
         (True, False)
-
         # "greater than" comparison when the comparison is true for all of the derivative elements
         >>> import numpy as np
         >>> x = Variable(7, np.array([5, 6]))
         >>> y = Variable(3, np.array([4, 4]))
         >>> x > y
         (True, True)
-
         """
         val_comparison = self.value > other.value
         try:
@@ -1479,32 +1561,26 @@ class Variable:
             der_comparison = self.derivative > other.derivative
         
         return (val_comparison, der_comparison)
-
-    
+      
     def __ge__(self, other):
         """
         Dunder method for overloading the greater than or equal to comparison.
         This operand will perform elementwise comparison of the value and 
         derivative of self and other.
-
         INPUTS
         =======
         other: a Variable object
-
         RETURNS
         ========
         a boolean tuple where the first element specifies if the comparison holds
         for the value of self and the second element specifies if the comparison
         holds for all the elements of the derivative
-
         NOTES
         =====
         POST:
          - self is not changed by this function
-
         EXAMPLES
         =========
-
         # >= comparison with scalar derivative
         >>> x = Variable(7, 2)
         >>> y = Variable(4, 2)
@@ -1517,14 +1593,12 @@ class Variable:
         >>> y = Variable(4, np.array([3, 2]))
         >>> x >= y
         (True, False)
-
         # >= comparison when the comparison is true for all of the derivative elements
         >>> import numpy as np
         >>> x = Variable(4, np.array([9, 7]))
         >>> y = Variable(4, np.array([4, 7]))
         >>> x >= y
         (True, True)
-
         """
         val_comparison = self.value >= other.value
         try:
@@ -1533,8 +1607,41 @@ class Variable:
             der_comparison = self.derivative >= other.derivative
         
         return (val_comparison, der_comparison)
-    
 
+    def logistic(self):
+        """
+        Computes the value and derivative of the standard logistic function of the form 1/(1 + e^-x).
+
+        INPUTS
+        =======
+        None
+
+        RETURNS
+        ========
+        a Variable object with the derivative and value of the logistic function.
+
+        NOTES
+        =====
+        POST:
+         - self is not changed by this function
+
+        EXAMPLES
+        =========
+        # logistic function with scalar derivative
+        >>> x = Variable(3, 1)
+        >>> y = x.logistic()
+        >>> print(y)
+        Variable(value=0.9525741268224334, derivative=0.045176659730912144)
+
+        # logistic function with vector derivative
+        >>> import numpy as np
+        >>> x = Variable(2, np.array([3, 3]))
+        >>> print(x.logistic())
+        Variable(value=0.8807970779778823, derivative=[0.31498076 0.31498076])
+
+        """
+        return 1/(1 + np.exp(-self))
+        
 if __name__ == "__main__":
     import doctest
     doctest.testmod()

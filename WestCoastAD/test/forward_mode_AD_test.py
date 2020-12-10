@@ -159,6 +159,19 @@ class VariableUnitTest(unittest.TestCase):
         self.assertEqual(np.exp(5), result.value)
         self.assertEqual(np.exp(5)*1.5, result.derivative)
 
+    def test_exp_vector(self):
+        var = Variable(5, np.array([1.5, 5.9]))
+        x = Variable(3, np.array([5, 6]))
+        y = Variable(1, np.array([-4, 3]))
+        result = var.exp()
+        equation = x + y**2
+        equation_result = equation.exp()
+
+        self.assertEqual(np.exp(5), result.value)
+        self.assertEqual(np.exp(equation.value), equation_result.value)
+        np.testing.assert_array_equal(np.exp(5)*np.array([1.5, 5.9]), result.derivative)
+        np.testing.assert_array_equal(np.exp(equation.value)*equation.derivative, equation_result.derivative)
+
     def test_arcsin_scalar(self):
         var = Variable(.4, -2)
         result = np.arcsin(var)
@@ -191,6 +204,19 @@ class VariableUnitTest(unittest.TestCase):
         self.assertEqual(np.sqrt(4), result.value)
         self.assertEqual((-1 * 0.5) * np.power(4, -0.5), result.derivative)
 
+    def test_sqrt_vector(self):
+        var = Variable(4, np.array([-1, 7]))
+        x = Variable(4, np.array([9, 4]))
+        y = Variable(0.1, np.array([0.5, 0.7]))
+        equation = x - abs(y)
+        result = var.sqrt()
+        equation_result = equation.sqrt()
+
+        self.assertEqual(np.sqrt(4), result.value)
+        self.assertEqual(np.sqrt(equation.value), equation_result.value)
+        np.testing.assert_array_equal((var.derivative * 0.5) * np.power(var.value, -0.5), result.derivative)
+        np.testing.assert_array_equal((equation.derivative * 0.5) * np.power(equation.value, -0.5), equation_result.derivative)
+
     def test__pow__scalar(self):
         var = Variable(4, 3)
         result = var ** 3
@@ -203,6 +229,21 @@ class VariableUnitTest(unittest.TestCase):
         self.assertAlmostEqual(var.derivative * np.log(3) * (3 ** var.value), reverse_result.derivative)
         self.assertEqual(4 ** 5, combined_result.value)
         self.assertAlmostEqual(4 ** 5 * ((5 * 3 / 4) + (np.log(4) * 0.7)), combined_result.derivative)
+
+    def test__pow__vector(self):
+        var = Variable(4, np.array([4, 7]))
+        exponent_var = Variable(5, np.array([0.7, 0.1]))
+        result = var ** 3
+        reverse_result = 3 ** var
+        combined_result = var ** Variable(5, np.array([0.7, 0.1]))
+        expected_derivative_combined = (var.value ** exponent_var.value) * (((exponent_var.value * var.derivative)/var.value) + (np.log(var.value) * exponent_var.derivative))
+
+        self.assertEqual(4 ** 3, result.value)
+        np.testing.assert_array_equal(var.derivative * 3 * (4 ** 2), result.derivative)
+        self.assertEqual(3 ** 4, reverse_result.value)
+        np.testing.assert_array_equal(var.derivative * np.log(3) * (3 ** var.value), reverse_result.derivative)
+        self.assertEqual(4 ** 5, combined_result.value)
+        np.testing.assert_array_equal(expected_derivative_combined, combined_result.derivative)
 
     def test_pow_exception(self):
         with self.assertRaises(TypeError):
@@ -236,6 +277,42 @@ class VariableUnitTest(unittest.TestCase):
         self.assertEqual(var.derivative * -1, result.derivative)
         with self.assertRaises(ValueError) as e:
             abs(zero_var)
+
+    def test_abs_vector(self):
+        var = Variable(-12, np.array([7, 8]))
+        x = Variable(-34, np.array([2, 0.5]))
+        y = Variable(4, np.array([2.5, 0.5]))
+        equation = np.cos(x) + np.sin(y)
+        result = abs(var)
+        equation_result = abs(equation)
+
+        self.assertEqual(12, result.value)
+        self.assertEqual(np.abs(equation.value), equation_result.value)
+        np.testing.assert_array_equal(var.derivative * -1, result.derivative)
+        np.testing.assert_array_equal(equation.derivative * -1, equation_result.derivative)
+
+    def test_logistic_scalar(self):
+        var = Variable(2, 7)
+        result = var.logistic()
+        expected_derivative = (var.derivative * np.exp(-2))/(1 + np.exp(-2))**2
+
+        self.assertAlmostEqual(1/(1 + np.exp(-2)), result.value)
+        self.assertAlmostEqual(expected_derivative, result.derivative)
+
+    def test_logistic_vector(self):
+        var = Variable(2, np.array([2, 6, 8]))
+        x = Variable(5, np.array([0.5, 0.7]))
+        y = Variable(3, np.array([0.5, 0.9]))
+        result = var.logistic()
+        expected_derivative = (var.derivative * np.exp(-2))/(1 + np.exp(-2))**2
+        equation = x + y**5
+        equation_result = equation.logistic()
+        equation_expected_derivative = (equation.derivative * np.exp(-equation.value))/(1 + np.exp(-equation.value))**2
+
+        self.assertAlmostEqual(1/(1 + np.exp(-2)), result.value)
+        np.testing.assert_array_equal(expected_derivative, result.derivative)
+        self.assertAlmostEqual(1 / (1 + np.exp(-equation.value)), equation_result.value)
+        np.testing.assert_array_equal(equation_expected_derivative, equation_result.derivative)
     
     def test_arccos_scalar_invalid_value(self):
         with self.assertRaises(ValueError) as e:
@@ -403,6 +480,40 @@ class VariableUnitTest(unittest.TestCase):
         var2 = Variable(5, np.array([-1, -3, 4]))
         self.assertEqual(var1 == var2, (True, False))
 
+    def test_ne_scalar(self):
+        var1 = Variable(12, 7)
+        var2 = Variable(5, 5)
+        self.assertEqual(var1 != var2, (True, True))
+
+        var1 = Variable(1, 30)
+        var2 = Variable(24, 30)
+        self.assertEqual(var1 != var2, (True, False))
+
+        var1 = Variable(3, 5)
+        var2 = Variable(3, 4)
+        self.assertEqual(var1 != var2, (False, True))
+
+        var1 = Variable(1, 2)
+        var2 = Variable(1, 2)
+        self.assertEqual(var1 != var2, (False, False))
+
+    def test__ne__vector(self):
+        var1 = Variable(2, np.array([1, 3]))
+        var2 = Variable(5, np.array([45, 78]))
+        self.assertEqual(var1 != var2, (True, True))
+
+        var1 = Variable(1, np.array([-1, 20]))
+        var2 = Variable(1, np.array([-1, 2]))
+        self.assertEqual(var1 != var2, (False, True))
+
+        var1 = Variable(5, np.array([2, 4]))
+        var2 = Variable(55, np.array([2, 4]))
+        self.assertEqual(var1 != var2, (True, False))
+
+        var1 = Variable(1, np.array([3, 4]))
+        var2 = Variable(1, np.array([3, 4]))
+        self.assertEqual(var1 != var2, (False, False))
+
     def test__ge__scalar(self):
         var1 = Variable(3, 10)
         var2 = Variable(3, 2)
@@ -454,6 +565,7 @@ class VariableUnitTest(unittest.TestCase):
         var1 = Variable(1, np.array([8, 5, 4]))
         var2 = Variable(2, 3*np.ones(3))
         self.assertEqual(var1 > var2, (False, True))
+
 
 class VariableIntegrationTest(unittest.TestCase):
 
