@@ -102,7 +102,7 @@ class Optimizer():
                 print("iteration: {}, objective function value: {}".format(i, objective.value))
 
             if tolerance!=None and np.linalg.norm(delta_var) < tolerance:
-                print("Variable update tolerance was reached. Terminating Search. {}".format(i))
+                print("Variable update tolerance was reached. Terminating Search.")
                 break
         
         return objective.value, cur_variable_values
@@ -143,9 +143,8 @@ class Optimizer():
 
         """
         cur_variable_values = self.variable_initialization
-        v, s, v_corrected, s_corrected,t = 0,0,0,0,0
+        v, s, v_corrected, s_corrected = 0,0,0,0
         for l in range(num_iterations):
-            t += 1
             # Compute the gradient
             objective = self.objective_function(*self._array_to_variable_class(cur_variable_values))
             delta_var = learning_rate * objective.derivative
@@ -153,16 +152,17 @@ class Optimizer():
             # Compute the moving average of the gradients.
             v = beta1 * v + (1 - beta1) * cur_variable_values
             # Compute bias-corrected first moment estimate.
-            v_corrected = v / (1 - np.power(beta1, t))
+            v_corrected = v / (1 - np.power(beta1, l+1))
             # Moving average of the squared gradients.
             s = beta2 * s + (1 - beta2) * np.power(cur_variable_values, 2)
             # Compute bias-corrected second raw moment estimate.
-            s_corrected = s / (1 - np.power(beta2, t))
+            s_corrected = s / (1 - np.power(beta2, l+1))
             # Update the derivatives.
             cur_variable_values = cur_variable_values - learning_rate * v_corrected / np.sqrt(s_corrected + epsilon)
+            
             if verbose:
                 print("iteration: {}, objective function value: {}".format(l, objective.value))
             if tolerance!=None and np.linalg.norm(delta_var) < tolerance:
-                print("Variable update tolerance was reached. Terminating Search. {}".format(l))
+                print("Variable update tolerance was reached. Terminating Search at iteration {}.".format(l))
                 return objective.value, cur_variable_values
         return objective.value, cur_variable_values
