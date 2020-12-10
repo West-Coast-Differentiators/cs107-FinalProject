@@ -7,7 +7,7 @@ class Optimizer():
     This is an optimizer class used for minimizing functions defined in terms of WestCoastAD variables.
     """
 
-    def __init__(self, objective_function, num_variables, variable_initialization):
+    def __init__(self, objective_function, num_variables, variable_initialization, objective_function_prime=None):
         """
         constructor for the Optimizer class.
 
@@ -43,9 +43,11 @@ class Optimizer():
         """
         assert len(variable_initialization) == num_variables, "Length of variable_initialization should equal the number of variables."
         self.objective_function = objective_function
+        self.objective_function_prime = objective_function_prime
         self.num_variables = num_variables
         self.variable_initialization = variable_initialization
-
+        
+        
 
     def _generate_seed_derivative(self, index):
         """
@@ -62,7 +64,9 @@ class Optimizer():
         This is a private method used for converting a 1D array of values for the objective function variables
         into WestCoastAD variables
         """
-        return [Variable(variable_array[i], self._generate_seed_derivative(i)) for i in range(self.num_variables)]
+        return [Variable(float(variable_array[i]), self._generate_seed_derivative(i)) for i in range(self.num_variables)]
+
+    
 
 
     def gd_optimize(self, num_iterations=100, learning_rate=0.01, tolerance=None, verbose=False):
@@ -106,7 +110,7 @@ class Optimizer():
             objective = self.objective_function(*self._array_to_variable_class(cur_variable_values))
             delta_var = learning_rate * objective.derivative
             cur_variable_values = cur_variable_values - delta_var
-
+            #print(cur_variable_values)
             if verbose:
                 print("iteration: {}, objective function value: {}".format(i, objective.value))
 
@@ -115,4 +119,56 @@ class Optimizer():
                 break
         
         return objective.value, cur_variable_values
+    
+    def newton_raphson(self, num_iterations=100, tolerance=None, verbose=False):
+        """
+        This function implements the Newton's method given the input functiono as well as the
+        starting point.
+        INPUTS
+        =======
+        - x0: an real number specifying the initial guess for a solution f(x)=0
+        - num_iterations: an int specifying the maximum number of iterations of Newton's method; Default is 100
+        - tolerance: a float specifying the smallest tolerance for the updates to the variables. 
+        - verbose: a boolean specifying whether updates about the optimization process will be printed
+                to the console. Default is False
+
+        RETURNS
+        ========
+
+
+        EXAMPLES
+        =========
+        >>> f = lambda x: x**2 - 12*x + 4
+        >>> fprime = lambda x: 2*x-12
+        >>> op = Optimizer(f, 1, np.array([1]),fprime)
+        >>> op.newton_raphson(x0=np.array([12]), num_iterations=100, tolerance =1e-3, verbose=True)
+        (-32.0, array([6.]))
+        """
+        if self.objective_function_prime is None:
+            raise ValueError("Newton's method requires the first derivative function of the objective function.")
+     
+        x = self.variable_initialization
+        
+        for i in range(num_iterations):
+            
+            f = self.objective_function(*self._array_to_variable_class(x))
+            f_prime = self.objective_function_prime(*self._array_to_variable_class(x))
+            
+            xnew = x - f_prime.value/f_prime.derivative          
+            print(xnew)
+            if verbose:
+                print("iteration: {}, objective function value: {}".format(i, f.value))
+            stepsize = np.linalg.norm(x-xnew)
+            if tolerance!=None and stepsize < tolerance:
+                print("Variable update tolerance was reached. Terminating Search.")
+                return f.value, xnew
+            
+            x = xnew
+
+        return f.value, xnew
+    
+
+if __name__ == "__main__":
+    import doctest
+    doctest.testmod()
     
