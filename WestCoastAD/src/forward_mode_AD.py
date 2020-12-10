@@ -515,8 +515,8 @@ class Variable:
         NOTES
         =====
         PRE:
-        -  self.value is not negative while other is integer otherwise a ValueError will be raised
-        -  self.value is not zero while other is negative otherwise a ValueError will be raised
+        -  A ValueError is raised if self.value is negative and other is non-integer
+        -  A ValueError is raised if self.value is zero and other is negative
         POST:
          - self is not changed by this function
 
@@ -576,8 +576,8 @@ class Variable:
         NOTES
         =====
         PRE:
-         -  other is positive otherwise a ValueError will be raised
-         -  self.value is not zero while other is negative otherwise a ValueError will be raised
+         -  ValueError is raised if other is zero and self.value is negative
+         -  ValueError is raised if other is negative
         POST:
          - self is not changed by this function
 
