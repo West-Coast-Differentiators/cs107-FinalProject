@@ -166,4 +166,3 @@ class Optimizer():
                 print("Variable update tolerance was reached. Terminating Search. {}".format(l))
                 return objective.value, cur_variable_values
         return objective.value, cur_variable_values
-
