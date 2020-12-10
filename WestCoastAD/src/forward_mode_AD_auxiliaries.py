@@ -200,30 +200,39 @@ def differentiate(func, variable_values, scalar=True):
     # Derivative computation for a univariate vector functions
     >>> import numpy as np
     >>> func = lambda x: np.array([x*2, x, x.log(base=2)])
-    >>> differentiate(func, np.array([2]))
-    (array([4., 2., 1.]), array([[2.        ],
-                                [1.        ],
-                                [0.72134752]]))
+    >>> val, der = differentiate(func, np.array([2]))
+    >>> val
+    array([4., 2., 1.])
+    >>> der
+    array([[2.        ],
+           [1.        ],
+           [0.72134752]])
 
     # Derivative computation for a multivariate vector functions
     >>> import numpy as np
     >>> func = lambda x, y: np.array([x*y, x-y, x.log(base=2)])
-    >>> differentiate(func, np.array([1, 3]))
-    (array([ 3., -2.,  0.]), array([[ 3.        ,  1.        ],
-                                    [ 1.        , -1.        ],
-                                    [ 1.44269504,  0.        ]]))
+    >>> val, der = differentiate(func, np.array([1, 3]))
+    >>> val
+    array([ 3., -2.,  0.])
+    >>> der 
+    array([[ 3.        ,  1.        ],
+           [ 1.        , -1.        ],
+           [ 1.44269504,  0.        ]])
 
     # alternatively giving the input as a vector:
     >>> import numpy as np
     >>> func = lambda x: np.array([x[0]*x[1], x[0]-x[1], x[0].log(base=2)])
-    >>> differentiate(func, np.array([1, 3]), scalar=False)
-    (array([ 3., -2.,  0.]), array([[ 3.        ,  1.        ],
-                                    [ 1.        , -1.        ],
-                                    [ 1.44269504,  0.        ]]))
+    >>> val, der = differentiate(func, np.array([1, 3]), scalar=False)
+    >>> val
+    array([ 3., -2.,  0.])
+    >>> der
+    array([[ 3.        ,  1.        ],
+           [ 1.        , -1.        ],
+           [ 1.44269504,  0.        ]])
 
 
     """
-    
+
     num_variables = len(variable_values)
 
     def _generate_seed_derivative(index):
@@ -243,8 +252,3 @@ def differentiate(func, variable_values, scalar=True):
         return result.value, result.derivative
     except AttributeError:
         return vector_function_value(result), vector_function_jacobian(result)
-
-
-if __name__ == "__main__":
-    import doctest
-    doctest.testmod()
