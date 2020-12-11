@@ -393,3 +393,75 @@ class Optimizer():
                 break
 
         return val, cur_variable_values
+
+    def adam_optimize(self, num_iterations=100, learning_rate=0.001, beta1=0.9, beta2=0.999, epsilon=1e-8, tolerance=None, verbose=False):
+        """
+        method that performs Adaptive Moment Estimation(adam) optimization of the objective function
+        INPUTS
+        =======
+        Default parameters follow those provided in the original paper.
+        - num_iterations: an int specifying the maximum number of iterations; Default is 100
+        - learning_rate: a float/int specifying the learning rate for gradient descent; Default value follow those provided in the original paper.
+        - beta1: Exponential decay hyperparameter for the first moment estimates. Default value follow those provided in the original paper.
+        - beta2: Exponential decay hyperparameter for the second moment estimates. Default value follow those provided in the original paper.
+        - epsilon: Hyperparameter preventing division by zero. Default value follow those provided in the original paper. Default value follow those provided in the original paper.
+        - tolerance: a float specifying the smallest tolerance for the updates to the variables. If the L2 norm
+                of the update step is smaller than this value, the adam_optimizer will terminate; Default is None 
+                (no tolerance check is used) 
+        - verbose: a boolean specifying whether updates about the optimization process will be printed
+                to the console. Default is False
+        RETURNS
+        ========
+        - objective_value: the minimum value of the objective_function that was found (float)
+        - cur_variable_values: the values for the inputs to objective_function that gave the
+                minimum objective_value found. (1D array of floats with the same size as the number of
+                inputs to the objective function)
+        EXAMPLES
+        =========
+        # multivariate function with scalars as input
+        >>> import numpy as np
+        >>> f = lambda x, y: x**3 + y**2
+        >>> op = Optimizer(f, np.array([1, -1]))
+        >>> op.adam_optimize(learning_rate=0.1, beta1=0.9, beta2=0.999, epsilon=1e-8)
+        (2.0572135284779802e-09, array([ 2.02961265e-03, -5.87082105e-08]))
+
+        # multivariate function with a vector as input
+        >>> import numpy as np
+        >>> f = lambda x: x[0]**2 + x[1]**2
+        >>> op = Optimizer(f, np.array([1, -1]), scalar=False)
+        >>> op.adam_optimize(learning_rate=0.1, beta1=0.9, beta2=0.999, epsilon=1e-8)
+        (4.92307680691863e-15, array([ 5.87082105e-08, -5.87082105e-08]))
+
+        # univariate function with scalar as input
+        >>> import numpy as np
+        >>> f = lambda x: x**2
+        >>> op = Optimizer(f, np.array([1]))
+        >>> op.adam_optimize(learning_rate=0.1, beta1=0.9, beta2=0.999, epsilon=1e-8)
+        (2.461538403459315e-15, array([5.87082105e-08]))
+
+        """
+
+        if not 0 <= beta1 <= 1 or not 0 <= beta2 <= 1:
+          raise ValueError("The value of beta (sample weight) should be between 0 and 1.")
+        cur_variable_values = self.variable_initialization
+        val, der = differentiate(self.objective_function, cur_variable_values, self.scalar)
+        v, s, v_corrected, s_corrected = 0,0,0,0
+        
+        for l in range(num_iterations):
+          # Compute the moving average of the gradients.
+          v = beta1 * v + (1 - beta1) * der
+          # Compute bias-corrected first moment estimate.
+          v_corrected = v / (1 - np.power(beta1, l+1))
+          # Moving average of the squared gradients.
+          s = beta2 * s + (1 - beta2) * np.power(der, 2)
+          # Compute bias-corrected second raw moment estimate.
+          s_corrected = s / (1 - np.power(beta2, l+1))
+          # Update the derivatives.
+          cur_variable_values = cur_variable_values - learning_rate * v_corrected / (np.sqrt(s_corrected) + epsilon)
+          val, der = differentiate(self.objective_function, cur_variable_values, self.scalar)
+
+          self._print_updates(verbose, l, val)
+
+          if self._tolerance_check(tolerance, (learning_rate * der)):
+              break
+        return val, cur_variable_values
