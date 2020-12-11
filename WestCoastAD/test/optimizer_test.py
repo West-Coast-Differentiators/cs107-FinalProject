@@ -114,9 +114,9 @@ class VariableUnitTest(unittest.TestCase):
         var_init = np.array([0.2, 0.5])
         optimizer = Optimizer(objective_func, var_init)
         min_value, var_value = optimizer.adagrad_optimize(
-            tolerance=0.0000001, num_iterations=10000, verbose=False
+            tolerance=None, num_iterations=10000, verbose=False
         )
-        self.assertAlmostEqual(min_value, 0, places=1)
+        self.assertAlmostEqual(min_value, 0, places=3)
         self.assertAlmostEqual(var_value[0], 0, places=1)
         self.assertAlmostEqual(var_value[1], 0, places=1)
 
@@ -127,7 +127,7 @@ class VariableUnitTest(unittest.TestCase):
         var_init = np.array([0.2, 0.5])
         optimizer = Optimizer(objective_func, var_init, scalar=False)
         min_value, var_value = optimizer.adagrad_optimize(
-            tolerance=0.0000001, num_iterations=10000, verbose=False
+            tolerance=None, num_iterations=10000, verbose=False
         )
         self.assertAlmostEqual(min_value, 0, places=1)
         self.assertAlmostEqual(var_value[0], 0, places=1)
@@ -140,10 +140,10 @@ class VariableUnitTest(unittest.TestCase):
         var_init = np.array([2])
         optimizer = Optimizer(objective_func, var_init)
         min_value, var_value = optimizer.rmsprop_optimize(
-            tolerance=0.0000001, num_iterations=100000, verbose=False
+            tolerance=None, num_iterations=10000, verbose=False
         )
-        self.assertAlmostEqual(min_value, -0.36, places=1)
-        self.assertAlmostEqual(var_value[0], 0.36, places=1)
+        self.assertAlmostEqual(min_value, -1/np.e, places=5)
+        self.assertAlmostEqual(var_value[0], 1/np.e, places=5)
 
     def test_multivariate_scalar_rmsprop_optimization(self):
         def objective_func(x, y):
@@ -152,11 +152,11 @@ class VariableUnitTest(unittest.TestCase):
         var_init = np.array([0.2, 0.5])
         optimizer = Optimizer(objective_func, var_init)
         min_value, var_value = optimizer.rmsprop_optimize(
-            tolerance=0.0000001, num_iterations=10000, verbose=False
+            tolerance=None, num_iterations=10000, verbose=False
         )
-        self.assertAlmostEqual(min_value, 0, places=1)
-        self.assertAlmostEqual(var_value[0], 0, places=1)
-        self.assertAlmostEqual(var_value[1], 0, places=1)
+        self.assertAlmostEqual(min_value, 0, places=5)
+        self.assertAlmostEqual(var_value[0], 0, places=3)
+        self.assertAlmostEqual(var_value[1], 0, places=3)
 
     def test_multivariate_vector_rmsprop_optimization(self):
         def objective_func(x):
@@ -165,11 +165,11 @@ class VariableUnitTest(unittest.TestCase):
         var_init = np.array([0.2, 0.5])
         optimizer = Optimizer(objective_func, var_init, scalar=False)
         min_value, var_value = optimizer.rmsprop_optimize(
-            tolerance=0.0000001, num_iterations=10000, verbose=False
+            tolerance=None, num_iterations=10000, verbose=False
         )
-        self.assertAlmostEqual(min_value, 0, places=1)
-        self.assertAlmostEqual(var_value[0], 0, places=1)
-        self.assertAlmostEqual(var_value[1], 0, places=1)
+        self.assertAlmostEqual(min_value, 0, places=5)
+        self.assertAlmostEqual(var_value[0], 0, places=3)
+        self.assertAlmostEqual(var_value[1], 0, places=3)
 
 
 if __name__ == "__main__":

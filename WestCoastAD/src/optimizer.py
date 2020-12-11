@@ -380,8 +380,8 @@ class Optimizer():
         _exp_average_gradient = 0
 
         for i in range(num_iterations):
-            _current_parameter_val = (beta * _exp_average_gradient) + ((1 - beta) * der**2)
-            delta_var = (learning_rate * der) / np.sqrt(_current_parameter_val + fuzz_factor)
+            _exp_average_gradient = (beta * _exp_average_gradient) + ((1 - beta) * der**2)
+            delta_var = (learning_rate * der) / np.sqrt(_exp_average_gradient + fuzz_factor)
             cur_variable_values = cur_variable_values - delta_var
             val, der = differentiate(self.objective_function, cur_variable_values, self.scalar)
 
