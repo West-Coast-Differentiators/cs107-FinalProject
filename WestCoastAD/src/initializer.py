@@ -210,7 +210,3 @@ class RandomNormal(Initializer):
         """
         return {"mean": self.mean, "stddev": self.stddev}
 
-if __name__ == "__main__":
-    import doctest
-    doctest.testmod()
-    
