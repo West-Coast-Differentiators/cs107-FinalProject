@@ -415,6 +415,3 @@ class Optimizer():
           if self._tolerance_check(tolerance, (learning_rate * der)):
               break
         return val, cur_variable_values
-
-def objective_func(x, y):
-    return x*y + np.exp(x*y)
