@@ -27,7 +27,7 @@ class Initializer(object):
 
 class Zeros(Initializer):
     """
-    Initializer that sets the initial value of WestCoastAD variables to zeros.
+    Initializer which can be used to initialize the Optimizer to zeros.
     
     EXAMPLES
     =========
@@ -49,7 +49,7 @@ class Zeros(Initializer):
     
 class Ones(Initializer):
     """
-    Initializer that sets the initial value of WestCoastAD variables to ones.
+    Initializer which can be used to initialize the Optimizer to ones.
     
     EXAMPLES
     =========
@@ -70,7 +70,7 @@ class Ones(Initializer):
 
 class Constant(Initializer):
     """
-    Initializer that sets the initial value of WestCoastAD variables to an input constant.
+    Initializer which can be used to initialize the Optimizer to an input constant.
     
     EXAMPLES
     =========
@@ -116,7 +116,7 @@ class Constant(Initializer):
     
 class RandomUniform(Initializer):
     """
-    Initializer that sets the initial value of WestCoastAD variables according to a uniform distribution.
+    Initializer which can be used to initialize the Optimizer according to a uniform distribution.
     
     EXAMPLES
     =========
@@ -164,7 +164,8 @@ class RandomUniform(Initializer):
     
 class RandomNormal(Initializer):
     """
-    Initializer that sets the initial value of WestCoastAD variables according to a normal distribution.
+    Initializer which can be used to initialize the Optimizer according to a normal distribution.
+    
     EXAMPLES
     =========
     >>> import numpy as np
@@ -194,6 +195,7 @@ class RandomNormal(Initializer):
     def __call__(self, shape):
         """
         Returns a numpy array initialized according to a normal distribution.
+        
         INPUTS
         =======
         - shape : int, size of the numpy array that will be returned
