@@ -1,7 +1,7 @@
 import unittest
 import numpy as np
 
-from WestCoastAD import Optimizer
+from WestCoastAD import Optimizer, MomentumOptimizer
 
 
 class VariableUnitTest(unittest.TestCase):
@@ -38,6 +38,49 @@ class VariableUnitTest(unittest.TestCase):
         self.assertAlmostEqual(var_value[0], 0, places=5)
         self.assertAlmostEqual(var_value[1], 0, places=5)
         self.assertAlmostEqual(var_value[2], 0, places=5)
+
+    def test_univariate_scalar_momentum_optimization(self):
+        def objective_func(x):
+            return x**6 - 2*x
+
+        var_init = np.array([2])
+        optimizer = MomentumOptimizer(objective_func, var_init)
+        min_value, var_value = optimizer.gd_optimize(tolerance=0.0000001, num_iterations=1000, verbose=False)
+        self.assertAlmostEqual(min_value, -1.3, places=1)
+        self.assertAlmostEqual(var_value[0], 0.8, places=1)
+
+    def test_multivariate_scalar_momentum_optimization(self):
+        def objective_func(x, y):
+            return x**2 + x*y + y**2
+
+        var_init = np.array([0.2, 0.5])
+        optimizer = MomentumOptimizer(objective_func, var_init)
+        min_value, var_value = optimizer.gd_optimize(tolerance=0.0000001, num_iterations=1000, verbose=False)
+        self.assertAlmostEqual(min_value, 0, places=1)
+        self.assertAlmostEqual(var_value[0], 0, places=1)
+        self.assertAlmostEqual(var_value[1], 0, places=1)
+
+
+    def test_multivariate_vector_momentum_optimization(self):
+        def objective_func(x):
+            return x[0]**2 + x[0]*x[1] + x[1]**2
+
+        var_init = np.array([0.2, 0.5])
+        optimizer = MomentumOptimizer(objective_func, var_init, scalar=False)
+        min_value, var_value = optimizer.gd_optimize(tolerance=0.0000001, num_iterations=1000, verbose=False)
+        self.assertAlmostEqual(min_value, 0, places=1)
+        self.assertAlmostEqual(var_value[0], 0, places=1)
+        self.assertAlmostEqual(var_value[1], 0, places=1)
+
+    def test_beta_exception(self):
+        def objective_func(x):
+            return x
+
+        with self.assertRaises(ValueError) as e:
+            var_init = np.array([0.2])
+            optimizer = MomentumOptimizer(objective_func, var_init)
+            optimizer.gd_optimize(beta=54, num_iterations=1000, verbose=False)
+        self.assertAlmostEqual("The value of beta (sample weight) should be between 0 and 1.", str(e.exception))
 
 if __name__ == '__main__':
     unittest.main()
