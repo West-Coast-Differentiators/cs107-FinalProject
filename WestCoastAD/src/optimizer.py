@@ -375,6 +375,8 @@ class Optimizer():
         (12.000746582986158, array([-0.01580348, -0.01576123]))
 
         """
+        if not 0 <= beta <= 1:
+            raise ValueError("The value of beta (sample weight) should be between 0 and 1.")
         cur_variable_values = self.variable_initialization
         val, der = differentiate(self.objective_function, cur_variable_values, self.scalar)
         _exp_average_gradient = 0

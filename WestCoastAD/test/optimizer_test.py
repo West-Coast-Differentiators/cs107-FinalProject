@@ -53,8 +53,8 @@ class VariableUnitTest(unittest.TestCase):
         min_value, var_value = optimizer.momentum_optimize(
             tolerance=None, num_iterations=1000, verbose=False
         )
-        self.assertAlmostEqual(min_value, -5/(3*3**(1/5)), places=5)
-        self.assertAlmostEqual(var_value[0], 1/(3**(1/5)), places=5)
+        self.assertAlmostEqual(min_value, -5 / (3 * 3 ** (1 / 5)), places=5)
+        self.assertAlmostEqual(var_value[0], 1 / (3 ** (1 / 5)), places=5)
 
     def test_multivariate_scalar_momentum_optimization(self):
         def objective_func(x, y):
@@ -82,7 +82,7 @@ class VariableUnitTest(unittest.TestCase):
         self.assertAlmostEqual(var_value[0], 0, places=5)
         self.assertAlmostEqual(var_value[1], 0, places=5)
 
-    def test_beta_exception(self):
+    def test_beta_momentum_exception(self):
         def objective_func(x):
             return x
 
@@ -104,8 +104,8 @@ class VariableUnitTest(unittest.TestCase):
         min_value, var_value = optimizer.adagrad_optimize(
             tolerance=None, num_iterations=100000, verbose=False
         )
-        self.assertAlmostEqual(min_value, -1/np.e, places=3)
-        self.assertAlmostEqual(var_value[0], 1/np.e, places=3)
+        self.assertAlmostEqual(min_value, -1 / np.e, places=3)
+        self.assertAlmostEqual(var_value[0], 1 / np.e, places=3)
 
     def test_multivariate_scalar_adagrad_optimization(self):
         def objective_func(x, y):
@@ -142,8 +142,8 @@ class VariableUnitTest(unittest.TestCase):
         min_value, var_value = optimizer.rmsprop_optimize(
             tolerance=None, num_iterations=10000, verbose=False
         )
-        self.assertAlmostEqual(min_value, -1/np.e, places=5)
-        self.assertAlmostEqual(var_value[0], 1/np.e, places=5)
+        self.assertAlmostEqual(min_value, -1 / np.e, places=5)
+        self.assertAlmostEqual(var_value[0], 1 / np.e, places=5)
 
     def test_multivariate_scalar_rmsprop_optimization(self):
         def objective_func(x, y):
@@ -170,6 +170,19 @@ class VariableUnitTest(unittest.TestCase):
         self.assertAlmostEqual(min_value, 0, places=5)
         self.assertAlmostEqual(var_value[0], 0, places=3)
         self.assertAlmostEqual(var_value[1], 0, places=3)
+
+    def test_beta_rmsprop_exception(self):
+        def objective_func(x):
+            return x
+
+        with self.assertRaises(ValueError) as e:
+            var_init = np.array([0.2])
+            optimizer = Optimizer(objective_func, var_init)
+            optimizer.rmsprop_optimize(beta=54, num_iterations=1000, verbose=False)
+        self.assertAlmostEqual(
+            "The value of beta (sample weight) should be between 0 and 1.",
+            str(e.exception),
+        )
 
 
 if __name__ == "__main__":
