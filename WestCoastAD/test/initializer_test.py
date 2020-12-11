@@ -7,7 +7,7 @@ np.random.seed(seed=2020)
 import unittest
 import numpy as np
 
-
+from WestCoastAD import Initializer
 from WestCoastAD import Zeros
 from WestCoastAD import Ones
 from WestCoastAD import Constant
@@ -17,6 +17,12 @@ np.random.seed(seed=2020)
 
 class InitializerUnitTest(unittest.TestCase):
     
+    def test_Initializer(self):
+        initializer = Initializer()
+
+        with self.assertRaises(NotImplementedError):
+            var_int = initializer(5)
+      
     def test_Zeros(self):
         initializer = Zeros()
         var_init = initializer(5)
