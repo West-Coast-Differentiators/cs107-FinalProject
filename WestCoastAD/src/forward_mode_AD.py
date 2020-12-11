@@ -20,6 +20,7 @@ class Variable:
     51
     >>> f.derivative
     24
+
     # Derivative computation for a multivariate scalar function
     >>> import numpy as np
     >>> x = Variable(4, np.array([1, 0]))
@@ -29,6 +30,7 @@ class Variable:
     16.14112000805987
     >>> f.derivative
     array([ 7.0100075, 16.9899925])
+
     """
 
     def __init__(self, value, derivative_seed):
@@ -81,6 +83,7 @@ class Variable:
         >>> x = Variable(5, np.array([1, 1]))
         >>> print(x.value)
         5
+
         """
         return self._value
     
@@ -108,6 +111,7 @@ class Variable:
         >>> x = Variable(3, np.array([2, 1.1]))
         >>> print(x.derivative)
         [2.  1.1]
+
         """
         return self._derivative
    
@@ -195,6 +199,7 @@ class Variable:
         >>> x.derivative = np.array([6 , 5])
         >>> print(x)
         Variable(value=2.1, derivative=[6. 5.])
+
         """
         
         if isinstance(derivative_seed, numbers.Number):
@@ -238,12 +243,14 @@ class Variable:
         >>> x = Variable(2.1, 3.1)
         >>> print(x + 1)
         Variable(value=3.1, derivative=3.1)
+
         # add two variables with vector derivatives
         >>> import numpy as np
         >>> x = Variable(4, np.array([1, 3]))
         >>> y = Variable(4, np.array([2, 1]))
         >>> print(x + y)
         Variable(value=8, derivative=[3. 4.])
+
         """
         try:
             val = self.value + other.value
@@ -276,11 +283,13 @@ class Variable:
         >>> x = Variable(2.1, 3.1)
         >>> print(1 + x)
         Variable(value=3.1, derivative=3.1)
+
         # add a constant and a variable with vector derivative
         >>> import numpy as np
         >>> x = Variable(2.1, np.array([1, 0]))
         >>> print(1 + x)
         Variable(value=3.1, derivative=[1. 0.])
+
         """
         return self.__add__(other)
 
@@ -311,17 +320,20 @@ class Variable:
         >>> x = Variable(5.25, 3)
         >>> print(x * 4)
         Variable(value=21.0, derivative=12.0)
+
         # multiply two variables with vector derivatives
         >>> import numpy as np
         >>> x = Variable(3, np.array([1, 6]))
         >>> y = Variable(3, np.array([4, 1]))
         >>> print(x * y)
         Variable(value=9, derivative=[15. 21.])
+
         # multiply a variable with vector derivatives and a constant
         >>> import numpy as np
         >>> x = Variable(3, np.array([4, 1]))
         >>> print(x * 3)
         Variable(value=9, derivative=[12.  3.])
+
         """
         try:
             return Variable(self.value * other.value, self.value * other.derivative + other.value * self.derivative)
@@ -351,11 +363,13 @@ class Variable:
         >>> x = Variable(5.25, 3)
         >>> print(4 * x)
         Variable(value=21.0, derivative=12.0)
+
         # multiply a constant and a variable with vector derivatives
         >>> import numpy as np
         >>> x = Variable(3, np.array([4, 1]))
         >>> print(3 * x)
         Variable(value=9, derivative=[12.  3.])
+
         """
         return self.__mul__(other)
 
@@ -400,6 +414,7 @@ class Variable:
         >>> x = Variable(2, np.array([6, 1]))
         >>> print(x - 3)
         Variable(value=-1, derivative=[6. 1.])
+
         """
         return self + (-other)
     
@@ -478,23 +493,27 @@ class Variable:
         >>> x = Variable(20.0, 3)
         >>> print(x / 4)
         Variable(value=5.0, derivative=0.75)
+
         # Divide two variables with vector derivatives
         >>> import numpy as np
         >>> x = Variable(3, np.array([1, 6]))
         >>> y = Variable(3, np.array([4, 1]))
         >>> print(x / y)
         Variable(value=1.0, derivative=[-1.          1.66666667])
+
         # Divide a variable with vector derivatives by a constant
         >>> import numpy as np
         >>> x = Variable(3, np.array([4, 1]))
         >>> print(x / 3)
         Variable(value=1.0, derivative=[1.33333333 0.33333333])
+
         # ZeroDivisionError will be raised when constant is zero
         >>> x = Variable(3, 1)
         >>> x / 0
         Traceback (most recent call last):
             ...
         ZeroDivisionError: Division by zero encountered
+
         # ZeroDivisionError will be raised when variable is zero
         >>> x = Variable(3, 1)
         >>> y = Variable(0, 1)
@@ -543,17 +562,20 @@ class Variable:
         >>> x = Variable(20.0, 3)
         >>> print(100 / x)
         Variable(value=5.0, derivative=-0.75)
+
         # Divide two variables with vector derivatives
         >>> import numpy as np
         >>> x = Variable(3, np.array([1, 6]))
         >>> y = Variable(3, np.array([4, 1]))
         >>> print(y / x)
         Variable(value=1.0, derivative=[ 1.         -1.66666667])
+
         # Divide a constant by a variable with vector derivatives 
         >>> import numpy as np
         >>> x = Variable(3, np.array([4, 1]))
         >>> print(3 / x)
         Variable(value=1.0, derivative=[-1.33333333 -0.33333333])
+
         """
         try:
             if self.value == 0:
@@ -588,19 +610,23 @@ class Variable:
         >>> y = Variable(1, 5)
         >>> print(y ** x)
         Variable(value=1, derivative=15.0)
+
         # Power of Variable with scalar exponent.
         >>> x = Variable(2.1, 3.2)
         >>> print(x ** 2)
         Variable(value=4.41, derivative=13.440000000000001)
+
         # Power of Variable with vector derivative.
         >>> x = Variable(2.1, np.array([3.2, 2.5]))
         >>> print(x ** 2)
         Variable(value=4.41, derivative=[13.44 10.5 ])
+
         # Power of Variable with vector derivative.
         >>> x = Variable(2.1, np.array([3.2, 2.5]))
         >>> y = Variable(5, np.array([0.4, 9.6]))
         >>> print(x ** y)
         Variable(value=40.84101000000001, derivative=[323.29018821 533.99536695])
+
         """
         try:
             val = self.value ** other.value
@@ -640,6 +666,7 @@ class Variable:
         >>> x = Variable(3, np.array([5, 6]))
         >>> print(3 ** x)
         Variable(value=27, derivative=[148.31265897 177.97519076])
+
         """
         if other == 0 and self.value <= 0:
             raise ValueError("Derivative of 0^x is undefined for non-positive x values")
@@ -671,11 +698,13 @@ class Variable:
         >>> x = Variable(4.2, 1.3)
         >>> print(-x)
         Variable(value=-4.2, derivative=-1.3)
+
         # negation of a variable with vector derivative
         >>> import numpy as np
         >>> x = Variable(1.7, np.array([-2, 3]))
         >>> print(-x)
         Variable(value=-1.7, derivative=[ 2. -3.])
+
         """
         val = (-1) * self.value 
         der = (-1) * self.derivative
@@ -702,6 +731,7 @@ class Variable:
         >>> x = Variable(4.2, 1.3)
         >>> print(x.log(5))
         Variable(value=0.891668149608153, derivative=0.19231795593511794)
+
         # log(base=e) of a variable with vector derivative
         >>> import numpy as np
         >>> x = Variable(1.7, np.array([-2, 3]))
@@ -765,11 +795,13 @@ class Variable:
         >>> x = Variable(4, 1)
         >>> print(np.exp(x))
         Variable(value=54.598150033144236, derivative=54.598150033144236)
+
         # exp of variable with vector derivative
         >>> import numpy as np
         >>> x = Variable(3, np.array([1, -4]))
         >>> print(np.exp(x))
         Variable(value=20.085536923187668, derivative=[ 20.08553692 -80.34214769])
+
         """
         val = np.exp(self.value)
         der = self.derivative * np.exp(self.value)
@@ -796,11 +828,13 @@ class Variable:
         >>> x = Variable(4, 1)
         >>> print(np.sqrt(x))
         Variable(value=2.0, derivative=0.25)
+
         # sqrt of variable with vector derivative
         >>> import numpy as np
         >>> x = Variable(3, np.array([1, -4]))
         >>> print(np.sqrt(x))
         Variable(value=1.7320508075688772, derivative=[ 0.28867513 -1.15470054])
+        
         """
         return self.__pow__(0.5)
     
@@ -832,6 +866,7 @@ class Variable:
         >>> x = Variable(np.pi/2, np.array([1, 0]))
         >>> print(np.sin(x))
         Variable(value=1.0, derivative=[6.123234e-17 0.000000e+00])
+        
         """
 
         val = np.sin(self.value)
@@ -902,6 +937,7 @@ class Variable:
         >>> x = Variable(np.pi/4, np.array([1, 0]))
         >>> print(np.tan(x))
         Variable(value=0.9999999999999999, derivative=[2. 0.])
+
         """
         if (self.value / (np.pi/2)) % 2 == 1:
             raise ValueError("Inputs to tan should not be odd multiples of pi/2")
@@ -938,6 +974,7 @@ class Variable:
         >>> x = Variable(3, np.array([1, 1]))
         >>> print(np.sinh(x))
         Variable(value=10.017874927409903, derivative=[10.067662 10.067662])
+
         """
         val = np.sinh(self.value)
         der = np.cosh(self.value) * self.derivative
@@ -971,6 +1008,7 @@ class Variable:
         >>> x = Variable(1.3, np.array([1, 3]))
         >>> print(np.cosh(x))
         Variable(value=1.9709142303266285, derivative=[1.69838244 5.09514731])
+
         """
         val = np.cosh(self.value)
         der = np.sinh(self.value) * self.derivative
@@ -1003,6 +1041,7 @@ class Variable:
         >>> x = Variable(3, np.array([4, 1]))
         >>> print(np.tanh(x))
         Variable(value=0.9950547536867305, derivative=[0.03946415 0.00986604])
+
         """
         val = np.tanh(self.value)
         der = 1 / (np.cosh(self.value)**2) * self.derivative
@@ -1045,6 +1084,7 @@ class Variable:
         Traceback (most recent call last):
             ...
         ValueError: Inputs to arcsin should be in (-1, 1) for the derivative to be defined.
+
         """
 
         if self.value >= 1 or self.value <= -1:
@@ -1093,7 +1133,6 @@ class Variable:
             ...
         ValueError: Inputs to arccos should be in (-1, 1) for the derivative to be defined.
         
-        
         """
         
         if self.value >= 1 or self.value <= -1:
@@ -1129,6 +1168,7 @@ class Variable:
         >>> x = Variable(3, np.array([4, 1]))
         >>> print(np.arctan(x))
         Variable(value=1.2490457723982544, derivative=[0.4 0.1])
+
         """
         val = np.arctan(self.value)
         der = 1 / (1 + self.value**2) * self.derivative
@@ -1157,17 +1197,20 @@ class Variable:
         >>> x = Variable(4, 1)
         >>> print(abs(x))
         Variable(value=4, derivative=1.0)
+
         # abs of variable with vector derivative
         >>> import numpy as np
         >>> x = Variable(3, np.array([1, -4]))
         >>> print(abs(x))
         Variable(value=3, derivative=[ 1. -4.])
+
         # ValueError will be raised if self.value is equal to 0
         >>> x = Variable(0, -0.6)
         >>> print(abs(x))
         Traceback (most recent call last):
             ...
         ValueError: Abs function derivative does not exist at 0
+
         """
         if self.value != 0.0:
             val = abs(self.value)
@@ -1207,12 +1250,14 @@ class Variable:
         >>> y = Variable(5, np.array([3, 2]))
         >>> x < y
         (True, False)
+
         # "less than" comparison when the comparison is true for all of the derivative elements
         >>> import numpy as np
         >>> x = Variable(4, np.array([1, 3]))
         >>> y = Variable(6, np.array([6, 6]))
         >>> x < y
         (True, True)
+
         """
         val_comparison = self.value < other.value
         try:
@@ -1254,12 +1299,14 @@ class Variable:
         >>> y = Variable(5, np.array([3, 2]))
         >>> x <= y
         (True, False)
+
         # <= comparison when the comparison is true for all of the derivative elements
         >>> import numpy as np
         >>> x = Variable(4, np.array([1, 3]))
         >>> y = Variable(4, np.array([4, 4]))
         >>> x <= y
         (True, True)
+
         """
         val_comparison = self.value <= other.value
         try:
@@ -1310,6 +1357,7 @@ class Variable:
         >>> y = Variable(4, np.array([3, 3]))
         >>> x == y
         (True, True)
+
         """
         val_comparison = self.value == other.value
         try:
@@ -1347,12 +1395,14 @@ class Variable:
         >>> y = Variable(5, 2)
         >>> x != y
         (False, True)
+
         # != comparison when some vector elements in derivative are not equal.
         >>> import numpy as np
         >>> x = Variable(2, np.array([3, 3]))
         >>> y = Variable(2, np.array([3, 2]))
         >>> x != y
         (False, True)
+
         # != comparison when all vector elements in derivative are the same.
         >>> import numpy as np
         >>> x = Variable(4, np.array([3, 3]))
@@ -1402,12 +1452,14 @@ class Variable:
         >>> y = Variable(1, np.array([3, 2]))
         >>> x > y
         (True, False)
+
         # "greater than" comparison when the comparison is true for all of the derivative elements
         >>> import numpy as np
         >>> x = Variable(7, np.array([5, 6]))
         >>> y = Variable(3, np.array([4, 4]))
         >>> x > y
         (True, True)
+
         """
         val_comparison = self.value > other.value
         try:
@@ -1448,12 +1500,14 @@ class Variable:
         >>> y = Variable(4, np.array([3, 2]))
         >>> x >= y
         (True, False)
+
         # >= comparison when the comparison is true for all of the derivative elements
         >>> import numpy as np
         >>> x = Variable(4, np.array([9, 7]))
         >>> y = Variable(4, np.array([4, 7]))
         >>> x >= y
         (True, True)
+
         """
         val_comparison = self.value >= other.value
         try:
@@ -1483,10 +1537,12 @@ class Variable:
         >>> y = x.logistic()
         >>> print(y)
         Variable(value=0.9525741268224334, derivative=0.045176659730912144)
+
         # logistic function with vector derivative
         >>> import numpy as np
         >>> x = Variable(2, np.array([3, 3]))
         >>> print(x.logistic())
         Variable(value=0.8807970779778823, derivative=[0.31498076 0.31498076])
+
         """
         return 1/(1 + np.exp(-self))

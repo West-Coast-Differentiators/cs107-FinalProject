@@ -58,6 +58,7 @@ class Ones(Initializer):
     >>> initializer = Ones()
     >>> initializer(4)
     array([1., 1., 1., 1.])
+    
     """
     def __call__(self, shape):
         """

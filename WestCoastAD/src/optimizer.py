@@ -40,7 +40,7 @@ class Optimizer():
         >>> import numpy as np
         >>> f = lambda x, y: x**2 + y**2
         >>> op = Optimizer(f, np.array([1, -1]))
-        
+
         # multivariate function with a vector as input
         >>> import numpy as np
         >>> f = lambda x: x[0]**2 + x[1]**2
@@ -156,6 +156,7 @@ class Optimizer():
         >>> op = Optimizer(f, np.array([1]))
         >>> op.gd_optimize(num_iterations=1000, learning_rate=0.1)
         (1.5134705823042444e-194, array([1.23023192e-97]))
+        
         """
 
         cur_variable_values = self.variable_initialization
@@ -217,6 +218,7 @@ class Optimizer():
         >>> op = Optimizer(g, np.array([0.5, 0.88]), scalar=False)
         >>> op.momentum_optimize(num_iterations=1000, learning_rate=0.01)
         (12.00002667493136, array([2.98791178e-02, 1.51990528e-23]))
+
         """
         if not 0 <= beta <= 1:
             raise ValueError("The value of beta (sample weight) should be between 0 and 1.")
