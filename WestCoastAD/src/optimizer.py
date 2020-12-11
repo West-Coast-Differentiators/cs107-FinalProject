@@ -40,10 +40,12 @@ class Optimizer():
         >>> import numpy as np
         >>> f = lambda x, y: x**2 + y**2
         >>> op = Optimizer(f, np.array([1, -1]))
+        
         # multivariate function with a vector as input
         >>> import numpy as np
         >>> f = lambda x: x[0]**2 + x[1]**2
         >>> op = Optimizer(f, np.array([1, -1]), scalar=False)
+
         # univariate function with scalar as input
         >>> import numpy as np
         >>> f = lambda x: x**2
@@ -74,10 +76,12 @@ class Optimizer():
         >>> op = Optimizer(f, np.array([1]))
         >>> op._print_updates(True, 1, 2)
         iteration: 1, objective function value: 2
+
         # Print nothing when verbose_flag is false
         >>> f = lambda x: x
         >>> op = Optimizer(f, np.array([1]))
         >>> op._print_updates(False, 1, 2)
+
         """
         if verbose_flag:
             print("iteration: {}, objective function value: {}".format(index, value))
@@ -99,12 +103,14 @@ class Optimizer():
         >>> op = Optimizer(f, np.array([1]))
         >>> print(op._tolerance_check(0.01, 1))
         None
+
         # Print nothing when verbose_flag is false
         >>> f = lambda x: x
         >>> op = Optimizer(f, np.array([1]))
         >>> print(op._tolerance_check(1, .05))
         Variable update tolerance was reached. Terminating Search.
         True
+
         """
         if tolerance != None and np.linalg.norm(value) < tolerance:
             print("Variable update tolerance was reached. Terminating Search.")
@@ -136,12 +142,14 @@ class Optimizer():
         >>> op = Optimizer(f, np.array([1, -1]))
         >>> op.gd_optimize(num_iterations=1000, learning_rate=0.1)
         (3.026941164608489e-194, array([ 1.23023192e-97, -1.23023192e-97]))
+
         # multivariate function with a vector as input
         >>> import numpy as np
         >>> f = lambda x: x[0]**2 + x[1]**2
         >>> op = Optimizer(f, np.array([1, -1]), scalar=False)
         >>> op.gd_optimize(num_iterations=1000, learning_rate=0.1)
         (3.026941164608489e-194, array([ 1.23023192e-97, -1.23023192e-97]))
+
         # univariate function with scalar as input
         >>> import numpy as np
         >>> f = lambda x: x**2
@@ -195,12 +203,14 @@ class Optimizer():
         >>> op = Optimizer(g, np.array([1]))
         >>> op.momentum_optimize(num_iterations=1000, learning_rate=0.01)
         (-0.4724703937105774, array([0.62996052]))
+
         # Multivariate objective function with scalar inputs.
         >>> import numpy as np
         >>> g = lambda x, y: x**3 + 2*y**2 + 12
         >>> op = Optimizer(g, np.array([0.5, 0.88]))
         >>> op.momentum_optimize(num_iterations=10000, learning_rate=0.01)
         (12.00002667493136, array([2.98791178e-02, 1.51990528e-23]))
+
         # Multivariate objective function with vector inputs.
         >>> import numpy as np
         >>> g = lambda x: x[0]**3 + 2*x[1]**2 + 12
@@ -254,18 +264,21 @@ class Optimizer():
         >>> op = Optimizer(g, np.array([1]))
         >>> op.adagrad_optimize(num_iterations=1000, learning_rate=0.01)
         (-0.4705616040471904, array([0.65786042]))
+
         # Multivariate objective function with scalar inputs.
         >>> import numpy as np
         >>> g = lambda x, y: x**2 + y**2 + 12
         >>> op = Optimizer(g, np.array([0.5, 0.88]))
         >>> op.adagrad_optimize(num_iterations=10000, learning_rate=0.01)
         (12.000013226920059, array([8.13318093e-08, 3.63688329e-03]))
+
         # Multivariate objective function with vector inputs.
         >>> import numpy as np
         >>> g = lambda x: x[0]**2 + 2*x[1]**2 + 12
         >>> op = Optimizer(g, np.array([0.5, 0.88]), scalar=False)
         >>> op.adagrad_optimize(num_iterations=10000, learning_rate=0.01)
         (12.000026453839908, array([8.13318093e-08, 3.63688327e-03]))
+
         """
         cur_variable_values = self.variable_initialization
         val, der = differentiate(self.objective_function, cur_variable_values, self.scalar)
@@ -315,18 +328,21 @@ class Optimizer():
         >>> op = Optimizer(g, np.array([1]))
         >>> op.rmsprop_optimize(num_iterations=1000, learning_rate=0.01)
         (-0.47214233786026005, array([0.61814907]))
+
         # Multivariate objective function with scalar inputs.
         >>> import numpy as np
         >>> g = lambda x, y: x**2 + y**2 + 12
         >>> op = Optimizer(g, np.array([0.5, 0.88]))
         >>> op.rmsprop_optimize(num_iterations=10000, learning_rate=0.01)
         (12.000499499999068, array([-0.01580348, -0.01580348]))
+
         # Multivariate objective function with vector inputs.
         >>> import numpy as np
         >>> g = lambda x: x[0]**2 + 2*x[1]**2 + 12
         >>> op = Optimizer(g, np.array([0.5, 0.88]), scalar=False)
         >>> op.rmsprop_optimize(num_iterations=10000, learning_rate=0.01)
         (12.000746582986158, array([-0.01580348, -0.01576123]))
+
         """
         if not 0 <= beta <= 1:
             raise ValueError("The value of beta (sample weight) should be between 0 and 1.")
@@ -377,18 +393,21 @@ class Optimizer():
         >>> op = Optimizer(f, np.array([1, -1]))
         >>> op.adam_optimize(learning_rate=0.1, beta1=0.9, beta2=0.999, epsilon=1e-8)
         (2.0572135284779802e-09, array([ 2.02961265e-03, -5.87082105e-08]))
+
         # multivariate function with a vector as input
         >>> import numpy as np
         >>> f = lambda x: x[0]**2 + x[1]**2
         >>> op = Optimizer(f, np.array([1, -1]), scalar=False)
         >>> op.adam_optimize(learning_rate=0.1, beta1=0.9, beta2=0.999, epsilon=1e-8)
         (4.92307680691863e-15, array([ 5.87082105e-08, -5.87082105e-08]))
+
         # univariate function with scalar as input
         >>> import numpy as np
         >>> f = lambda x: x**2
         >>> op = Optimizer(f, np.array([1]))
         >>> op.adam_optimize(learning_rate=0.1, beta1=0.9, beta2=0.999, epsilon=1e-8)
         (2.461538403459315e-15, array([5.87082105e-08]))
+
         """
 
         if not 0 <= beta1 <= 1 or not 0 <= beta2 <= 1:
