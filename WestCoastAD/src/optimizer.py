@@ -312,8 +312,8 @@ class Optimizer():
         _cumsum_gradient = 0
 
         for i in range(num_iterations):
-            _current_cumsum_val = _cumsum_gradient + (der**2)
-            delta_var = (learning_rate * der) / np.sqrt(_current_cumsum_val + fuzz_factor)
+            _cumsum_gradient = _cumsum_gradient + (der**2)
+            delta_var = (learning_rate * der) / np.sqrt(_cumsum_gradient + fuzz_factor)
             cur_variable_values = cur_variable_values - delta_var
             val, der = differentiate(self.objective_function, cur_variable_values, self.scalar)
 
@@ -333,7 +333,7 @@ class Optimizer():
         INPUTS
         =======
         - num_iterations: an int specifying the maximum number of iterations of gradient descent; Default is 100
-        - learning_rate: a float/int specifying the learning rate for gradient descent; Default is 0.01
+        - learning_rate: a float/int specifying the learning rate for gradient descent; Default is 0.001
         - fuzz_factor: A float to prevent division by zero during optimization; Default is 0.0000001
         - beta: A float ranging between 0 and 1 specifying the sample weight for exponential average of weights; Default
                 is 0.9
