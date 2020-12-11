@@ -192,7 +192,7 @@ class VariableUnitTest(unittest.TestCase):
         optimizer = Optimizer(objective_func, var_init)
         min_value, var_value = optimizer.adam_optimize(learning_rate=0.001, beta1=0.9, beta2=0.999, epsilon=1e-8, num_iterations=1000,verbose=False)
         self.assertEqual(min_value, 0.1353352832366127)
-        self.assertEqual(var_value[0], 1.867539367724144)
+        self.assertEqual(var_value[0], 1.963495408493621)
 
     def test_x_y_exp_func_adam_optimize(self):
         def objective_func(x, y):
