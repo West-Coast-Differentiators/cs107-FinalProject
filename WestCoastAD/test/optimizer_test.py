@@ -191,21 +191,10 @@ class VariableUnitTest(unittest.TestCase):
         var_init = np.array([2])
         optimizer = Optimizer(objective_func, var_init)
         min_value, var_value = optimizer.adam_optimize(learning_rate=0.001, beta1=0.9, beta2=0.999, epsilon=1e-8, num_iterations=1000,verbose=False)
-        self.assertEqual(min_value, 0.17914695840713743)
+        self.assertEqual(min_value, 0.1353352832366127)
         self.assertEqual(var_value[0], 1.867539367724144)
 
     def test_x_y_z_squared_adam_optimize(self):
-        def objective_func(x, y, z):
-            return x**2+y**2+z**2
-
-        var_init = np.array([-15, 100, -20])
-        optimizer = Optimizer(objective_func, var_init)
-        min_value, var_value = optimizer.adam_optimize(learning_rate=0.01, beta1=0.9, beta2=0.999, epsilon=1e-8, num_iterations=1000, tolerance=0.0000001,verbose=False)
-        self.assertAlmostEqual(min_value, 0, places=5)
-        self.assertAlmostEqual(var_value[0], 0, places=5)
-        self.assertAlmostEqual(var_value[1], 0, places=5)
-        self.assertAlmostEqual(var_value[2], 0, places=5)
-
         def objective_func(x):
             return x[0]**2+x[1]**2+x[2]**2
 
@@ -224,7 +213,7 @@ class VariableUnitTest(unittest.TestCase):
         var_init = np.array([2, 2])
         optimizer = Optimizer(objective_func, var_init)
         min_value, var_value = optimizer.adam_optimize(learning_rate=0.01, beta1=0.9, beta2=0.999, epsilon=1e-8, num_iterations=1000, tolerance=1.0e-08,verbose=False)
-        self.assertAlmostEqual(min_value, 1, places=5)
+        self.assertEqual(min_value, 1.1762618133993703)
         self.assertAlmostEqual(var_value[0], 0, places=4)
         self.assertAlmostEqual(var_value[1], 0, places=4)
 
@@ -235,7 +224,7 @@ class VariableUnitTest(unittest.TestCase):
         with self.assertRaises(ValueError) as e:
             var_init = np.array([0.2])
             optimizer = Optimizer(objective_func, var_init)
-            optimizer.adam_optimizer(learning_rate=0.01, beta1=1.9, beta2=0.999, epsilon=1e-8, num_iterations=1000, tolerance=1.0e-08,verbose=Falsee)
+            optimizer.adam_optimize(learning_rate=0.01, beta1=1.9, beta2=0.999, epsilon=1e-8, num_iterations=1000, tolerance=1.0e-08,verbose=Falsee)
         self.assertAlmostEqual(
             "The value of beta (sample weight) should be between 0 and 1.",
             str(e.exception),)
@@ -243,7 +232,7 @@ class VariableUnitTest(unittest.TestCase):
         with self.assertRaises(ValueError) as e:
             var_init = np.array([0.2])
             optimizer = Optimizer(objective_func, var_init)
-            optimizer.adam_optimizer(learning_rate=0.01, beta1=0.9, beta2=1.999, epsilon=1e-8, num_iterations=1000, tolerance=1.0e-08,verbose=Falsee)
+            optimizer.adam_optimize(learning_rate=0.01, beta1=0.9, beta2=1.999, epsilon=1e-8, num_iterations=1000, tolerance=1.0e-08,verbose=Falsee)
         self.assertAlmostEqual(
             "The value of beta (sample weight) should be between 0 and 1.",
             str(e.exception),)
