@@ -128,14 +128,10 @@ class Optimizer():
         
         return val, cur_variable_values
 
-class MomentumOptimizer(Optimizer):
-    """
-    This extends the base optimizer class for minimizing the objective functions expressed as Variable
-    using a momentum, which is an exponential moving average of current and past gradients.
-    """
-    def gd_optimize(self, num_iterations=100, learning_rate=0.01, beta=0.9, tolerance=None, verbose=False):
+    def momentum_optimize(self, num_iterations=100, learning_rate=0.01, beta=0.9, tolerance=None, verbose=False):
         """
-        method that performs gradient descent optimization of the objective function
+        Method that performs momentum gradient descent optimization of the objective function. It does so by factoring a
+        momentum term during learning, which is an exponential moving average of current and past gradients.
 
         INPUTS
         =======
@@ -162,22 +158,22 @@ class MomentumOptimizer(Optimizer):
         # Univariate objective function with scalar inputs.
         >>> import numpy as np
         >>> g = lambda x: x**4 - x
-        >>> op = MomentumOptimizer(g, np.array([1]))
-        >>> op.gd_optimize(num_iterations=1000, learning_rate=0.01)
+        >>> op = Optimizer(g, np.array([1]))
+        >>> op.momentum_optimize(num_iterations=1000, learning_rate=0.01)
         (-0.4724703937105774, array([0.62996052]))
 
         # Multivariate objective function with scalar inputs.
         >>> import numpy as np
         >>> g = lambda x, y: x**3 + 2*y**2 + 12
-        >>> op = MomentumOptimizer(g, np.array([0.5, 0.88]))
-        >>> op.gd_optimize(num_iterations=1000, learning_rate=0.01)
+        >>> op = Optimizer(g, np.array([0.5, 0.88]))
+        >>> op.momentum_optimize(num_iterations=1000, learning_rate=0.01)
         (12.00002667493136, array([2.98791178e-02, 1.51990528e-23]))
 
         # Multivariate objective function with vector inputs.
         >>> import numpy as np
         >>> g = lambda x: x[0]**3 + 2*x[1]**2 + 12
-        >>> op = MomentumOptimizer(g, np.array([0.5, 0.88]), scalar=False)
-        >>> op.gd_optimize(num_iterations=1000, learning_rate=0.01)
+        >>> op = Optimizer(g, np.array([0.5, 0.88]), scalar=False)
+        >>> op.momentum_optimize(num_iterations=1000, learning_rate=0.01)
         (12.00002667493136, array([2.98791178e-02, 1.51990528e-23]))
 
         """
