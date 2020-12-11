@@ -3,7 +3,7 @@ import numpy as np
 
 class Initializer(object):
     """
-    This is an initializer class used for setting the initial value of WestCoastAD variables.
+    This is an initializer class which can be used to initialize the Optimizer
     
     """
     def __call__(self, shape):
@@ -12,7 +12,7 @@ class Initializer(object):
         
         INPUTS
         =======
-        - shape: int, number of Variable object
+        - shape: int, size of the numpy array that will be returned
         """
         raise NotImplementedError()
     
@@ -32,7 +32,7 @@ class Zeros(Initializer):
     EXAMPLES
     =========
     >>> import numpy as np
-    >>> from WestCoastAD import Zeros
+    >>> from WestCoastAD import Initializer
     >>> initializer = Zeros()
     >>> initializer(5)
     array([0., 0., 0., 0., 0.])
@@ -43,7 +43,7 @@ class Zeros(Initializer):
         Returns a numpy array initialized to 0.
         INPUTS
         =======
-        - shape : int, number of Variable object
+        - shape : int, size of the numpy array that will be returned
         """
         return np.zeros(shape)
     
@@ -54,7 +54,7 @@ class Ones(Initializer):
     EXAMPLES
     =========
     >>> import numpy as np
-    >>> from WestCoastAD import Ones
+    >>> from WestCoastAD import Initializer
     >>> initializer = Ones()
     >>> initializer(4)
     array([1., 1., 1., 1.])
@@ -64,7 +64,7 @@ class Ones(Initializer):
         Returns a numpy array initialized to 1.
         INPUTS
         =======
-        - shape : int, number of Variable object
+        - shape : int, size of the numpy array that will be returned
         """
         return np.ones(shape)
 
@@ -75,7 +75,7 @@ class Constant(Initializer):
     EXAMPLES
     =========
     >>> import numpy as np
-    >>> from WestCoastAD import Constant
+    >>> from WestCoastAD import Initializer
     >>> initializer = Constant(-6.5)
     >>> initializer(10)
     array([-6.5, -6.5, -6.5, -6.5, -6.5, -6.5, -6.5, -6.5, -6.5, -6.5])
@@ -101,7 +101,7 @@ class Constant(Initializer):
         Returns a numpy array initialized to a constant.
         INPUTS
         =======
-        - shape : int, number of Variable object
+        - shape : int, size of the numpy array that will be returned
         """
         return self.value*np.ones(shape)
     
@@ -121,8 +121,11 @@ class RandomUniform(Initializer):
     EXAMPLES
     =========
     >>> import numpy as np
-    >>> from WestCoastAD import RandomUniform
+    >>> from WestCoastAD import Initializer
+    >>> np.random.seed(seed=2020)
     >>> initializer = RandomUniform(1,4)
+    >>> initializer(5)
+    array([3.95883049, 3.62017584, 2.52923657, 1.81550714, 2.01075618])
     >>> initializer.get_config()
     {'min value': 1, 'max value': 4}
     
@@ -165,8 +168,11 @@ class RandomNormal(Initializer):
     EXAMPLES
     =========
     >>> import numpy as np
-    >>> from WestCoastAD import RandomNormal
+    >>> from WestCoastAD import Initializer
+    >>> np.random.seed(seed=2020)
     >>> initializer = RandomNormal(1,0.2)
+    >>> initializer(4)
+    array([0.64623086, 1.01511045, 0.77387406, 0.86971397])
     >>> initializer.get_config()
     {'mean': 1, 'stddev': 0.2}
     
@@ -190,7 +196,7 @@ class RandomNormal(Initializer):
         Returns a numpy array initialized according to a normal distribution.
         INPUTS
         =======
-        - shape : int, number of Variable object
+        - shape : int, size of the numpy array that will be returned
         
         """
         return np.random.normal(loc=self.mean, scale=self.stddev, size=shape)
