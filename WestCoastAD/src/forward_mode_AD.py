@@ -1,21 +1,37 @@
+""" 
+This file defines the WestCoastAD Variable class which is the core of the automatic 
+differentiation package used in WestCoastAD's optimizers.
+"""
+
 import numbers
 import numpy as np 
 
 class Variable:
     """
     This is a custom variable class with elementary function and operation overloading
-    to perform forward mode automatic differentiation.
+    to perform forward mode automatic differentiation for scalar functions of one or more
+    variables.
 
     EXAMPLES
     =========
 
-    # Derivative computation for a single input scalar function
+    # Derivative computation for a univariate scalar functions
     >>> x = Variable(4, 1)
     >>> f = 3*x**2 + 3
     >>> f.value
     51
     >>> f.derivative
     24
+
+    # Derivative computation for a multivariate scalar function
+    >>> import numpy as np
+    >>> x = Variable(4, np.array([1, 0]))
+    >>> y = Variable(1, np.array([0, 1]))
+    >>> f = x**2*y + np.sin(x-y)
+    >>> f.value
+    16.14112000805987
+    >>> f.derivative
+    array([ 7.0100075, 16.9899925])
 
     """
 
@@ -203,12 +219,14 @@ class Variable:
         
         if isinstance(derivative_seed, numbers.Number):
             self._derivative = derivative_seed
+            self._dimensionality = 1
         elif isinstance(derivative_seed, np.ndarray) and len(derivative_seed.shape) == 1:
             try:
                 derivative_seed = derivative_seed.astype(float)
             except ValueError:
                 raise TypeError('Input derivative seed array contains non int/float values')
             self._derivative = derivative_seed   
+            self._dimensionality = len(derivative_seed)
         else:
             raise TypeError('Input derivative seed should be an int, float, or a 1D numpy array of ints/floats.')
 
@@ -625,8 +643,35 @@ class Variable:
 
         NOTES
         =====
+        PRE:
+        -  A ValueError is raised if self.value is negative and other is non-integer
+        -  A ValueError is raised if self.value is zero and other is negative
         POST:
          - self is not changed by this function
+
+        EXAMPLES
+        =========
+        # Power of variables with scalar derivatives
+        >>> x = Variable(3, 3)
+        >>> y = Variable(1, 5)
+        >>> print(y ** x)
+        Variable(value=1, derivative=15.0)
+
+        # Power of Variable with scalar exponent.
+        >>> x = Variable(2.1, 3.2)
+        >>> print(x ** 2)
+        Variable(value=4.41, derivative=13.440000000000001)
+
+        # Power of Variable with vector derivative.
+        >>> x = Variable(2.1, np.array([3.2, 2.5]))
+        >>> print(x ** 2)
+        Variable(value=4.41, derivative=[13.44 10.5 ])
+
+        # Power of Variable with vector derivative.
+        >>> x = Variable(2.1, np.array([3.2, 2.5]))
+        >>> y = Variable(5, np.array([0.4, 9.6]))
+        >>> print(x ** y)
+        Variable(value=40.84101000000001, derivative=[323.29018821 533.99536695])
 
         """
         try:
@@ -659,8 +704,18 @@ class Variable:
 
         NOTES
         =====
+        PRE:
+         -  ValueError is raised if other is zero and self.value is negative
+         -  ValueError is raised if other is negative
         POST:
          - self is not changed by this function
+
+        EXAMPLES
+        =========
+        # Power of variables with scalar derivatives
+        >>> x = Variable(3, np.array([5, 6]))
+        >>> print(3 ** x)
+        Variable(value=27, derivative=[148.31265897 177.97519076])
 
         """
         if other == 0 and self.value <= 0:
@@ -1205,7 +1260,7 @@ class Variable:
         >>> import numpy as np
         >>> x = Variable(2, 1)
         >>> print(np.arctan(x))
-        Variable(value=1.1071487177940904, derivative=0.2)
+        Variable(value=1.1071487177940906, derivative=0.2)
         
         # arctan of variable with vector derivative
         >>> import numpy as np
@@ -1426,7 +1481,60 @@ class Variable:
             der_comparison = self.derivative == other.derivative
             
         return (val_comparison, der_comparison)
-    
+
+    def __ne__(self, other):
+        """
+        Dunder method for overloading the not equal to comparison.
+        This operand will perform elementwise comparison of the
+        value and derivative of self and other.
+        
+        INPUTS
+        =======
+        other: a Variable object
+        
+        RETURNS
+        ========
+        a boolean tuple where the first element specifies if the inequality holds
+        for the value of self and the second element specifies if the inequality
+        holds for any of the elements of the derivative
+        
+        NOTES
+        =====
+        POST:
+         - self is not changed by this function
+         
+        EXAMPLES
+        =========
+        # != comparison with scalar derivative
+        >>> x = Variable(5, 3)
+        >>> y = Variable(5, 2)
+        >>> x != y
+        (False, True)
+
+        # != comparison when some vector elements in derivative are not equal.
+        >>> import numpy as np
+        >>> x = Variable(2, np.array([3, 3]))
+        >>> y = Variable(2, np.array([3, 2]))
+        >>> x != y
+        (False, True)
+
+        # != comparison when all vector elements in derivative are the same.
+        >>> import numpy as np
+        >>> x = Variable(4, np.array([3, 3]))
+        >>> y = Variable(4, np.array([3, 3]))
+        >>> x != y
+        (False, False)
+        
+        """
+        val_comparison = self.value != other.value
+        try:
+            der_comparison = any(self.derivative != other.derivative)
+        except TypeError:
+            der_comparison = self.derivative != other.derivative
+
+        return val_comparison, der_comparison
+
+
     def __gt__(self, other):
         """
         Dunder method for overloading the greater than comparison.
@@ -1447,10 +1555,9 @@ class Variable:
         =====
         POST:
          - self is not changed by this function
-
+        
         EXAMPLES
         =========
-
         # "greater than" comparison when the comparison is true only for the derivative
         >>> x = Variable(3, 7)
         >>> y = Variable(5, 2)
@@ -1470,7 +1577,6 @@ class Variable:
         >>> y = Variable(3, np.array([4, 4]))
         >>> x > y
         (True, True)
-
         """
         val_comparison = self.value > other.value
         try:
@@ -1479,8 +1585,7 @@ class Variable:
             der_comparison = self.derivative > other.derivative
         
         return (val_comparison, der_comparison)
-
-    
+      
     def __ge__(self, other):
         """
         Dunder method for overloading the greater than or equal to comparison.
@@ -1524,7 +1629,6 @@ class Variable:
         >>> y = Variable(4, np.array([4, 7]))
         >>> x >= y
         (True, True)
-
         """
         val_comparison = self.value >= other.value
         try:
@@ -1533,8 +1637,38 @@ class Variable:
             der_comparison = self.derivative >= other.derivative
         
         return (val_comparison, der_comparison)
-    
 
-if __name__ == "__main__":
-    import doctest
-    doctest.testmod()
+    def logistic(self):
+        """
+        Computes the value and derivative of the standard logistic function of the form 1/(1 + e^-x).
+
+        INPUTS
+        =======
+        None
+
+        RETURNS
+        ========
+        a Variable object with the derivative and value of the logistic function.
+
+        NOTES
+        =====
+        POST:
+         - self is not changed by this function
+
+        EXAMPLES
+        =========
+        # logistic function with scalar derivative
+        >>> x = Variable(3, 1)
+        >>> y = x.logistic()
+        >>> print(y)
+        Variable(value=0.9525741268224334, derivative=0.045176659730912144)
+
+        # logistic function with vector derivative
+        >>> import numpy as np
+        >>> x = Variable(2, np.array([3, 3]))
+        >>> print(x.logistic())
+        Variable(value=0.8807970779778823, derivative=[0.31498076 0.31498076])
+
+        """
+        return 1/(1 + np.exp(-self))
+
