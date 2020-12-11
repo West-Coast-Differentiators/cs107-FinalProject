@@ -192,7 +192,7 @@ class VariableUnitTest(unittest.TestCase):
         var_init = np.array([2])
         optimizer = Optimizer(objective_func, var_init)
         min_value, var_value = optimizer.adam_optimize(learning_rate=0.001, beta1=0.9, beta2=0.999, epsilon=1e-8, num_iterations=1000)
-        self.assertEqual(min_value, 0.17914695868777564)
+        self.assertEqual(min_value, 0.17914695840713743)
         self.assertEqual(var_value[0], 1.8675393674421659)
 
     def test_x_y_z_squared_adam_optimize(self):
