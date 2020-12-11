@@ -3,8 +3,8 @@ import setuptools
 with open("README.md", "r", encoding="utf-8") as fh:
     long_description = fh.read()
 
-setuptools.setup(name='WestCoastAD-era998_test44',
-      version='1.3',
+setuptools.setup(name='WestCoastAD',
+      version='1.0',
       packages= setuptools.find_packages(),
       author="Anita Mahinpei, Yingchen Liu, Erik Adames, Lekshmi Santhosh",
       description="An Optimization Package with an Automatic Differenation Core",
