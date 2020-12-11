@@ -61,6 +61,72 @@ class Optimizer():
         self.scalar = scalar
         self.variable_initialization = variable_initialization
 
+    def _print_updates(self, verbose_flag, index, value):
+        """
+        Private helper method to print out the iteration count and objective function value on all optimizer methods.
+
+        INPUTS
+        =======
+        - verbose_flag: a boolean specifying whether updates about the optimization process will be printed
+                to the console.
+        - index: An int specifying the iteration count.
+        - value: a float value, specifying the value of the objective function.
+
+        RETURNS
+        ========
+        - None
+
+        EXAMPLES
+        =========
+
+        # Print the value to stdout when verbose_flag is true
+        >>> f = lambda x: x
+        >>> op = Optimizer(f, np.array([1]))
+        >>> op._print_updates(True, 1, 2)
+        iteration: 1, objective function value: 2
+
+        # Print nothing when verbose_flag is false
+        >>> f = lambda x: x
+        >>> op = Optimizer(f, np.array([1]))
+        >>> op._print_updates(False, 1, 2)
+
+        """
+        if verbose_flag:
+            print("iteration: {}, objective function value: {}".format(index, value))
+
+    def _tolerance_check(self, tolerance, value):
+        """
+        Private helper method to check if the a given value is lesser than the tolerance threshold.
+
+        INPUTS
+        =======
+        - tolerance: a float value, specifying the threshold against which we need to .
+        - value: a float value, specifying the value of the objective function.
+
+        RETURNS
+        ========
+        - True if the L2 norm of the given value is less than tolerance.
+
+        EXAMPLES
+        =========
+
+        # Print the value to stdout when verbose_flag is true
+        >>> f = lambda x: x
+        >>> op = Optimizer(f, np.array([1]))
+        >>> print(op._tolerance_check(0.01, 1))
+        None
+
+        # Print nothing when verbose_flag is false
+        >>> f = lambda x: x
+        >>> op = Optimizer(f, np.array([1]))
+        >>> print(op._tolerance_check(1, .05))
+        Variable update tolerance was reached. Terminating Search.
+        True
+
+        """
+        if tolerance != None and np.linalg.norm(value) < tolerance:
+            print("Variable update tolerance was reached. Terminating Search.")
+            return True
 
     def gd_optimize(self, num_iterations=100, learning_rate=0.01, tolerance=None, verbose=False):
         """
@@ -119,13 +185,11 @@ class Optimizer():
             cur_variable_values = cur_variable_values - delta_var
             val, der = differentiate(self.objective_function, cur_variable_values, self.scalar)
 
-            if verbose:
-                print("iteration: {}, objective function value: {}".format(i, val))
+            self._print_updates(verbose, i, val)
 
-            if tolerance!=None and np.linalg.norm(delta_var) < tolerance:
-                print("Variable update tolerance was reached. Terminating Search.")
+            if self._tolerance_check(tolerance, delta_var):
                 break
-        
+
         return val, cur_variable_values
 
     def momentum_optimize(self, num_iterations=100, learning_rate=0.01, beta=0.9, tolerance=None, verbose=False):
@@ -189,11 +253,9 @@ class Optimizer():
             cur_variable_values = cur_variable_values - delta_var
             val, der = differentiate(self.objective_function, cur_variable_values, self.scalar)
 
-            if verbose:
-                print("iteration: {}, objective function value: {}".format(i, val))
+            self._print_updates(verbose, i, val)
 
-            if tolerance != None and np.linalg.norm(delta_var) < tolerance:
-                print("Variable update tolerance was reached. Terminating Search.")
+            if self._tolerance_check(tolerance, delta_var):
                 break
 
         return val, cur_variable_values
@@ -255,11 +317,77 @@ class Optimizer():
             cur_variable_values = cur_variable_values - delta_var
             val, der = differentiate(self.objective_function, cur_variable_values, self.scalar)
 
-            if verbose:
-                print("iteration: {}, objective function value: {}".format(i, val))
+            self._print_updates(verbose, i, val)
 
-            if tolerance != None and np.linalg.norm(delta_var) < tolerance:
-                print("Variable update tolerance was reached. Terminating Search.")
+            if self._tolerance_check(tolerance, delta_var):
+                break
+
+        return val, cur_variable_values
+
+    def rmsprop_optimize(self, num_iterations=10000, learning_rate=0.001, fuzz_factor=0.0000001, beta=0.9, tolerance=None, verbose=False):
+        """
+        Method that performs RMSProp gradient descent optimization of the objective function.
+        This is an enhancement to Adagrad and adjusts the learning rate alpha by dividing it by the
+        exponential moving averages of gradients.
+
+        INPUTS
+        =======
+        - num_iterations: an int specifying the maximum number of iterations of gradient descent; Default is 100
+        - learning_rate: a float/int specifying the learning rate for gradient descent; Default is 0.01
+        - fuzz_factor: A float to prevent division by zero during optimization; Default is 0.0000001
+        - beta: A float ranging between 0 and 1 specifying the sample weight for exponential average of weights; Default
+                is 0.9
+        - tolerance: a float specifying the smallest tolerance for the updates to the variables. If the L2 norm
+                       of the update step is smaller than this value, gradient descent will terminate; Default is None
+                       (no tolerance check is used)
+        - verbose: a boolean specifying whether updates about the optimization process will be printed
+                       to the console. Default is False
+
+        RETURNS
+        ========
+        - objective_value: the minimum value of the objective_function that was found (float)
+        - cur_variable_values: the values for the inputs to objective_function that gave the
+                       minimum objective_value found. (1D array of floats with the same size as the number of
+                       inputs to the objective function)
+
+
+        EXAMPLES
+        =========
+        # Univariate objective function with scalar inputs.
+        >>> import numpy as np
+        >>> g = lambda x: x**4 - x
+        >>> op = Optimizer(g, np.array([1]))
+        >>> op.rmsprop_optimize(num_iterations=1000, learning_rate=0.01)
+        (-0.47214233786026005, array([0.61814907]))
+
+        # Multivariate objective function with scalar inputs.
+        >>> import numpy as np
+        >>> g = lambda x, y: x**2 + y**2 + 12
+        >>> op = Optimizer(g, np.array([0.5, 0.88]))
+        >>> op.rmsprop_optimize(num_iterations=10000, learning_rate=0.01)
+        (12.000499499999068, array([-0.01580348, -0.01580348]))
+
+        # Multivariate objective function with vector inputs.
+        >>> import numpy as np
+        >>> g = lambda x: x[0]**2 + 2*x[1]**2 + 12
+        >>> op = Optimizer(g, np.array([0.5, 0.88]), scalar=False)
+        >>> op.rmsprop_optimize(num_iterations=10000, learning_rate=0.01)
+        (12.000746582986158, array([-0.01580348, -0.01576123]))
+
+        """
+        cur_variable_values = self.variable_initialization
+        val, der = differentiate(self.objective_function, cur_variable_values, self.scalar)
+        _exp_average_gradient = 0
+
+        for i in range(num_iterations):
+            _current_parameter_val = (beta * _exp_average_gradient) + ((1 - beta) * der**2)
+            delta_var = (learning_rate * der) / np.sqrt(_current_parameter_val + fuzz_factor)
+            cur_variable_values = cur_variable_values - delta_var
+            val, der = differentiate(self.objective_function, cur_variable_values, self.scalar)
+
+            self._print_updates(verbose, i, val)
+
+            if self._tolerance_check(tolerance, delta_var):
                 break
 
         return val, cur_variable_values
