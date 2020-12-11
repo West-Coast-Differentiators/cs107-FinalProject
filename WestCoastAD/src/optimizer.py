@@ -181,13 +181,12 @@ class Optimizer():
             raise ValueError("The value of beta (sample weight) should be between 0 and 1.")
         cur_variable_values = self.variable_initialization
         val, der = differentiate(self.objective_function, cur_variable_values, self.scalar)
-        _momentum = []
+        _current_momentum = 0
 
         for i in range(num_iterations):
-            _current_momentum = (beta * (0 if i == 0 else _momentum[i-1])) + ((1 - beta) * der)
+            _current_momentum = (beta * _current_momentum) + ((1 - beta) * der)
             delta_var = learning_rate * _current_momentum
             cur_variable_values = cur_variable_values - delta_var
-            _momentum.append(_current_momentum)
             val, der = differentiate(self.objective_function, cur_variable_values, self.scalar)
 
             if verbose:
@@ -248,13 +247,12 @@ class Optimizer():
         """
         cur_variable_values = self.variable_initialization
         val, der = differentiate(self.objective_function, cur_variable_values, self.scalar)
-        _cumsum_gradient = []
+        _cumsum_gradient = 0
 
         for i in range(num_iterations):
-            _current_cumsum_val = (0 if i == 0 else _cumsum_gradient[i-1]) + (der**2)
+            _current_cumsum_val = _cumsum_gradient + (der**2)
             delta_var = (learning_rate * der) / np.sqrt(_current_cumsum_val + fuzz_factor)
             cur_variable_values = cur_variable_values - delta_var
-            _cumsum_gradient.append(_current_cumsum_val)
             val, der = differentiate(self.objective_function, cur_variable_values, self.scalar)
 
             if verbose:
