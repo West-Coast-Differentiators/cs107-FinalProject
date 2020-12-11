@@ -122,71 +122,75 @@ class Optimizer():
         
         return val, cur_variable_values
 
-def adam_optimizer(self, num_iterations=100, learning_rate=0.001, beta1=0.9, beta2=0.999, epsilon=1e-8, tolerance=None, verbose=False):
-        """
-        method that performs Adaptive Moment Estimation(adam) optimization of the objective function
+    def adam_optimize(self, num_iterations=100, learning_rate=0.001, beta1=0.9, beta2=0.999, epsilon=1e-8, tolerance=None):
+      """
+      method that performs Adaptive Moment Estimation(adam) optimization of the objective function
 
-        INPUTS
-        =======
-        Default parameters follow those provided in the original paper.
-        - num_iterations: an int specifying the maximum number of iterations; Default is 100
-        - learning_rate: a float/int specifying the learning rate for gradient descent; Default value follow those provided in the original paper.
-        - beta1: Exponential decay hyperparameter for the first moment estimates. Default value follow those provided in the original paper.
-        - beta2: Exponential decay hyperparameter for the second moment estimates. Default value follow those provided in the original paper.
-        - epsilon: Hyperparameter preventing division by zero. Default value follow those provided in the original paper. Default value follow those provided in the original paper.
-        - tolerance: a float specifying the smallest tolerance for the updates to the variables. If the L2 norm
-                of the update step is smaller than this value, the adam_optimizer will terminate; Default is None 
-                (no tolerance check is used) 
-        - verbose: a boolean specifying whether updates about the optimization process will be printed
-                to the console. Default is False
+      INPUTS
+      =======
+      Default parameters follow those provided in the original paper.
+      - num_iterations: an int specifying the maximum number of iterations; Default is 100
+      - learning_rate: a float/int specifying the learning rate for gradient descent; Default value follow those provided in the original paper.
+      - beta1: Exponential decay hyperparameter for the first moment estimates. Default value follow those provided in the original paper.
+      - beta2: Exponential decay hyperparameter for the second moment estimates. Default value follow those provided in the original paper.
+      - epsilon: Hyperparameter preventing division by zero. Default value follow those provided in the original paper. Default value follow those provided in the original paper.
+      - tolerance: a float specifying the smallest tolerance for the updates to the variables. If the L2 norm
+              of the update step is smaller than this value, the adam_optimizer will terminate; Default is None 
+              (no tolerance check is used) 
+      - verbose: a boolean specifying whether updates about the optimization process will be printed
+              to the console. Default is False
 
-        RETURNS
-        ========
-        - objective_value: the minimum value of the objective_function that was found (float)
-        - cur_variable_values: the values for the inputs to objective_function that gave the
-                minimum objective_value found. (1D array of floats with the same size as the number of
-                inputs to the objective function)
+      RETURNS
+      ========
+      - objective_value: the minimum value of the objective_function that was found (float)
+      - cur_variable_values: the values for the inputs to objective_function that gave the
+              minimum objective_value found. (1D array of floats with the same size as the number of
+              inputs to the objective function)
 
-        EXAMPLES
-        =========
-        >>> import numpy as np
-        >>> from WestCoastAD import Optimizer
-        >>> f = lambda x, y: x**2 + y**2
-        >>> op = Optimizer(f, 2, np.array([1, -1]))
-        >>> op.adam_optimizer(num_iterations=1000, learning_rate=0.01, beta1=0.9, beta2=0.999, epsilon=1e-8)
-        (5.330320183722531e-54, array([-1.37088662e-27,  1.37088662e-27]))
+      EXAMPLES
+      =========
 
-        """
-        cur_variable_values = self.variable_initialization
-        v, s, v_corrected, s_corrected = 0,0,0,0
-        for l in range(num_iterations):
-            # Compute the gradient
-            val, der = differentiate(self.objective_function, cur_variable_values, self.scalar)
-            delta_var = learning_rate * der
-            cur_variable_values = cur_variable_values - delta_var
-            # Compute the moving average of the gradients.
-            v = beta1 * v + (1 - beta1) * cur_variable_values
-            # Compute bias-corrected first moment estimate.
-            v_corrected = v / (1 - np.power(beta1, l+1))
-            # Moving average of the squared gradients.
-            s = beta2 * s + (1 - beta2) * np.power(cur_variable_values, 2)
-            # Compute bias-corrected second raw moment estimate.
-            s_corrected = s / (1 - np.power(beta2, l+1))
-            # Update the derivatives.
-            cur_variable_values = cur_variable_values - learning_rate * v_corrected / np.sqrt(s_corrected + epsilon)
-            
-            if verbose:
-                print("iteration: {}, objective function value: {}".format(l, val))
-            if tolerance!=None and np.linalg.norm(delta_var) < tolerance:
+      # multivariate function with scalars as input
+      >>> import numpy as np
+      >>> f = lambda x, y: x**3 + y**2
+      >>> op = Optimizer(f, np.array([1, -1]))
+      >>> op.adam_optimize(learning_rate=0.1, beta1=0.9, beta2=0.999, epsilon=1e-8)
+      (2.0572135284779802e-09, array([ 2.02961265e-03, -5.87082105e-08]))
+
+      # multivariate function with a vector as input
+      >>> import numpy as np
+      >>> f = lambda x: x[0]**2 + x[1]**2
+      >>> op = Optimizer(f, np.array([1, -1]), scalar=False)
+      >>> op.adam_optimize(learning_rate=0.1, beta1=0.9, beta2=0.999, epsilon=1e-8)
+      (4.92307680691863e-15, array([ 5.87082105e-08, -5.87082105e-08]))
+
+      # univariate function with scalar as input
+      >>> import numpy as np
+      >>> f = lambda x: x**2
+      >>> op = Optimizer(f, np.array([1]))
+      >>> op.adam_optimize(learning_rate=0.1, beta1=0.9, beta2=0.999, epsilon=1e-8)
+      (2.461538403459315e-15, array([5.87082105e-08]))
+
+      """
+      cur_variable_values = self.variable_initialization
+      v, s, v_corrected, s_corrected = 0,0,0,0
+      for l in range(num_iterations):
+        # Compute the gradient
+        val, der = differentiate(self.objective_function, cur_variable_values, self.scalar)
+        delta_var = learning_rate * der
+        cur_variable_values = cur_variable_values - delta_var
+        # Compute the moving average of the gradients.
+        v = beta1 * v + (1 - beta1) * cur_variable_values
+        # Compute bias-corrected first moment estimate.
+        v_corrected = v / (1 - np.power(beta1, l+1))
+        # Moving average of the squared gradients.
+        s = beta2 * s + (1 - beta2) * np.power(cur_variable_values, 2)
+        # Compute bias-corrected second raw moment estimate.
+        s_corrected = s / (1 - np.power(beta2, l+1))
+        # Update the derivatives.
+        cur_variable_values = cur_variable_values - learning_rate * v_corrected / np.sqrt(s_corrected + epsilon)
+
+        if tolerance!=None and np.linalg.norm(delta_var) < tolerance:
                 print("Variable update tolerance was reached. Terminating Search at iteration {}.".format(l))
                 return val, cur_variable_values
-        return val, cur_variable_values
-
-def objective_func(x, y):
-        return x*y + np.exp(x*y)
-
-var_init = np.array([2, 2])
-optimizer = Optimizer(objective_func, 2, var_init)
-min_value, var_value = optimizer.adam_optimizer(learning_rate=0.01, beta1=0.9, beta2=0.999, epsilon=1e-8, num_iterations=1000, verbose=False, tolerance=1.0e-08)
-print(min_value)
-print(var_value)
+      return val, cur_variable_values
