@@ -422,7 +422,7 @@ class VariableUnitTest(unittest.TestCase):
 
         var1 = Variable(1, np.array([2, 3, 4]))
         var2 = Variable(2, 2.2*np.ones(3))
-        self.assertAlmostEqual(var1 < var2, (True, False))
+        self.assertAlmostEqual(var1 <= var2, (True, False))
     
     def test__lt__scalar(self):
         var1 = Variable(1, 2)
