@@ -11,8 +11,10 @@ class Variable:
     This is a custom variable class with elementary function and operation overloading
     to perform forward mode automatic differentiation for scalar functions of one or more
     variables.
+
     EXAMPLES
     =========
+
     # Derivative computation for a univariate scalar functions
     >>> x = Variable(4, 1)
     >>> f = 3*x**2 + 3
@@ -36,6 +38,7 @@ class Variable:
     def __init__(self, value, derivative_seed):
         """ 
         constructor for the Variable class
+
         INPUTS
         =======
         value: An int or float giving the value of the variable
@@ -49,9 +52,11 @@ class Variable:
     def __repr__(self):
         """
         Operator overloading for Variable object representation
+
         INPUTS
         =======
         None
+
         RETURNS
         ========
         the value attribute of the Variable object
@@ -64,15 +69,18 @@ class Variable:
     def value(self):
         """ 
         getter method for getting the value attribute of the Variable object
+
         INPUTS
         =======
         None
+
         RETURNS
         ========
         the value attribute of the Variable object
         
         EXAMPLES
         =========
+
         # get the value attribute of a variable with scalar derivative
         >>> x = Variable(2, 1)
         >>> print(x.value)
@@ -83,7 +91,11 @@ class Variable:
         >>> x = Variable(5, np.array([1, 1]))
         >>> print(x.value)
         5
+<<<<<<< HEAD
 
+=======
+        
+>>>>>>> origin
         """
         return self._value
     
@@ -92,15 +104,18 @@ class Variable:
     def derivative(self):
         """ 
         getter method for getting the derivative attribute of the Variable object
+
         INPUTS
         =======
         None
+
         RETURNS
         ========
         the derivative attribute of the Variable object
         
         EXAMPLES
         =========
+
         # get the derivative attribute of a variable with scalar derivative
         >>> x = Variable(2, 1)
         >>> print(x.derivative)
@@ -120,9 +135,11 @@ class Variable:
     def value(self, value):
         """ 
         setter method for setting the value attribute of Variable object
+
         INPUTS
         =======
         value: A real number giving the value of the variable
+
         RETURNS
         ========
         None
@@ -157,15 +174,18 @@ class Variable:
     def derivative(self,derivative_seed):
         """ 
         setter method for setting the derivative attribute of Variable object
+
         INPUTS
         =======
         derivative_seed: A real number or 1D array of real numbers giving a seed value for the variable derivative
+
         RETURNS
         ========
         None
         
         EXAMPLES
         =========
+
         # set the derivative attribute of a variable with scalar derivative to another scalar
         >>> x = Variable(2, 1)
         >>> print(x)
@@ -221,18 +241,23 @@ class Variable:
         """ 
         Dunder method for overloading the "+" operator. 
         Computes the value and the derivative of the summation operation
+        
         INPUTS
         =======
         other: a Variable object, an int, or a float
+
         RETURNS
         ========
         a Variable object with the derivative and value of the summation operation.
+
         NOTES
         =====
         POST:
          - self is not changed by this function
+
         EXAMPLES
         =========
+
         # add two variables
         >>> x = Variable(4, 1)
         >>> y = Variable(4, 2)
@@ -250,7 +275,11 @@ class Variable:
         >>> y = Variable(4, np.array([2, 1]))
         >>> print(x + y)
         Variable(value=8, derivative=[3. 4.])
+<<<<<<< HEAD
 
+=======
+        
+>>>>>>> origin
         """
         try:
             val = self.value + other.value
@@ -266,12 +295,15 @@ class Variable:
         """ 
         Dunder method for overloading the "+" operator. 
         Computes the value and derivative of the summation operation
+
         INPUTS
         =======
         other: a Variable object, an int, or a float
+
         RETURNS
         ========
         a Variable object with the derivative and value of the summation operation.
+
         NOTES
         =====
         POST:
@@ -279,6 +311,7 @@ class Variable:
         
         EXAMPLES
         =========
+
         # add a constant and a variable
         >>> x = Variable(2.1, 3.1)
         >>> print(1 + x)
@@ -298,18 +331,23 @@ class Variable:
         """ 
         Dunder method for overloading the "*" operator. 
         Computes the value and derivative of the multiplication operation
+
         INPUTS
         =======
         other: a Variable object, an int, or a float
+
         RETURNS
         ========
         a Variable object with the derivative and value of the multiplication operation.
+
         NOTES
         =====
         POST:
          - self is not changed by this function
+
         EXAMPLES
         =========
+
         # multiply two variables
         >>> x = Variable(15, 1)
         >>> y = Variable(3, 1)
@@ -320,7 +358,7 @@ class Variable:
         >>> x = Variable(5.25, 3)
         >>> print(x * 4)
         Variable(value=21.0, derivative=12.0)
-
+        
         # multiply two variables with vector derivatives
         >>> import numpy as np
         >>> x = Variable(3, np.array([1, 6]))
@@ -346,12 +384,15 @@ class Variable:
         """ 
         Dunder method for overloading the "*" operator. 
         Computes the value and derivative of the multiplication operation
+
         INPUTS
         =======
         other: a Variable object, an int, or a float
+
         RETURNS
         ========
         a Variable object with the derivative and value of the multiplication operation.
+
         NOTES
         =====
         POST:
@@ -359,6 +400,7 @@ class Variable:
         
         EXAMPLES
         =========
+
         # multiply a constant and a variable
         >>> x = Variable(5.25, 3)
         >>> print(4 * x)
@@ -378,12 +420,15 @@ class Variable:
         """ 
         Dunder method for overloading the "-" operator. 
         Computes the value and derivative of the substraction operation
+
         INPUTS
         =======
         other: a Variable object, an int, or a float
+
         RETURNS
         ========
         a Variable object with the derivative and value of the substraction operation.
+
         NOTES
         =====
         POST:
@@ -391,6 +436,7 @@ class Variable:
          
         EXAMPLES
         =========
+
         # substract two variables with scalar derivatives
         >>> x = Variable(2, 3)
         >>> y = Variable(4, 5)
@@ -423,12 +469,15 @@ class Variable:
         """ 
         Dunder method for overloading the "-" operator. 
         Computes the value and derivative of the substraction operation
+
         INPUTS
         =======
         other: a Variable object, an int, or a float
+
         RETURNS
         ========
         a Variable object with the derivative and value of the substraction operation.
+
         NOTES
         =====
         POST:
@@ -436,6 +485,7 @@ class Variable:
          
         EXAMPLES
         =========
+
         # substract two variables with scalar derivatives
         >>> x = Variable(3, 3)
         >>> y = Variable(1, 5)
@@ -468,12 +518,15 @@ class Variable:
         """ 
         Dunder method for overloading the "/" operator. 
         Computes the value and derivative of the divison operation
+
         INPUTS
         =======
         other: a Variable object, an int, or a float
+
         RETURNS
         ========
         a Variable object with the derivative and value of the divison operation.
+
         NOTES
         =====
         PRE:
@@ -483,6 +536,7 @@ class Variable:
         
         EXAMPLES
         =========
+
         # Divide two variables
         >>> x = Variable(15, 1)
         >>> y = Variable(3, 1)
@@ -538,20 +592,25 @@ class Variable:
         """ 
         Dunder method for overloading the "/" operator. 
         Computes the value and derivative of the divison operation
+
         INPUTS
         =======
         other: a Variable object, an int, or a float
+
         RETURNS
         ========
         a Variable object with the derivative and value of the divison operation.
+
         NOTES
         =====
         PRE:
          -  self.value cannot be Zero a ZeroDivisionError will be raised.
         POST:
          - self is not changed by this function
+
         EXAMPLES
         =========
+
         # Divide two variables
         >>> x = Variable(3, 2)
         >>> y = Variable(15, 5)
@@ -590,12 +649,15 @@ class Variable:
         """
         Dunder method for overloading the "**" operator.
         Computes the value and derivative of the power operation.
+
         INPUTS
         =======
         other: a Variable object, an int, or a float
+
         RETURNS
         ========
         a Variable object with the derivative and value of the power operation.
+
         NOTES
         =====
         PRE:
@@ -603,8 +665,10 @@ class Variable:
         -  A ValueError is raised if self.value is zero and other is negative
         POST:
          - self is not changed by this function
+
         EXAMPLES
         =========
+
         # Power of variables with scalar derivatives
         >>> x = Variable(3, 3)
         >>> y = Variable(1, 5)
@@ -647,12 +711,15 @@ class Variable:
         """
         Dunder method for overloading the "**" operator.
         Computes the value and derivative of the power operation.
+
         INPUTS
         =======
         other: a Variable object, an int, or a float
+
         RETURNS
         ========
         a Variable object with the derivative and value of the power operation.
+
         NOTES
         =====
         PRE:
@@ -660,8 +727,10 @@ class Variable:
          -  ValueError is raised if other is negative
         POST:
          - self is not changed by this function
+
         EXAMPLES
         =========
+
         # Power of variables with scalar derivatives
         >>> x = Variable(3, np.array([5, 6]))
         >>> print(3 ** x)
@@ -681,12 +750,15 @@ class Variable:
         """ 
         This method is called using '-' operator.
         Computes the value and derivative of the negation operation
+
         INPUTS
         =======
         None
+
         RETURNS
         ========
         a Variable object with the derivative and value of the negation operation.
+
         NOTES
         =====
         POST:
@@ -694,6 +766,7 @@ class Variable:
          
         EXAMPLES
         =========
+
         # negation of a variable with scalar derivative
         >>> x = Variable(4.2, 1.3)
         >>> print(-x)
@@ -714,12 +787,15 @@ class Variable:
     def log(self, base=None):
         """
         Computes the value and derivative of log function with any base. Default base is e.
+
         INPUTS
         =======
         base: an int, or a float. Default is None.
+
         RETURNS
         ========
         a Variable object with the derivative and value of the log function.
+
         NOTES
         =====
         POST:
@@ -727,6 +803,7 @@ class Variable:
          
         EXAMPLES
         =========
+
         # log(base=5) of a variable with scalar derivative
         >>> x = Variable(4.2, 1.3)
         >>> print(x.log(5))
@@ -778,18 +855,23 @@ class Variable:
     def exp(self):
         """
         Computes the value and derivative of exp function
+
         INPUTS
         =======
         None
+
         RETURNS
         ========
         a Variable object with the derivative and value of the exp function.
+
         NOTES
         =====
         POST:
          - self is not changed by this function
+
         EXAMPLES
         =========
+
         # exp of variable with scalar derivative
         >>> import numpy as np
         >>> x = Variable(4, 1)
@@ -811,18 +893,23 @@ class Variable:
     def sqrt(self):
         """
         Computes the value and derivative of sqrt function
+
         INPUTS
         =======
         None
+
         RETURNS
         ========
         a Variable object with the derivative and value of the sqrt function.
+
         NOTES
         =====
         POST:
          - self is not changed by this function
+
         EXAMPLES
         =========
+
         # sqrt of variable with scalar derivative
         >>> import numpy as np
         >>> x = Variable(4, 1)
@@ -834,7 +921,11 @@ class Variable:
         >>> x = Variable(3, np.array([1, -4]))
         >>> print(np.sqrt(x))
         Variable(value=1.7320508075688772, derivative=[ 0.28867513 -1.15470054])
+<<<<<<< HEAD
         
+=======
+
+>>>>>>> origin
         """
         return self.__pow__(0.5)
     
@@ -842,12 +933,15 @@ class Variable:
     def sin(self):
         """ 
         Computes the value and derivative of the sin function
+
         INPUTS
         =======
         None
+
         RETURNS
         ========
         a Variable object with the derivative and value of the sin function.
+        
         NOTES
         =====
         POST:
@@ -855,6 +949,7 @@ class Variable:
         
         EXAMPLES
         =========
+
         # sin of variable with scalar derivative
         >>> import numpy as np
         >>> x = Variable(np.pi/2, 1)
@@ -866,7 +961,11 @@ class Variable:
         >>> x = Variable(np.pi/2, np.array([1, 0]))
         >>> print(np.sin(x))
         Variable(value=1.0, derivative=[6.123234e-17 0.000000e+00])
+<<<<<<< HEAD
         
+=======
+
+>>>>>>> origin
         """
 
         val = np.sin(self.value)
@@ -877,12 +976,15 @@ class Variable:
     def cos(self):
         """ 
         Computes the value and derivative of the cos function
+        
         INPUTS
         =======
         None
+
         RETURNS
         ========
         a Variable object with the derivative and value of the cos function.
+
         NOTES
         =====
         POST:
@@ -890,6 +992,7 @@ class Variable:
          
         EXAMPLES
         =========
+
         # cos of variable with scalar derivative
         >>> import numpy as np
         >>> x = Variable(np.pi/2, 2)
@@ -912,20 +1015,25 @@ class Variable:
     def tan(self):
         """ 
         Computes the value and derivative of the tan function
+
         INPUTS
         =======
         None
+
         RETURNS
         ========
         a Variable object with the derivative and value of the tan function.
+
         NOTES
         =====
         PRE:
          -  self.value is not an odd multiple of pi/2 otherwise a ValueError will be raised
         POST:
          - self is not changed by this function
+
         EXAMPLES
         =========
+
         # tan of variable with scalar derivative
         >>> import numpy as np
         >>> x = Variable(np.pi, 1)
@@ -950,12 +1058,15 @@ class Variable:
     def sinh(self):
         """ 
         Computes the value and derivative of the sinh function
+
         INPUTS
         =======
         None
+
         RETURNS
         ========
         a Variable object with the derivative and value of the sinh function.
+
         NOTES
         =====
         POST:
@@ -984,12 +1095,15 @@ class Variable:
     def cosh(self):
         """ 
         Computes the value and derivative of the cosh function
+
         INPUTS
         =======
         None
+
         RETURNS
         ========
         a Variable object with the derivative and value of the cosh function.
+        
         NOTES
         =====
         POST:
@@ -1018,18 +1132,23 @@ class Variable:
     def tanh(self):
         """ 
         Computes the value and derivative of the tanh function
+
         INPUTS
         =======
         None
+
         RETURNS
         ========
         a Variable object with the derivative and value of the tanh function.
+
         NOTES
         =====
         POST:
          - self is not changed by this function
+
         EXAMPLES
         =========
+
         # tanh of variable with scalar derivative
         >>> import numpy as np
         >>> x = Variable(2, 1)
@@ -1051,20 +1170,25 @@ class Variable:
     def arcsin(self):
         """ 
         Computes the value and derivative of the arcsin function
+
         INPUTS
         =======
         None
+
         RETURNS
         ========
         a Variable object with the derivative and value of the arcsin function.
+
         NOTES
         =====
         PRE:
          - self.value should be in (-1, 1), otherwise a ValueError will be raised
         POST:
          - self is not changed by this function
+
         EXAMPLES
         =========
+
         # arcsin of variable with scalar derivative
         >>> import numpy as np
         >>> x = Variable(0.5, 1)
@@ -1098,12 +1222,15 @@ class Variable:
     def arccos(self):
         """ 
         Computes the value and derivative of the arccos function
+
         INPUTS
         =======
         None
+
         RETURNS
         ========
         a Variable object with the derivative and value of the arccos function.
+
         NOTES
         =====
         PRE:
@@ -1145,16 +1272,20 @@ class Variable:
     def arctan(self):
         """ 
         Computes the value and derivative of the arctan function
+
         INPUTS
         =======
         None
+
         RETURNS
         ========
         a Variable object with the derivative and value of the arctan function.
+
         NOTES
         =====
         POST:
          - self is not changed by this function
+
         EXAMPLES
         =========
         # arctan of variable with scalar derivative
@@ -1179,20 +1310,25 @@ class Variable:
         """
         Dunder method for overloading the abs function.
         Computes the value and derivative of abs function
+
         INPUTS
         =======
         None
+
         RETURNS
         ========
         a Variable object with the derivative and value of the abs function.
+
         NOTES
         =====
         PRE:
          -  self.value is not 0 otherwise a ValueError will be raised
         POST:
          - self is not changed by this function
+
         EXAMPLES
         =========
+
         # abs of variable with scalar derivative
         >>> x = Variable(4, 1)
         >>> print(abs(x))
@@ -1224,20 +1360,25 @@ class Variable:
         Dunder method for overloading the less than comparison.
         This operand will perform elementwise comparison of the value and 
         derivative of self and other.
+
         INPUTS
         =======
         other: a Variable object
+
         RETURNS
         ========
         a boolean tuple where the first element specifies if the comparison holds
         for the value of self and the second element specifies if the comparison
         holds for all the elements of the derivative
+
         NOTES
         =====
         POST:
          - self is not changed by this function
+
         EXAMPLES
         =========
+
         # "less than" comparison when the comparison is true only for the derivative
         >>> x = Variable(4, 1)
         >>> y = Variable(4, 2)
@@ -1273,20 +1414,25 @@ class Variable:
         Dunder method for overloading the less than or equal to comparison.
         This operand will perform elementwise comparison of the value and 
         derivative of self and other.
+
         INPUTS
         =======
         other: a Variable object
+
         RETURNS
         ========
         a boolean tuple where the first element specifies if the comparison holds
         for the value of self and the second element specifies if the comparison
         holds for all the elements of the derivative
+
         NOTES
         =====
         POST:
          - self is not changed by this function
+
         EXAMPLES
         =========
+
         # <= comparison with scalar derivative
         >>> x = Variable(4, 1)
         >>> y = Variable(4, 2)
@@ -1306,7 +1452,11 @@ class Variable:
         >>> y = Variable(4, np.array([4, 4]))
         >>> x <= y
         (True, True)
+<<<<<<< HEAD
 
+=======
+        
+>>>>>>> origin
         """
         val_comparison = self.value <= other.value
         try:
@@ -1336,6 +1486,7 @@ class Variable:
         =====
         POST:
          - self is not changed by this function
+
         EXAMPLES
         =========
         # == comparison with scalar derivative
@@ -1390,6 +1541,7 @@ class Variable:
          
         EXAMPLES
         =========
+
         # != comparison with scalar derivative
         >>> x = Variable(5, 3)
         >>> y = Variable(5, 2)
@@ -1425,14 +1577,17 @@ class Variable:
         Dunder method for overloading the greater than comparison.
         This operand will perform elementwise comparison of the value and 
         derivative of self and other.
+
         INPUTS
         =======
         other: a Variable object
+
         RETURNS
         ========
         a boolean tuple where the first element specifies if the comparison holds
         for the value of self and the second element specifies if the comparison
         holds for all the elements of the derivative
+
         NOTES
         =====
         POST:
@@ -1440,6 +1595,7 @@ class Variable:
         
         EXAMPLES
         =========
+
         # "greater than" comparison when the comparison is true only for the derivative
         >>> x = Variable(3, 7)
         >>> y = Variable(5, 2)
@@ -1474,20 +1630,25 @@ class Variable:
         Dunder method for overloading the greater than or equal to comparison.
         This operand will perform elementwise comparison of the value and 
         derivative of self and other.
-        INPUTS
+        
         =======
         other: a Variable object
+
         RETURNS
         ========
+
         a boolean tuple where the first element specifies if the comparison holds
         for the value of self and the second element specifies if the comparison
         holds for all the elements of the derivative
+
         NOTES
         =====
         POST:
          - self is not changed by this function
+
         EXAMPLES
         =========
+
         # >= comparison with scalar derivative
         >>> x = Variable(7, 2)
         >>> y = Variable(4, 2)
@@ -1520,18 +1681,23 @@ class Variable:
     def logistic(self):
         """
         Computes the value and derivative of the standard logistic function of the form 1/(1 + e^-x).
+
         INPUTS
         =======
         None
+
         RETURNS
         ========
         a Variable object with the derivative and value of the logistic function.
+
         NOTES
         =====
         POST:
          - self is not changed by this function
+
         EXAMPLES
         =========
+
         # logistic function with scalar derivative
         >>> x = Variable(3, 1)
         >>> y = x.logistic()
@@ -1546,3 +1712,4 @@ class Variable:
 
         """
         return 1/(1 + np.exp(-self))
+        

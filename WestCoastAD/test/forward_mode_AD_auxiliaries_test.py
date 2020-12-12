@@ -77,7 +77,7 @@ class AuxiliariesUnitTest(unittest.TestCase):
     def test_multivariate_dimension_check_exception(self):
         with self.assertRaises(ValueError) as e:
             multivariate_dimension_check([])
-        self.assertAlmostEqual('variable_list must have at least one variable.', str(e.exception))
+        self.assertEqual('variable_list must have at least one variable.', str(e.exception))
 
     
     def test_differentiate_univariate_scalar_function(self):
