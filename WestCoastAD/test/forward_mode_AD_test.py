@@ -8,7 +8,7 @@ class VariableUnitTest(unittest.TestCase):
     def test_value_setter_string(self):
         with self.assertRaises(TypeError) as e:
             var = Variable('s', 1)
-        self.assertAlmostEqual('Input value should be an int or float.', str(e.exception))
+        self.assertEqual('Input value should be an int or float.', str(e.exception))
             
     def test_value_setter_float_and_int(self):
         var1 = Variable(1.2, 1)
@@ -19,7 +19,7 @@ class VariableUnitTest(unittest.TestCase):
     def test_derivative_setter_string(self):
         with self.assertRaises(TypeError) as e:
             var = Variable(1.2, 'string')
-        self.assertAlmostEqual('Input derivative seed should be an int, float, or a 1D numpy array of ints/floats.', str(e.exception))
+        self.assertEqual('Input derivative seed should be an int, float, or a 1D numpy array of ints/floats.', str(e.exception))
     
     def test_derivative_setter_float_and_int(self):
         var1 = Variable(1.2, 1)
@@ -34,11 +34,11 @@ class VariableUnitTest(unittest.TestCase):
 
         with self.assertRaises(TypeError) as e:
             var = Variable(10.2, np.array([[0],[2],[0]]))
-        self.assertAlmostEqual('Input derivative seed should be an int, float, or a 1D numpy array of ints/floats.', str(e.exception))
+        self.assertEqual('Input derivative seed should be an int, float, or a 1D numpy array of ints/floats.', str(e.exception))
 
         with self.assertRaises(TypeError) as e:
             var = Variable(10.2, np.array([1.1, 2, "s"]))
-        self.assertAlmostEqual('Input derivative seed array contains non int/float values', str(e.exception))
+        self.assertEqual('Input derivative seed array contains non int/float values', str(e.exception))
         
     def test__add__scalar_two_variable_objects(self):
         var1 = Variable(10.1, 2.1)
@@ -122,7 +122,7 @@ class VariableUnitTest(unittest.TestCase):
         with self.assertRaises(ValueError) as e:
             var = Variable(-5*np.pi/2, 1)
             np.tan(var)
-        self.assertAlmostEqual("Inputs to tan should not be odd multiples of pi/2", str(e.exception))
+        self.assertEqual("Inputs to tan should not be odd multiples of pi/2", str(e.exception))
 
     def test_sinh_scalar(self):
         var = Variable(-.5, 1.2)
@@ -183,12 +183,12 @@ class VariableUnitTest(unittest.TestCase):
         with self.assertRaises(ValueError) as e:
             var = Variable(-20, 1)
             np.arcsin(var)
-        self.assertAlmostEqual("Inputs to arcsin should be in (-1, 1) for the derivative to be defined.", str(e.exception))
+        self.assertEqual("Inputs to arcsin should be in (-1, 1) for the derivative to be defined.", str(e.exception))
 
         with self.assertRaises(ValueError) as e:
             var = Variable(20, 1)
             np.arcsin(var)
-        self.assertAlmostEqual("Inputs to arcsin should be in (-1, 1) for the derivative to be defined." , str(e.exception))
+        self.assertEqual("Inputs to arcsin should be in (-1, 1) for the derivative to be defined." , str(e.exception))
 
     def test_arccos_scalar(self):
         var = Variable(.8, -1.2)
@@ -260,13 +260,13 @@ class VariableUnitTest(unittest.TestCase):
     def test_log_exception(self):
         with self.assertRaises(ValueError) as e:
             Variable(-23, 9).log()
-        self.assertAlmostEqual("Values for log should be greater than zero.", str(e.exception))
+        self.assertEqual("Values for log should be greater than zero.", str(e.exception))
         with self.assertRaises(ValueError) as e:
             Variable(4,5).log(1)
-        self.assertAlmostEqual("Base should be greater than zero and not equal to 1.", str(e.exception))
+        self.assertEqual("Base should be greater than zero and not equal to 1.", str(e.exception))
         with self.assertRaises(ValueError):
             Variable(4,5).log(-2)
-        self.assertAlmostEqual("Base should be greater than zero and not equal to 1.", str(e.exception))
+        self.assertEqual("Base should be greater than zero and not equal to 1.", str(e.exception))
 
     def test_abs_scalar(self):
         var = Variable(-12, 9)
@@ -318,12 +318,12 @@ class VariableUnitTest(unittest.TestCase):
         with self.assertRaises(ValueError) as e:
             var = Variable(18, 2)
             np.arccos(var)
-        self.assertAlmostEqual("Inputs to arccos should be in (-1, 1) for the derivative to be defined.", str(e.exception))
+        self.assertEqual("Inputs to arccos should be in (-1, 1) for the derivative to be defined.", str(e.exception))
 
         with self.assertRaises(ValueError) as e:
             var = Variable(-18, 2)
             np.arccos(var)
-        self.assertAlmostEqual("Inputs to arccos should be in (-1, 1) for the derivative to be defined.", str(e.exception))
+        self.assertEqual("Inputs to arccos should be in (-1, 1) for the derivative to be defined.", str(e.exception))
 
     def test_arctan_scalar(self):
         var = Variable(.5, .75)
@@ -374,19 +374,19 @@ class VariableUnitTest(unittest.TestCase):
         with self.assertRaises(ZeroDivisionError) as e:
             var = Variable(20.0, 2.0)
             divided = var / 0
-        self.assertAlmostEqual('Division by zero encountered', str(e.exception))
+        self.assertEqual('Division by zero encountered', str(e.exception))
 
         with self.assertRaises(ZeroDivisionError) as e:
             var1 = Variable(20.0, 2.0)
             var2 = Variable(0.0, 5.0)
             divided = var1 / var2
-        self.assertAlmostEqual('Division by zero encountered', str(e.exception))
+        self.assertEqual('Division by zero encountered', str(e.exception))
 
         with self.assertRaises(ZeroDivisionError) as e:
             var1 = Variable(20.0, 2.0)
             var2 = Variable(0.0, 5.0)
             divided = 3 / var2
-        self.assertAlmostEqual('Division by zero encountered', str(e.exception))
+        self.assertEqual('Division by zero encountered', str(e.exception))
     
     def test__truediv__scalar_one_variable_one_constant(self):
         var = Variable(20.0, 2.0)
