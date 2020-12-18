@@ -22,6 +22,8 @@ Our package contains several optimization algorithms that are ubiquitous in mach
 
 All the optimization methods mentioned above require derivative computations. For this library, we have used Automatic Differentiation as it is an efficient way of computing these derivatives which can be used with various complex functions.
 
+[Introductory video](https://youtu.be/qErU1uYU85E)
+
 # Broader Impact and Inclusivity Statement
 
 ### Broader Impact
